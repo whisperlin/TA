@@ -1,0 +1,217 @@
+﻿Shader "TA/VectorWater2"
+{
+	Properties
+	{
+		_Color("深水色", Color) = (0.23828125, 0.53515625, 0.7297, 0.5)//61,137,189
+		_TopColor("浅水色", Color) = (0.402343, 0.77343, 0.77343, 0.3)//103.198.198
+		_EdgeColor("水边色", Color) = (1, 1, 1, 1)
+		_DepthFactor("深浅变换调节", Range(0,1)) = 0.5
+		
+		
+
+		_GSpeed ("海面速度", vector) = (1,1,0,0)
+		_GFrequency("波浪大小",Range(0,100)) = 10
+		_GHeight("波浪高度",Range(0,1)) = 0.5
+
+		_SpecularTex("扰动纹理", 2D) = "white" {}
+		_SpecularTexR_ST ("_SpecularTexR_ST", vector) = (20,20,1,1)
+		_SpecularTexG_ST ("_SpecularTexG_ST", vector) = (20,20,0.5,-0.3)
+		_SpecularTexB_ST ("_SpecularTexB_ST", vector) = (20,20,-0.7,-0.4)
+
+		_SpecularPower("假高光强度",Range(0,100)) = 10
+		_SpecularColor("高光色", Color) = (1,1,1,1)
+
+
+		_WareTex ("波浪", 2D) = "white" {}
+		_WareTex_ST ("_SpecularTexG_ST", vector) = (0.1,3.0,0,0.2)
+		 
+		[KeywordEnum(off, on )] _SIMPLE_WAVE("简单浪", Float) = 0
+
+		[KeywordEnum(on, off )] _ANIMATION("顶点起伏开关", Float) = 0
+	}
+
+	SubShader
+	{
+        Tags
+		{ 
+			"Queue" = "Transparent"
+		}
+
+		 
+
+		Pass
+		{
+            Blend SrcAlpha OneMinusSrcAlpha
+
+			CGPROGRAM
+            #include "UnityCG.cginc"
+
+			#pragma vertex vert
+			#pragma fragment frag
+
+			#define _UNITY_DEPTH_ON 1
+			//#pragma multi_compile _UNITY_DEPTH_OFF _UNITY_DEPTH_ON
+
+			#pragma multi_compile _SIMPLE_WAVE_OFF _SIMPLE_WAVE_ON
+
+			#pragma multi_compile _ANIMATION_ON _ANIMATION_OFF 
+			
+			
+			
+			// Properties
+			float4 _Color;
+			float4 _EdgeColor;
+			float4 _TopColor;
+			float  _DepthFactor;
+ 
+	 
+ #if _UNITY_DEPTH_ON
+			sampler2D _CameraDepthTexture;
+#else
+			sampler2D _CustomDepth;
+#endif
+ 
+			sampler2D _SpecularTex;
+
+			sampler2D _WareTex;
+ 
+
+			half4 _WareTex_ST;
+			//half _WareTexSpeed;
+ 
+
+
+			uniform half _GFrequency;
+			uniform half4 _GSpeed;
+			uniform half _GHeight;
+			//float _EdgeWidth;
+ 
+
+
+			uniform float _SpecularExp;
+			uniform float _SpecularPower;
+			uniform half4 _SpecularColor;
+ 
+ 
+			uniform half4 _SpecularTexR_ST;
+			uniform half4 _SpecularTexG_ST;
+			uniform half4 _SpecularTexB_ST;
+
+			struct vertexInput
+			{
+				float4 vertex : POSITION;
+				float4 texCoord : TEXCOORD1;
+			};
+
+			struct vertexOutput
+			{
+				float4 pos : SV_POSITION;
+				float4 texCoord : TEXCOORD0;
+
+				float4 screenPos : TEXCOORD1;
+				#if _UNITY_DEPTH_ON
+				
+				#else
+				float4 screenPos2 : TEXCOORD2;
+				#endif
+
+				float wareOffset : TEXCOORD3;
+				
+			};
+
+			vertexOutput vert(vertexInput input)
+			{
+				vertexOutput output;
+
+				float4 posWorld = mul(unity_ObjectToWorld, input.vertex);
+
+				#if _ANIMATION_ON 
+				float2 _p = _GFrequency * posWorld.xz + _Time.yy * _GSpeed.xy;	
+				posWorld.y += sin(_p.x+_p.y)*_GHeight;
+				#endif
+				output.pos = mul(UNITY_MATRIX_VP, posWorld   );
+ 
+				output.wareOffset = (posWorld.x+posWorld.y)*_WareTex_ST.x +_Time.y*_WareTex_ST.w;
+				output.screenPos = ComputeScreenPos(output.pos);
+
+				#if _UNITY_DEPTH_ON
+				
+				#else
+				output.screenPos2.xyz = output.pos.xyw;
+				output.screenPos2.y *= _ProjectionParams.x;
+				#endif
+
+				output.texCoord = input.texCoord;
+
+				return output;
+			}
+			float unpackFloatFromVec4i(in float4 value) {
+				  const float4 bitSh = float4(1.0/(256.0*256.0*256.0), 1.0/(256.0*256.0), 1.0/256.0, 1.0);
+				  return(dot(value, bitSh));
+				}
+			float4 frag(vertexOutput input) : COLOR
+			{
+
+
+				half2 uv0 =    input.texCoord * _SpecularTexR_ST.xy  +   _Time.x *    _SpecularTexR_ST.zw;
+				half colr = tex2D(_SpecularTex,uv0).r;
+
+				half2 uv1 =    input.texCoord  * _SpecularTexG_ST.xy  +   _Time.x *    _SpecularTexG_ST.zw;
+				half colg = tex2D(_SpecularTex,uv1).g;
+
+				half2 uv2 =    input.texCoord  * _SpecularTexB_ST.xy  +   _Time.x *    _SpecularTexB_ST.zw;
+				half colb = tex2D(_SpecularTex,uv2).b;
+				half sp =  colr * colg * colb ;
+
+
+
+				
+
+				sp = sp ;
+
+				
+				#if _UNITY_DEPTH_ON
+				float4 depthSample = SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, input.screenPos);
+	 
+				#else
+				float2 screenUV = (input.screenPos2.xy / input.screenPos2.z) * 0.5f + 0.5f;
+				float4 cd = tex2D(_CustomDepth, screenUV);
+		 
+				//float4 depthSample = unpackFloatFromVec4i(cd);
+				float4 depthSample = DecodeFloatRG(cd);
+				//float4 depthSample = cd.r;
+				#endif
+
+
+
+				
+				
+				float depth = LinearEyeDepth(depthSample).r;
+				float delta = depth - input.screenPos.w;
+	 
+				float w = delta*_WareTex_ST.y;
+				#if _SIMPLE_WAVE_ON
+				
+
+				float t0 =   step(w,0.3);
+				#else
+				float t2 = w * step(w,1);
+				float t0 = tex2Dlod(_WareTex,float4(input.wareOffset,t2,0,1)).r;
+				#endif
+				
+			 
+				
+				float foamLine = 1 - saturate(_DepthFactor * delta);
+			 
+				//float4 waterColor = lerp (lerp(_Color , _TopColor,c) ,_EdgeColor ,t0 );
+			    float4 waterColor = lerp (lerp(_Color , _TopColor,foamLine) ,_EdgeColor ,t0 );
+
+				fixed4 col = lerp(waterColor,_SpecularColor*_SpecularPower,sp  );
+
+                return col;
+			}
+
+			ENDCG
+		}
+	}
+}
