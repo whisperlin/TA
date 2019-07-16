@@ -361,7 +361,17 @@ public class SphericalHarmonics
         return true;
     }
 
-	/*inline float2 ToRadialCoords(float3 coords)
+    /*
+     inline float2 ToRadialCoords(float3 coords)
+	{
+		float3 normalizedCoords = normalize(coords);
+		float latitude = acos(normalizedCoords.y);
+		float longitude = atan2(normalizedCoords.z, normalizedCoords.x);
+		float2 sphereCoords = float2(longitude, latitude) * float2(0.5 / UNITY_PI, 1.0 / UNITY_PI);
+		return float2(0.5, 1.0) - sphereCoords;
+	}
+     * 
+     * inline float2 ToRadialCoords(float3 coords)
 	{
 		float3 normalizedCoords = normalize(coords);
 		float latitude = acos(normalizedCoords.y);
@@ -369,7 +379,7 @@ public class SphericalHarmonics
 		float2 sphereCoords = float2(longitude, latitude) * float2(0.5/UNITY_PI, 1.0/UNITY_PI);
 		return float2(0.5,1.0) - sphereCoords;
 	}*/
-	public static Vector2 ToRadialCoords(Vector3 coords)
+    public static Vector2 ToRadialCoords(Vector3 coords)
 	{
         Matrix4x4 m = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(new Vector3(0, 90, 0)), Vector3.one);
         coords = m.MultiplyVector(coords);
@@ -410,15 +420,16 @@ public class SphericalHarmonics
         Color[] cls = null;
 		if(tex)
 			cls = tex.GetPixels ();
+        Quaternion rot = Quaternion.Euler(0,-90f,0);
 		for (int c = 0; c < 9; ++c)
 		{
 			for (int s = 0; s < sample_count; ++s)
 			{
 				Vector3 dir = Random.onUnitSphere;
-
-				Color radiance = Color.black;
+                Vector3 dir0 = rot * dir;
+                Color radiance = Color.black;
 				if (tex) {
-					int index = UVtoTextureIndex(ToRadialCoords (dir),tex);
+					int index = UVtoTextureIndex(ToRadialCoords (dir0),tex);
 					radiance = cls[index];
 					if (sun)
 						radiance = AddSun (radiance);

@@ -124,8 +124,8 @@ public class LookAtTarget : MonoBehaviour {
                     yAngle = rRotationLimity;
                 }
                 var new_local = Quaternion.Euler(0f, yAngle * sign * Mathf.Rad2Deg, 0f) * yBase * lengthXZ;
-                var target = temp.localToWorldMatrix.MultiplyPoint(new_local);
-                targetPos = new Vector3(target.x, targetPos.y, target.z);
+                var target0 = temp.localToWorldMatrix.MultiplyPoint(new_local);
+				targetPos = new Vector3(target0.x, targetPos.y, target0.z);
                 _forward = (targetPos - temp.position).normalized;
 
             }

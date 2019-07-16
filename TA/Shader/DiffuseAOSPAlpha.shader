@@ -120,6 +120,8 @@ Shader "TA/BumpedAOSpecularAlpha"
 		#pragma shader_feature MELT_SNOW
 
 		#pragma   multi_compile  _  _HEIGHT_FOG_ON
+		#pragma   multi_compile  _  GLOBAL_ENV_SH9
+		#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 
  		#define _AO_ON 1
  		 

@@ -8,6 +8,8 @@ public class SetGlobalSH9 : MonoBehaviour {
     public SH9Data data;
     SH9Data curData;
 
+   
+
     [Header("角色虚拟光颜色")]
     public Color virtualDirectLightColor0 = Color.white;
     [Header("虚拟光强度")]
@@ -40,14 +42,37 @@ public class SetGlobalSH9 : MonoBehaviour {
 
     [Header("高度雾顶部")]
     public float heightFogHeight2 = 10;
-
+    [Range(0.1f,1f)]
+    [Header("高度过渡")]
+    public float fog_height_power = 0.4f;
+    [Header("远景变色")]
+    public bool enable_env = true;
+    [Header("反射环境色")]
+    public SH9Data farEvn;
+    [Range(0f,0.9f)]
+    [Header("反射环境色向下偏移")]
+    public float globalEnvOffset = 0.5f;
+    SH9Data curFarEnv;
     [Header("远景色")]
-    public Color farSceneColor;
+    public Color farSceneColor = new Color(1,1,1,1);
+    [Range(0.001f, 0.02f)]
+    [Header("远景过渡")]
+    public float density = 0.01f;
 
+    [Range(0.001f, 0.02f)]
+    [Header("高度过渡")]
+    public float densityH = 0.01f;
+
+    //[Range(0.001f, 0.02f)]
+    //[Header("雾色过渡")]
+    //public float color_density = 0.01f;
+
+    
 
     // Use this for initialization
     void Start () {
         curData = null;
+        curFarEnv = null;
         setSH9Global();
     }
 	// Update is called once per frame
@@ -66,6 +91,42 @@ public class SetGlobalSH9 : MonoBehaviour {
                 Shader.SetGlobalVector(param, data.coefficients[i]);
             }
         }
+        if (farEvn != null && curFarEnv != farEvn)
+        {
+            curFarEnv = farEvn;
+            for (int i = 0; i < 9; ++i)
+            {
+                string param = "evn_sph" + i.ToString();
+                Shader.SetGlobalVector(param, farEvn.coefficients[i]);
+            }
+        }
+        float _density = density / Mathf.Sqrt(Mathf.Log(2));
+        float _densityH = densityH / Mathf.Sqrt(Mathf.Log(2));
+
+        //float _color_density = color_density /  Mathf.Sqrt(Mathf.Log(2));
+        Shader.SetGlobalFloat("env_density", _density);
+        Shader.SetGlobalFloat("height_density", _densityH);
+        //Shader.SetGlobalFloat("color_density", color_density);
+
+        Shader.SetGlobalFloat("globalEnvOffset", globalEnvOffset);
+       
+        if (enable_env)
+        {
+            Shader.EnableKeyword("ENABLE_DISTANCE_ENV");
+        }
+        else
+        {
+            Shader.DisableKeyword("ENABLE_DISTANCE_ENV");
+        }
+        if (farEvn)
+        {
+            Shader.EnableKeyword("GLOBAL_ENV_SH9");
+        }
+        else
+        {
+            Shader.DisableKeyword("GLOBAL_ENV_SH9");
+        }
+        Shader.SetGlobalFloat("fog_height_power", fog_height_power);
         var v = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(new Vector3(VirtualDirectLight0.x, VirtualDirectLight0.y, VirtualDirectLight0.z)), Vector3.one).MultiplyVector(Vector3.back);
         v.Normalize();
         //Vector3.forward

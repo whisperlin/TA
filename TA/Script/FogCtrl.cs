@@ -5,7 +5,7 @@ using UnityEngine;
 public class FogCtrl : MonoBehaviour {
 
 
-    [Range(0.01f,0.03f)]
+    [Range(0.001f,0.03f)]
     public float fogDensity;
 
     public bool fog = true;

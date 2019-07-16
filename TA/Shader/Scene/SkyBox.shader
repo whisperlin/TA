@@ -4,7 +4,7 @@
 	{
 		_MainTex ("Texture", 2D) = "white" {}
 
-		_Rotation ("Rotation", Range(0, 360)) = 0
+		//_Rotation ("Rotation", Range(0, 360)) = 0
 		_SunPower("Sun Power",Range(1,14)) = 1
 		_SunBright("_SunBright",Range(-0.25,0.25)) = 0
 
@@ -43,7 +43,7 @@
 				float4 vertex : SV_POSITION;
 			};
 			half _SunPower;
-			half _Rotation;
+			//half _Rotation;
 			half _SunBright;
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
@@ -57,6 +57,7 @@
 				return float3(mul(m, vertex.xz), vertex.y).xzy;
 			}
 			
+			//这个是网易的。
 			inline half2 ToRadialCoordsNetEase(half3 envRefDir)
 			{
  
@@ -67,20 +68,31 @@
 				half u = s - ((s * 2.0f - 1.0f) * (latitude.x * 0.5f));
 				return half2(u, latitude.y);
 			}
+			//这个是unity。
+			inline float2 ToRadialCoords(float3 coords)
+			{
+				float3 normalizedCoords = normalize(coords);
+				float latitude = acos(normalizedCoords.y);
+				float longitude = atan2(normalizedCoords.z, normalizedCoords.x);
+				float2 sphereCoords = float2(longitude, latitude) * float2(0.5 / UNITY_PI, 1.0 / UNITY_PI);
+				return float2(0.5, 1.0) - sphereCoords;
+			}
 			v2f vert (appdata v)
 			{
 				v2f o;
-				float3 rotated = RotateAroundYInDegrees(v.vertex, _Rotation);
+				//float3 rotated = RotateAroundYInDegrees(v.vertex, _Rotation);
+				float3 rotated = v.vertex;
 				o.vertex = UnityObjectToClipPos(rotated);
 				o.texcoord = v.vertex.xyz;
+				o.texcoord.xz = -o.texcoord.xz;
 				
 				return o;
 			}
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				half2 skyUV = ToRadialCoordsNetEase(i.texcoord);
-				skyUV.y = 1 - skyUV.y;
+				half2 skyUV = ToRadialCoords(i.texcoord);
+				//skyUV.y = 1 - skyUV.y;
 				// sample the texture
 				fixed4 col = tex2D(_MainTex, skyUV);
 				half p = (col.w+_SunBright) *_SunPower ;
@@ -91,6 +103,7 @@
 
 
 				#if DEVELOP_SKY_BOX
+				_SunDirect.xz = -_SunDirect.xz;
 				float d = dot(_SunDirect,i.texcoord);
 				//return float4(1,0,0,1);
 				if(d>_SunDirect.a)

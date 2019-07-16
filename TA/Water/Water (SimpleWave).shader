@@ -93,12 +93,13 @@
 			#if _ANIMATION_ON 
 			float fade : TEXCOORD6;
 			#endif
-			UNITY_FOG_COORDS(7)
+			UNITY_FOG_COORDS_EX(7)
 			float4 wpos: TEXCOORD8;
 #ifdef __CREATE_DEPTH_MAP
 			float4 projPos : TEXCOORD9;
 			float3 ray : TEXCOORD10;
 #endif
+			float3 normalWorld : TEXCOORD11;
 		};
 
 
@@ -108,7 +109,7 @@
 			v2f o;
 			half4 s;
 
-			
+			o.normalWorld = UnityObjectToWorldNormal(v.normal);
 			float4 wpos = mul(unity_ObjectToWorld, v.vertex);
 
 			
@@ -162,7 +163,7 @@
 			 
 #endif
 			o.wareOffset = (wpos.x+wpos.y)*_WareTex_ST.x*0.1 +_Time.y*_WareTex_ST.w;
-			UNITY_TRANSFER_FOG(o, o.pos);
+			UNITY_TRANSFER_FOG_EX(o, o.pos);
 
 
 
@@ -284,7 +285,7 @@
 					fixed4 col = lerp(waterColor,_SpecularColor*_SpecularPower,sp  );
  
   
-					APPLY_HEIGHT_FOG(col,i.wpos);
+					APPLY_HEIGHT_FOG(col,i.wpos,i.normalWorld,i.fogCoord);
 					UNITY_APPLY_FOG(i.fogCoord, col);
 	 
 					return col;

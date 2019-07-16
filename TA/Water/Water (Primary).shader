@@ -274,7 +274,7 @@
 					
 					//col.rgb  += spec;
  
-					APPLY_HEIGHT_FOG(col,i.wpos);
+					//APPLY_HEIGHT_FOG(col,i.wpos);
 					UNITY_APPLY_FOG(i.fogCoord, col);
 	 
 					return col;

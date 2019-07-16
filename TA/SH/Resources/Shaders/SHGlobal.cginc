@@ -1,4 +1,8 @@
 ﻿
+#ifndef ___GLOBAL_SH9___
+#define ___GLOBAL_SH9___ 1
+
+
 uniform float4 g_sph0;
 uniform float4 g_sph1;
 uniform float4 g_sph2;
@@ -67,3 +71,5 @@ float3 g_sh(float3 v)
 	);
 	return max(result, float3(0, 0, 0));
 }
+
+#endif

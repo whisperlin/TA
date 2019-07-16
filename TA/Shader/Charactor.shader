@@ -118,7 +118,9 @@ Shader "TA/Charactor"
 			#pragma shader_feature S_DEVELOP
 			#pragma shader_feature HARD_SNOW
 			#pragma shader_feature MELT_SNOW
+			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 
+			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 		
 			//#pragma multi_compile __ GLOBAL_SH9
 	 

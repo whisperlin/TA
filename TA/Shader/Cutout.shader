@@ -19,6 +19,7 @@ Shader "TA/Cutout"
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
+			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#include "UnityCG.cginc"
 			#include "height-fog.cginc"
 			struct appdata
@@ -26,14 +27,16 @@ Shader "TA/Cutout"
 				float4 vertex : POSITION;
 				float2 uv : TEXCOORD0;
 				float2 uv2 : TEXCOORD1;
+				float3 normal : NORMAL;
 			};
 
 			struct v2f
 			{
 				float2 uv : TEXCOORD0;
 				float2 uv2 : TEXCOORD1;
-				UNITY_FOG_COORDS(2)
+				UNITY_FOG_COORDS_EX(2)
 				float4 wpos:TEXCOORD3;
+				float3 normalWorld : TEXCOORD4;
 				float4 vertex : SV_POSITION;
 			};
 
@@ -52,7 +55,8 @@ Shader "TA/Cutout"
 				o.wpos = wpos;
 				o.uv = v.uv;
 				o.uv2 = v.uv2 * unity_LightmapST.xy + unity_LightmapST.zw;
-				UNITY_TRANSFER_FOG(o, o.vertex);
+				o.normalWorld = UnityObjectToWorldNormal(v.normal);
+				UNITY_TRANSFER_FOG_EX(o, o.vertex);
 				return o;
 			}
 			
@@ -67,7 +71,7 @@ Shader "TA/Cutout"
 #ifdef BRIGHTNESS_ON
 				c.rgb = c.rgb * _Brightness * 2;
 #endif
-				APPLY_HEIGHT_FOG(c,i.wpos);
+				APPLY_HEIGHT_FOG(c,i.wpos,i.normalWorld,i.fogCoord);
 				UNITY_APPLY_FOG(i.fogCoord, c);
 				return c;
 			}

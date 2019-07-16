@@ -4,7 +4,7 @@
 #include "SceneWeather.inc" 
 #include "SHGlobal.cginc"
 #include "Shadow.cginc"
-
+#include "height-fog.cginc"
 #if _VIRTUAL_LIGHT_SHADOW2
 #include "shadowmap.cginc"
 #endif
@@ -22,7 +22,7 @@
 	{
 		half4 pos : SV_POSITION;
 		half2 uv : TEXCOORD0;
-		UNITY_FOG_COORDS(1)
+		UNITY_FOG_COORDS_EX(1)
 		half3 tspace0 : TEXCOORD2;
 		half3 tspace1 : TEXCOORD3;
 		half3 tspace2 : TEXCOORD4;
@@ -52,7 +52,7 @@
 //#endif
 	};
 
-	#include "height-fog.cginc"
+	
 	
 
 	//sampler2D unity_NHxRoughness;
@@ -201,7 +201,8 @@
 #endif
 		
 			
-		UNITY_TRANSFER_FOG(o, o.pos);
+		UNITY_TRANSFER_FOG_EX(o, o.pos);
+
 		#if _HEIGHT_FOG_ON
 		#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
 		//o.fogCoord0 = 1-o.fogCoord.x;
@@ -454,9 +455,9 @@
  
 
 #if GLOBAL_SH9
-	fixed3 ambient = g_sh(half4(normal, 1))* c.rgb *_AmbientPower;
+	fixed3 ambient = g_sh(half4(normal, 1))* c.rgb ;
 #else
-	fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT * c0.rgb *_AmbientPower;
+	fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT * c0.rgb ;
 #endif
 
 	//half nl0 = saturate(dot(normal, -lightDir));
@@ -492,7 +493,7 @@
 	half3 brdf = tex2D( _BRDFTex, brdfUV ).rgb;
 	//return float4(brdf,1);
 	//c.rgb = (lerp(c0.rgb * nl , c0.rgb * brdf.rgb*_S3STR , _S3SPower   ) * _LightColor0.rgb
-	fixed3 diffuse = ambient + lightColor * lerp(c0.rgb*  nl ,  c0.rgb*  brdf.rgb , _S3SPower *_AO_var )    ;
+	fixed3 diffuse = ambient*_AmbientPower + lightColor * lerp(c0.rgb*  nl ,  c0.rgb*  brdf.rgb , _S3SPower *_AO_var )    ;
 
 #else
 
@@ -500,16 +501,16 @@
 	#if _CHARACTOR
 
 #if _ISS3_BACK
-	fixed3 diffuse = ambient + lightColor * lerp(_DifSC, 1, nl) * c0.rgb + _BackColor.rgb *saturate(b_nl)*sss_scatter0;
+	fixed3 diffuse = ambient*_AmbientPower + lightColor * lerp(_DifSC, 1, nl) * c0.rgb + _BackColor.rgb *saturate(b_nl)*sss_scatter0;
 #else
-	fixed3 diffuse = ambient + lightColor *c0.rgb* calc_transmission_sss(nl, _nl, b_nl, _DifSC, sss_scatter0, _AO_var);
+	fixed3 diffuse = ambient*_AmbientPower + lightColor *c0.rgb* calc_transmission_sss(nl, _nl, b_nl, _DifSC, sss_scatter0, _AO_var);
 #endif
 		
 
 	#else
 
 		
-		fixed3 diffuse = ambient + lightColor *c0.rgb* calc_transmission_sss(nl, _nl, b_nl, _DifSC, sss_scatter0, 1);
+		fixed3 diffuse = ambient*_AmbientPower + lightColor *c0.rgb* calc_transmission_sss(nl, _nl, b_nl, _DifSC, sss_scatter0, 1);
 	#endif
  	
 	//fixed3 diffuse = ambient + lightColor * lerp(_DifSC,1, nl) * c0.rgb + _BackColor.rgb *nl0  ;
@@ -552,12 +553,13 @@
 	half _m = _e  *  metallic_power;
 #endif
 
-
+	
 #if S_BAKE
 
 #else
 	spec *= sp;
 #endif
+fixed3 InDirspec = 0;
 
 #if _ISMETALLIC_ON
 	//金属 .  
@@ -566,20 +568,21 @@
 	half4 skyUV = half4(ToRadialCoords(viewReflectDirection),0, roughness*6);
 	fixed4 localskyColor = tex2Dlod(environment_reflect, skyUV) ;
  
-	fixed3 skyColor =  localskyColor.xyz ;
+	fixed3 baseSkyColor =  localskyColor.xyz ;
 
-
+	
 
 
 	#if _ISSUN_ON
-		skyColor *= max(0,exp2(localskyColor.w * 14.48538f - 3.621346f));
+		baseSkyColor *= max(0,exp2(localskyColor.w * 14.48538f - 3.621346f));
 	#endif
 
 	#if _ISMETADIFFUSECOLOR_ON
-		skyColor *= c_base.rgb;
- 
+		fixed3 skyColor = baseSkyColor*c_base.rgb;
+	#else
+		fixed3 skyColor = baseSkyColor;
 	#endif
- 
+	
 	skyColor += ArmBRDFEnv(roughness, NdotV);
 
 	skyColor *=  _m;
@@ -588,24 +591,28 @@
 	diffuse *=   max((1 - _m),0);
 
 
-#if _VIRTUAL_LIGHT_SHADOW
-	skyColor *= lerp(_MetalShadow,1,attenuation);
-#endif
+	#if _VIRTUAL_LIGHT_SHADOW
+		skyColor *= lerp(_MetalShadow,1,attenuation);
+	#endif
 
-#if _VIRTUAL_LIGHT_SHADOW2
-	skyColor *= lerp(_MetalShadow,1,attenuation);
+	#if _VIRTUAL_LIGHT_SHADOW2
+		skyColor *= lerp(_MetalShadow,1,attenuation);
 
-#endif
+	#endif
 	//return attenuation;
-	spec  += skyColor;
-
- 
-
+	InDirspec  = skyColor;
+	//return float4(baseSkyColor,1);
+#else
+	
+	#if GLOBAL_ENV_SH9
+	half3 viewReflectDirection = reflect(-viewDir, normal);
+	 
+	#endif
 #endif 
 
 
 
-	c.rgb = diffuse + spec ;
+	c.rgb = diffuse + spec + InDirspec ;
 
 #ifdef _ISMEMISSION_ON
 	c.rgb += c0.rgb*_Emission*nor_val.b;
@@ -622,17 +629,32 @@
 #endif
 
  
-
+ 
 
  
 #if BRIGHTNESS_ON
 	c.rgb = c.rgb * _Brightness * 2;
 #endif
-
-	
 	 
-	APPLY_HEIGHT_FOG(c,i.posWorld);
  
-	UNITY_APPLY_FOG(i.fogCoord, c);
+	//APPLY_HEIGHT_FOG(c,i.posWorld,normal,i.fogCoord);
+	//APPLY_HEIGHT_FOG_EX(c,i.posWorld,baseSkyColor,i.fogCoord);
+
+	//APPLY_HEIGHT_FOG(c,i.posWorld,normal,i.fogCoord);
+
+	#if ENABLE_DISTANCE_ENV
+	
+	#endif
+	#if GLOBAL_ENV_SH9
+	float3 l__viewDir = lerp(-viewDir,float3(0,-1,0),globalEnvOffset);
+	//half __gray = dot(c.rgb,half3(0.3,0.6,0.1));
+	APPLY_HEIGHT_FOG_EX(c,i.posWorld,envsh9(l__viewDir),i.fogCoord);
+	#else
+	APPLY_HEIGHT_FOG(c,i.posWorld,normal,i.fogCoord);
+	#endif
+
+	//APPLY_HEIGHT_FOG(c,i.posWorld,normal,i.fogCoord);
+
+	UNITY_APPLY_FOG(i.fogCoord.r, c);
 	return c;
 	}

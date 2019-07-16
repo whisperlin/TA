@@ -97,6 +97,7 @@
 			{
 				float4 vertex : POSITION;
 				float4 texCoord : TEXCOORD1;
+				float3 normal : NORMAL;
 			};
 
 			struct vertexOutput
@@ -113,12 +114,15 @@
 
 				float wareOffset : TEXCOORD3;
 				float4 wpos: TEXCOORD4;
-				
+				UNITY_FOG_COORDS_EX(5)
+				float3 normalWorld : TEXCOORD6;
 			};
 
 			vertexOutput vert(vertexInput input)
 			{
 				vertexOutput output;
+
+				//o.normalWorld = UnityObjectToWorldNormal(v.normal);
 
 				float4 posWorld = mul(unity_ObjectToWorld, input.vertex);
 				
@@ -201,7 +205,7 @@
 			    float4 waterColor = lerp (lerp(_Color , _TopColor,foamLine) ,_EdgeColor ,t0 );
 
 				fixed4 col = lerp(waterColor,_SpecularColor*_SpecularPower,sp  );
-				APPLY_HEIGHT_FOG(col,input.wpos);
+				APPLY_HEIGHT_FOG(col,input.wpos,input.normalWorld,i.fogCoord);
 				UNITY_APPLY_FOG(input.fogCoord, col);
                 return col;
 			}

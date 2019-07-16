@@ -1,8 +1,10 @@
-Shader "TA/Diffuse"
+ï»¿Shader "TA/Emission"
 {
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+		_Emission ("Emission (Lightmapper)", Range(0,1)) = 0.0
+		_Normal("æ³•çº¿", 2D) = "bump" {}
 	}
 
 	SubShader
@@ -24,8 +26,8 @@ Shader "TA/Diffuse"
 			#include "UnityCG.cginc"
 			#include "height-fog.cginc"
 			#include "Lighting.cginc"
-			#include "AutoLight.cginc" //µÚÈý²½// 
-
+			#include "AutoLight.cginc" //ç¬¬ä¸‰æ­¥// 
+			fixed _Emission;
 			struct appdata
 			{
 				float4 vertex : POSITION;
@@ -56,7 +58,7 @@ Shader "TA/Diffuse"
 			};
 
 			sampler2D _MainTex;
-
+			sampler2D _Normal;
 #ifdef BRIGHTNESS_ON
 			fixed3 _Brightness;
 #endif
@@ -83,7 +85,9 @@ Shader "TA/Diffuse"
 			fixed4 frag (v2f i) : SV_Target
 			{
 				fixed4 c = tex2D(_MainTex, i.uv);
-
+				fixed4 e = tex2D(_Normal, i.uv);
+				
+				fixed4 c0 = c;
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
 				c.rgb *= lm;
@@ -99,7 +103,7 @@ Shader "TA/Diffuse"
 				c.rgb = c.rgb * _Brightness * 2;
 #endif
 
-
+				c.rgb += c0.rgb*_Emission*e.b;
 				
 	#if ENABLE_DISTANCE_ENV
 

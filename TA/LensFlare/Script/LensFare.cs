@@ -79,7 +79,13 @@ public class LensFare : MonoBehaviour {
     void Update()
     {
         
-        //
+		var _SunDirect = Quaternion.Euler(sun) * Vector3.forward;
+		if (null == mCamera)
+			mCamera = GetComponent<Camera>();
+		var _CameraDir = mCamera.transform.forward;
+		float  sdotv = Vector3.Dot(_SunDirect, _CameraDir);
+		Debug.Log ("sdotv"+sdotv);
+		Shader.SetGlobalVector("_SunDirect", new Vector4(_SunDirect.x, _SunDirect.y, _SunDirect.z, 1.0f - sun_radius));
 
 #if UNITY_EDITOR
         if (develop)
@@ -100,12 +106,7 @@ public class LensFare : MonoBehaviour {
         if (null == sunTexure)
             return;
 
-        var _SunDirect = Quaternion.Euler(sun) * Vector3.forward;
-        if (null == mCamera)
-            mCamera = GetComponent<Camera>();
-        var _CameraDir = mCamera.transform.forward;
-        float  sdotv = Vector3.Dot(_SunDirect, _CameraDir);
-
+        
 
         length = mCamera.farClipPlane - mCamera.nearClipPlane;
         Vector3 mainPointPos = transform.position;
@@ -286,7 +287,7 @@ public class LensFare : MonoBehaviour {
         mOccludieCamera.nearClipPlane = mCamera.nearClipPlane;
 
         Vector3 screen_pos =  mCamera.WorldToScreenPoint(farClipPlanePos);
-        Shader.SetGlobalVector("_SunDirect", new Vector4(_SunDirect.x, _SunDirect.y, _SunDirect.z, 1.0f - sun_radius));
+        
 
 
         

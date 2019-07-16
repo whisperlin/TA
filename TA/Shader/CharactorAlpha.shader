@@ -108,7 +108,8 @@ Shader "TA/CharactorAlpha"
 			#pragma shader_feature MELT_SNOW
 
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
-
+			#pragma   multi_compile  _  GLOBAL_ENV_SH9
+			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 	 		#define GLOBAL_SH9 1
 			#define _CHARACTOR 1
 			#define ALPHA_CLIP 1
