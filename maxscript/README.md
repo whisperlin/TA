@@ -1,7 +1,4 @@
-# TA
-假光晕
-![image](https://github.com/whisperlin/TA/blob/master/pic/sun.png)
-环境色过渡
-![image](https://github.com/whisperlin/TA/blob/master/pic/env.jpg)
-角色
-![image](https://github.com/whisperlin/TA/blob/master/pic/role.png)
+# MaxScript
+计算平均法线到颜色值  avgNormal2Color <br>
+![image](https://github.com/whisperlin/TA/blob/master/maxscript/pic/avgNormal2Color.png)<br>
+ 
