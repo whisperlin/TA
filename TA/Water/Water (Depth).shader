@@ -43,8 +43,12 @@
             Blend SrcAlpha OneMinusSrcAlpha
 
 			CGPROGRAM
+
+			#define ENABLE_FOG_EX  1
             #include "UnityCG.cginc"
+			#if ENABLE_FOG_EX
 			#include "../Shader/height-fog.cginc"
+			#endif
 			#pragma vertex vert
 			#pragma fragment frag
 
@@ -114,13 +118,18 @@
 
 				float wareOffset : TEXCOORD3;
 				float4 wpos: TEXCOORD4;
+				#if ENABLE_FOG_EX
 				UNITY_FOG_COORDS_EX(5)
+				#else
+				UNITY_FOG_COORDS(5)
+				#endif
+				
 				float3 normalWorld : TEXCOORD6;
 			};
 
 			vertexOutput vert(vertexInput input)
 			{
-				vertexOutput output;
+				vertexOutput o;
 
 				//o.normalWorld = UnityObjectToWorldNormal(v.normal);
 
@@ -130,21 +139,27 @@
 				float2 _p = _GFrequency * posWorld.xz + _Time.yy * _GSpeed.xy;	
 				posWorld.y += sin(_p.x+_p.y)*_GHeight;
 				#endif
-				output.pos = mul(UNITY_MATRIX_VP, posWorld   );
-				output.wpos = posWorld;
-				output.wareOffset = (posWorld.x+posWorld.y)*_WareTex_ST.x +_Time.y*_WareTex_ST.w;
-				output.screenPos = ComputeScreenPos(output.pos);
+				o.pos = mul(UNITY_MATRIX_VP, posWorld   );
+				o.wpos = posWorld;
+				o.wareOffset = (posWorld.x+posWorld.y)*_WareTex_ST.x +_Time.y*_WareTex_ST.w;
+				o.screenPos = ComputeScreenPos(o.pos);
 
 				#if _UNITY_DEPTH_ON
 				
 				#else
-				output.screenPos2.xyz = output.pos.xyw;
-				output.screenPos2.y *= _ProjectionParams.x;
+				o.screenPos2.xyz = o.pos.xyw;
+				o.screenPos2.y *= _ProjectionParams.x;
 				#endif
 
-				output.texCoord = input.texCoord;
 
-				return output;
+				#if ENABLE_FOG_EX
+					UNITY_TRANSFER_FOG_EX(o, o.pos);
+				#else
+					UNITY_TRANSFER_FOG(o, o.pos);
+				#endif
+				o.texCoord = input.texCoord;
+
+				return o;
 			}
 			float unpackFloatFromVec4i(in float4 value) {
 				  const float4 bitSh = float4(1.0/(256.0*256.0*256.0), 1.0/(256.0*256.0), 1.0/256.0, 1.0);
@@ -205,8 +220,14 @@
 			    float4 waterColor = lerp (lerp(_Color , _TopColor,foamLine) ,_EdgeColor ,t0 );
 
 				fixed4 col = lerp(waterColor,_SpecularColor*_SpecularPower,sp  );
+				#if ENABLE_FOG_EX
+
 				APPLY_HEIGHT_FOG(col,input.wpos,input.normalWorld,i.fogCoord);
+				UNITY_APPLY_FOG_MOBILE(input.fogCoord, col);
+				#else
 				UNITY_APPLY_FOG(input.fogCoord, col);
+				#endif
+				
                 return col;
 			}
 

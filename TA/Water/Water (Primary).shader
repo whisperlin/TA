@@ -32,7 +32,11 @@
 		#pragma multi_compile __  __CREATE_DEPTH_MAP 
 		#pragma multi_compile __  __CREATE_DEPTH_MAP2 
 		#include "UnityCG.cginc"
+		#define ENABLE_FOG_EX  1
+
+		#if ENABLE_FOG_EX
 		#include "../Shader/height-fog.cginc"
+		#endif
 		#include "UnityLightingCommon.cginc" // for _LightColor0
 
 
@@ -67,7 +71,11 @@
 			half3 tspace0 : TEXCOORD5;
 			half3 tspace1 : TEXCOORD6;
 			half3 tspace2 : TEXCOORD7;
+			#if ENABLE_FOG_EX
+			UNITY_FOG_COORDS_EX(8)
+			#else
 			UNITY_FOG_COORDS(8)
+			#endif
 			float4 wpos: TEXCOORD9;
 #ifdef __CREATE_DEPTH_MAP
 			float4 projPos : TEXCOORD10;
@@ -130,7 +138,11 @@
 			 
 #endif
 		
-			UNITY_TRANSFER_FOG(o, o.pos);
+			#if ENABLE_FOG_EX
+				UNITY_TRANSFER_FOG_EX(o, o.pos);
+			#else
+				UNITY_TRANSFER_FOG(o, o.pos);
+			#endif
 
 
 
@@ -275,7 +287,12 @@
 					//col.rgb  += spec;
  
 					//APPLY_HEIGHT_FOG(col,i.wpos);
+					#if ENABLE_FOG_EX
+					APPLY_HEIGHT_FOG(col,i.wpos,i.normalWorld,i.fogCoord);
+					UNITY_APPLY_FOG_MOBILE(i.fogCoord, col);
+					#else
 					UNITY_APPLY_FOG(i.fogCoord, col);
+					#endif
 	 
 					return col;
 				}

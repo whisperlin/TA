@@ -1,23 +1,24 @@
-﻿Shader "TA/Scene/SkyBox"
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+Shader "TA/Scene/SkyBoxForMesh"
 {
 	Properties
 	{
-		_MainTex ("Texture", 2D) = "white" {}
+		[NoScaleOffset] _Tex ("Cubemap    ", Cube) = "grey" {}
 
-		//_Rotation ("Rotation", Range(0, 360)) = 0
-		_SunPower("Sun Power",Range(1,14)) = 1
-		_SunBright("_SunBright",Range(-0.25,0.25)) = 0
-
-		[Toggle(OPEN_SUN)] _OPEN_SUN("开启太阳", Float) = 0
+		_Rotation ("Rotation", Range(0, 360)) = 0
+		
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque+800" }
+		Tags { "RenderType"="Opaque" "Queue"="Geometry-1"  }
+		//"ForceNoShadowCasting"="True"
 		LOD 100
 
 		Pass
 		{
 			Cull Off
+			ZWrite Off
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
@@ -42,12 +43,14 @@
 			{
 				float3 texcoord : TEXCOORD0;
 				float4 vertex : SV_POSITION;
+ 
 			};
-			half _SunPower;
-			//half _Rotation;
-			half _SunBright;
-			sampler2D _MainTex;
-			float4 _MainTex_ST;
+
+			samplerCUBE _Tex;
+
+			 
+			half _Rotation;
+			 
 
 			float3 RotateAroundYInDegrees (float3 vertex, float degrees)
 			{
@@ -58,17 +61,7 @@
 				return float3(mul(m, vertex.xz), vertex.y).xzy;
 			}
 			
-			//这个是网易的。
-			inline half2 ToRadialCoordsNetEase(half3 envRefDir)
-			{
- 
-				half k = envRefDir.x / (length(envRefDir.xz) + 1E-06f);
-				half2 normalY = { k, envRefDir.y };
-				half2 latitude = acos(normalY) * 0.3183099f;
-				half s = step(envRefDir.z, 0.0f);
-				half u = s - ((s * 2.0f - 1.0f) * (latitude.x * 0.5f));
-				return half2(u, latitude.y);
-			}
+			 
 			//这个是unity。
 			inline float2 ToRadialCoords(float3 coords)
 			{
@@ -81,11 +74,15 @@
 			v2f vert (appdata v)
 			{
 				v2f o;
-				//float3 rotated = RotateAroundYInDegrees(v.vertex, _Rotation);
-				float3 rotated = v.vertex;
-				//o.vertex =  mul(UNITY_MATRIX_P, mul(unity_ObjectToWorld, float4(rotated, 1.0)));
-				o.vertex = UnityObjectToClipPos(rotated);
-				//o.vertex = UnityObjectToClipPos(rotated);
+
+ 
+
+				float3 rotated = RotateAroundYInDegrees(v.vertex, _Rotation) ;
+				
+				rotated += mul(unity_ObjectToWorld,float4(0,0,0,1));
+ 
+				o.vertex =  mul(UNITY_MATRIX_VP, float4(rotated, 1.0));
+				
 				o.texcoord = v.vertex.xyz;
 				o.texcoord.xz = -o.texcoord.xz;
 				
@@ -94,16 +91,11 @@
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				half2 skyUV = ToRadialCoords(i.texcoord);
-				//skyUV.y = 1 - skyUV.y;
-				// sample the texture
-				fixed4 col = tex2D(_MainTex, skyUV);
-				half p = (col.w+_SunBright) *_SunPower ;
-	 
-				#if OPEN_SUN
-				col *= max(0,exp2(p));
-				#endif
-
+ 
+				half4 tex = texCUBElod (_Tex, float4(i.texcoord,0));
+ 
+				 
+				 
 
 				#if DEVELOP_SKY_BOX
 				_SunDirect.xz = -_SunDirect.xz;
@@ -117,7 +109,7 @@
 				#endif
 	 
  
-				return col;
+				return tex;
 			}
 			ENDCG
 		}

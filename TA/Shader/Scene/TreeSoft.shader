@@ -61,7 +61,7 @@ Shader "TA/Scene/TreeSoft"
 				//return i.color;
 				clip(c.a - _AlphaCut);
 				APPLY_HEIGHT_FOG(c,i.wpos,i.normalWorld,i.fogCoord);
-				UNITY_APPLY_FOG(i.fogCoord, c);
+				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
 				return c;
 			}
 			ENDCG

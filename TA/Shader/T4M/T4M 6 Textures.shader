@@ -1,13 +1,20 @@
-﻿Shader "TA/Emission"
-{
-	Properties
-	{
-		_MainTex ("Texture", 2D) = "white" {}
-		_Emission ("Emission (Lightmapper)", Range(0,1)) = 0.0
-		_Normal("法线", 2D) = "bump" {}
-	}
+Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 6 Textures" {
+Properties {
+	_Splat0 ("Layer 1 (R)", 2D) = "white" {}
+	_Splat1 ("Layer 2 (G)", 2D) = "white" {}
+	_Splat2 ("Layer 3 (B)", 2D) = "white" {}
+	_Splat3 ("Layer 4 (A)", 2D) = "white" {}
+	_Tiling3("_Tiling3 x/y", Vector)=(1,1,0,0)
+	_Splat4 ("Layer 5", 2D) = "white" {}
+	_Tiling4("_Tiling4 x/y", Vector)=(1,1,0,0)
+	_Splat5 ("Layer 6", 2D) = "white" {}
+	_Tiling5("_Tiling6 x/y", Vector)=(1,1,0,0)
+	_Control ("Control (RGBA)", 2D) = "white" {}
+	_Control2 ("Control2 (RGBA)", 2D) = "white" {}
+	_MainTex ("Never Used", 2D) = "white" {}
+} 
 
-	SubShader
+SubShader
 	{
 		Pass
 		{
@@ -24,10 +31,10 @@
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#include "UnityCG.cginc"
-			#include "height-fog.cginc"
+			#include "../height-fog.cginc"
 			#include "Lighting.cginc"
-			#include "AutoLight.cginc" //第三步// 
-			fixed _Emission;
+			#include "AutoLight.cginc"  
+
 			struct appdata
 			{
 				float4 vertex : POSITION;
@@ -57,8 +64,10 @@
 				float4 pos : SV_POSITION;
 			};
 
-			sampler2D _MainTex;
-			sampler2D _Normal;
+			sampler2D _Control,_Control2;
+			sampler2D _Splat0,_Splat1,_Splat2,_Splat3,_Splat4,_Splat5;
+			float4 _Splat0_ST,_Splat1_ST,_Splat2_ST,_Splat3_ST,_Splat4_ST,_Splat5_ST,_Control_ST,_Control2_ST;
+			float4 _Tiling3,_Tiling4,_Tiling5;
 #ifdef BRIGHTNESS_ON
 			fixed3 _Brightness;
 #endif
@@ -84,10 +93,36 @@
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				fixed4 c = tex2D(_MainTex, i.uv);
-				fixed4 e = tex2D(_Normal, i.uv);
-				
-				fixed4 c0 = c;
+				half2 uvctrl = TRANSFORM_TEX(i.uv, _Control);
+				half4 splat_control = tex2D (_Control, uvctrl).rgba;
+				half3 splat_control2 = tex2D (_Control2, TRANSFORM_TEX(i.uv, _Control2));
+				half3 col;
+				half3 col2;
+				half3 splat0 = tex2D (_Splat0, TRANSFORM_TEX(i.uv, _Splat0)).rgb;
+				half3 splat1 = tex2D (_Splat1, TRANSFORM_TEX(i.uv, _Splat1)).rgb;
+				half3 splat2 = tex2D (_Splat2, TRANSFORM_TEX(i.uv, _Splat2)).rgb;
+				half3 splat3 = tex2D (_Splat3, uvctrl*_Tiling3.xy).rgb;
+				half3 splat4 = tex2D (_Splat4, uvctrl*_Tiling4.xy).rgb;
+				half3 splat5 = tex2D (_Splat5, uvctrl*_Tiling5.xy).rgb;
+	
+				col = splat_control.r * splat0.rgb;
+
+				col += splat_control.g * splat1.rgb;
+	
+				col += splat_control.b * splat2.rgb;
+	
+				col2 = splat_control2.r * splat3.rgb;
+	
+				col2 += splat_control2.g * splat4.rgb;
+	
+				col2 += splat_control2.b * splat5.rgb;
+	
+				col += splat_control.a * col2.rgb;
+
+
+
+				 
+				half4 c = half4(col.rgb,1);
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
 				c.rgb *= lm;
@@ -103,18 +138,9 @@
 				c.rgb = c.rgb * _Brightness * 2;
 #endif
 
-				c.rgb += c0.rgb*_Emission*e.b;
+
 				
-	#if ENABLE_DISTANCE_ENV
-
-		#if GLOBAL_ENV_SH9
-			//return float4(0,1,0,1);
-
-		#else
-			//return float4(0,0,1,1);
-		#endif
-
-	#endif
+	 
 				APPLY_HEIGHT_FOG(c,i.wpos,i.normalWorld, i.fogCoord);
 				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
 				return c;

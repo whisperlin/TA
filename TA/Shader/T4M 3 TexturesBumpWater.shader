@@ -55,7 +55,6 @@ CGPROGRAM
 #pragma vertex vert_surf
 #pragma fragment frag_surf
 #pragma target 3.0
-#pragma exclude_renderers gles xbox360 ps3
 #pragma multi_compile_fog
 #pragma multi_compile_fwdbase
 #include "HLSLSupport.cginc"
@@ -270,6 +269,8 @@ v2f_surf vert_surf (appdata_full v) {
   #endif // !LIGHTMAP_ON
 
 	  TRANSFER_SHADOW(o); // pass shadow coordinates to pixel shader
+	  //UNITY_CALC_FOG_FACTOR((o.pos).z); o.fogCoord.x = unityFogFactor;
+	  // o.fogCoord.x = (o.pos).z;
 	  UNITY_TRANSFER_FOG_EX(o,o.pos); // pass fog coordinates to pixel shader
 	  return o;
 }
@@ -427,10 +428,16 @@ inline fixed4 LightingBlinnPhongWater(SurfaceOutput s, half3 viewDir, UnityGI gi
 	  #endif
 	  LightingBlinnPhong_GI(o, giInput, gi);
 	  //waterNormal = o.Normal;
- 
+	/*#if  defined(SHADER_API_MOBILE)
+        return float4(0,1,0,1);
+
+    #else
+        return float4(1,0,0,1);
+       
+    #endif*/
 	  c += LightingBlinnPhongWater(o, worldViewDir, gi, waterNormal,inWater, _SpecColor0);
 	  APPLY_HEIGHT_FOG(c,float4(worldPos,1),waterNormal, IN.fogCoord);
-	  UNITY_APPLY_FOG(IN.fogCoord, c); // apply fog
+	  UNITY_APPLY_FOG_MOBILE(IN.fogCoord, c); // apply fog
 	  UNITY_OPAQUE_ALPHA(c.a);
 
 	 

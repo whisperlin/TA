@@ -51,11 +51,7 @@ float3 envsh9(float3 v)
 
  ///float unityFogFactor = unity_FogParams.x * (coord); unityFogFactor = exp2(-unityFogFactor*unityFogFactor)
  //距离衰减.
- #if ENABLE_DISTANCE_ENV
-	#define UNITY_CALC_ENV_FACTOR_RAW(coord) half4 unityEnvFactor = half4(unity_FogParams.x,color_density,height_density,env_density) * (coord); unityEnvFactor = exp2(-unityEnvFactor*unityEnvFactor)
- #else
-	#define UNITY_CALC_ENV_FACTOR_RAW(coord) half4 unityEnvFactor = 0;
- #endif
+#define UNITY_CALC_ENV_FACTOR_RAW(coord) half4 unityEnvFactor = half4(unity_FogParams.x,color_density,height_density,env_density) * (coord); unityEnvFactor = exp2(-unityEnvFactor*unityEnvFactor)
  
 
  
@@ -76,19 +72,16 @@ float globalEnvOffset;
 
 	#if GLOBAL_ENV_SH9
 		#define APPLY_ENV_DISTANCE(c,posWorld,normal,fogCoord)\
-		half3 __viewDir = -normalize(UnityWorldSpaceViewDir(posWorld));\
-		__viewDir = lerp(__viewDir,half3(0,-1,0),globalEnvOffset);\
+		float3 __viewDir = -normalize(UnityWorldSpaceViewDir(posWorld));\
+		__viewDir = lerp(__viewDir,float3(0,-1,0),globalEnvOffset);\
 		fixed3 __baseSkyColor = envsh9(__viewDir)   ;\
-		unity_FogColor.rgb = __baseSkyColor.rgb;\
 		c.rgb = lerp(c.rgb , __baseSkyColor  ,(1-saturate(fogCoord.w))*farSceneColor.a) ; 
 
 		#define APPLY_ENV_DISTANCE_EX(c,posWorld,env,fogCoord)\
-		unity_FogColor.rgb = env;\
 		c.rgb = lerp(c.rgb ,env,(1-saturate(fogCoord.w))*farSceneColor.a) ; 
 
 	#else
 		#define APPLY_ENV_DISTANCE(c,posWorld,normal,fogCoord)\
-		unity_FogColor.rgb = farSceneColor.rgb;\
 		c.rgb = lerp(c.rgb ,farSceneColor.rgb,(1-saturate(fogCoord.w))*farSceneColor.a) ;
 
 		#define APPLY_ENV_DISTANCE_EX(c,posWorld,env,fogCoord)  APPLY_ENV_DISTANCE(c,posWorld,normal,fogCoord)
@@ -101,12 +94,23 @@ float globalEnvOffset;
 	
 #endif
 
+#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
+    #define UNITY_APPLY_FOG_COLOR_MOBILE(coord,col,fogCol) UNITY_FOG_LERP_COLOR(col,fogCol,(coord).x)
+#else
+    #define UNITY_APPLY_FOG_COLOR_MOBILE(coord,col,fogCol)
+#endif
+
+#ifdef UNITY_PASS_FORWARDADD
+    #define UNITY_APPLY_FOG_MOBILE(coord,col) UNITY_APPLY_FOG_COLOR_MOBILE(coord,col,fixed4(0,0,0,0))
+#else
+    #define UNITY_APPLY_FOG_MOBILE(coord,col) UNITY_APPLY_FOG_COLOR_MOBILE(coord,col,unity_FogColor)
+#endif
 
 half fog_height_power;
 #ifdef _HEIGHT_FOG_ON
 	#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
 		#define APPLY_HEIGHT_FOG_COL(c,posWorld,fogCoord)\
-			half fogCoord0 =   smoothstep(heightFogHeight,heightFogHeight+heightFogHeight2*(1-fogCoord.z), posWorld.y/posWorld.w);\
+			float fogCoord0 =   smoothstep(heightFogHeight,heightFogHeight+heightFogHeight2*(1-fogCoord.z), posWorld.y/posWorld.w);\
 			fogCoord0 = pow(fogCoord0,fog_height_power );\
 			unity_FogColor.rgb = lerp(unity_FogColor.rgb,c.rgb,fogCoord0  );
 		#define APPLY_HEIGHT_FOG(c,posWorld,normal,fogCoord)\

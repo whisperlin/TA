@@ -52,17 +52,17 @@ Shader "TA/Scene/Tree"
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				fixed4 e = tex2D(_EmissionTex, i.uv);
 				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
-				c.rgb *= lm  + _Emission*e.r;
+				c.rgb *= lm  + _Emission*e.b;
 #else
 				fixed4 e = tex2D(_EmissionTex, i.uv);
 				half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
 				half nl = saturate(dot(i.normalWorld, lightDir)) + saturate(dot(i.normalWorld, -lightDir)) ;
-				c.rgb = ( UNITY_LIGHTMODEL_AMBIENT + _LightColor0 * nl + _Emission*e.r) * c.rgb;
+				c.rgb = ( UNITY_LIGHTMODEL_AMBIENT + _LightColor0 * nl + _Emission*e.b) * c.rgb;
 #endif
 				//return i.color;
 				clip(c.a - _AlphaCut);
 				APPLY_HEIGHT_FOG(c,i.wpos,i.normalWorld,i.fogCoord);
-				UNITY_APPLY_FOG(i.fogCoord, c);
+				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
 				return c;
 			}
 			ENDCG

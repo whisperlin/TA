@@ -72,7 +72,7 @@ Shader "TA/Cutout"
 				c.rgb = c.rgb * _Brightness * 2;
 #endif
 				APPLY_HEIGHT_FOG(c,i.wpos,i.normalWorld,i.fogCoord);
-				UNITY_APPLY_FOG(i.fogCoord, c);
+				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
 				return c;
 			}
 			ENDCG

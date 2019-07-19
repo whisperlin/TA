@@ -1,10 +1,10 @@
-﻿Shader "TA/Scene/SkyBox"
+﻿Shader "TA/Scene/SkyBoxForMeshSun"
 {
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
 
-		//_Rotation ("Rotation", Range(0, 360)) = 0
+		_Rotation ("Rotation", Range(0, 360)) = 0
 		_SunPower("Sun Power",Range(1,14)) = 1
 		_SunBright("_SunBright",Range(-0.25,0.25)) = 0
 
@@ -12,12 +12,13 @@
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque+800" }
+		Tags { "RenderType"="Opaque" }
 		LOD 100
 
 		Pass
 		{
 			Cull Off
+			ZWrite Off
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
@@ -44,7 +45,7 @@
 				float4 vertex : SV_POSITION;
 			};
 			half _SunPower;
-			//half _Rotation;
+			half _Rotation;
 			half _SunBright;
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
@@ -81,11 +82,12 @@
 			v2f vert (appdata v)
 			{
 				v2f o;
-				//float3 rotated = RotateAroundYInDegrees(v.vertex, _Rotation);
-				float3 rotated = v.vertex;
-				//o.vertex =  mul(UNITY_MATRIX_P, mul(unity_ObjectToWorld, float4(rotated, 1.0)));
-				o.vertex = UnityObjectToClipPos(rotated);
-				//o.vertex = UnityObjectToClipPos(rotated);
+				float3 rotated = RotateAroundYInDegrees(v.vertex, 270) ;
+				
+				rotated += mul(unity_ObjectToWorld,float4(0,0,0,1));
+ 
+				o.vertex =  mul(UNITY_MATRIX_VP, float4(rotated, 1.0));
+				
 				o.texcoord = v.vertex.xyz;
 				o.texcoord.xz = -o.texcoord.xz;
 				

@@ -46,7 +46,7 @@ public class SetGlobalSH9 : MonoBehaviour {
     [Header("高度过渡")]
     public float fog_height_power = 0.4f;
     [Header("远景变色")]
-    public bool enable_env = true;
+    public bool enable_env = false;
     [Header("反射环境色")]
     public SH9Data farEvn;
     [Range(0f,0.9f)]

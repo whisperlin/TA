@@ -1,10 +1,12 @@
-ï»¿Shader "TA/Emission"
+Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 3 Textures" 
 {
 	Properties
 	{
-		_MainTex ("Texture", 2D) = "white" {}
-		_Emission ("Emission (Lightmapper)", Range(0,1)) = 0.0
-		_Normal("æ³•çº¿", 2D) = "bump" {}
+		_Splat0 ("Layer 1 (R)", 2D) = "white" {}
+		_Splat1 ("Layer 2 (G)", 2D) = "white" {}
+		_Splat2 ("Layer 3 (B)", 2D) = "white" {}
+		_Control ("Control (RGBA)", 2D) = "white" {}
+		_MainTex ("Never Used", 2D) = "white" {}
 	}
 
 	SubShader
@@ -24,10 +26,10 @@
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#include "UnityCG.cginc"
-			#include "height-fog.cginc"
+			#include "../height-fog.cginc"
 			#include "Lighting.cginc"
-			#include "AutoLight.cginc" //ç¬¬ä¸‰æ­¥// 
-			fixed _Emission;
+			#include "AutoLight.cginc" //µÚÈý²½// 
+
 			struct appdata
 			{
 				float4 vertex : POSITION;
@@ -57,8 +59,9 @@
 				float4 pos : SV_POSITION;
 			};
 
-			sampler2D _MainTex;
-			sampler2D _Normal;
+			sampler2D _Control;
+			sampler2D _Splat0,_Splat1,_Splat2;
+			float4 _Splat0_ST,_Splat1_ST,_Splat2_ST;
 #ifdef BRIGHTNESS_ON
 			fixed3 _Brightness;
 #endif
@@ -84,10 +87,20 @@
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				fixed4 c = tex2D(_MainTex, i.uv);
-				fixed4 e = tex2D(_Normal, i.uv);
-				
-				fixed4 c0 = c;
+				half3 splat_control = tex2D (_Control, i.uv);
+				half3 col;
+
+ 
+				half4 splat0 = tex2D (_Splat0, TRANSFORM_TEX(i.uv, _Splat0));
+				half4 splat1 = tex2D (_Splat1, TRANSFORM_TEX(i.uv, _Splat1));
+				half4 splat2 = tex2D (_Splat2, TRANSFORM_TEX(i.uv, _Splat2));
+	
+				col = splat_control.r * splat0.rgb;
+
+				col += splat_control.g * splat1.rgb;
+	
+				col += splat_control.b * splat2.rgb;
+				half4 c = half4(col.rgb,1);
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
 				c.rgb *= lm;
@@ -103,18 +116,9 @@
 				c.rgb = c.rgb * _Brightness * 2;
 #endif
 
-				c.rgb += c0.rgb*_Emission*e.b;
+
 				
-	#if ENABLE_DISTANCE_ENV
-
-		#if GLOBAL_ENV_SH9
-			//return float4(0,1,0,1);
-
-		#else
-			//return float4(0,0,1,1);
-		#endif
-
-	#endif
+	 
 				APPLY_HEIGHT_FOG(c,i.wpos,i.normalWorld, i.fogCoord);
 				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
 				return c;

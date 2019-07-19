@@ -1,6 +1,11 @@
 ﻿#include "UnityCG.cginc"
 #include "height-fog.cginc"
 #include "Lighting.cginc"
+#include "SHGlobal.cginc"
+
+#if _VIRTUAL_LIGHT_SHADOW2
+#include "shadowmap.cginc"
+#endif
 struct appdata
 {
 	float4 vertex : POSITION;
@@ -20,9 +25,16 @@ struct v2f
 	float2 uv2 : TEXCOORD1;
 
 #endif
-	float3 normalWorld : TEXCOORD4;
+	
 	float4 wpos:TEXCOORD2;
 	UNITY_FOG_COORDS_EX(3)
+	float3 normalWorld : TEXCOORD4;
+	fixed3 ambient: TEXCOORD5;
+
+	#if _VIRTUAL_LIGHT_SHADOW2
+		float4 shadowCoord : TEXCOORD6;
+	#endif
+
 	float4 vertex : SV_POSITION;
 };
 
@@ -33,8 +45,16 @@ uniform float _Cutoff;
 //uniform float _CutoffEnd;
  
 
-uniform fixed3 _Gravity;
+uniform fixed4 _Gravity;
+uniform fixed4 _Extend;
 uniform fixed _GravityStrength;
+uniform half _AmbientPower;
+
+
+#if _VIRTUAL_LIGHT_ON
+	half4 VirtualDirectLight0;
+	half4 VirtualDirectLightColor0;
+#endif
 
 #ifdef BRIGHTNESS_ON
 fixed3 _Brightness;
@@ -45,8 +65,12 @@ v2f vert (appdata v)
 	v2f o;
 	UNITY_INITIALIZE_OUTPUT(v2f, o);
 
-	fixed3 direction = lerp(v.normal, _Gravity * _GravityStrength + v.normal * (1-_GravityStrength), FUR_MULTIPLIER);
+	fixed3 _g = (_Gravity +v.normal*_Extend)* _GravityStrength + v.normal * (1-_GravityStrength);
+	fixed3 direction = lerp(v.normal,_g , FUR_MULTIPLIER);
 	v.vertex.xyz += direction * _FurLength * FUR_MULTIPLIER * v.color.a;
+
+ 
+	
 	//o.vertex.xyz = 0;
 	o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
 	float4 wpos = mul(unity_ObjectToWorld, v.vertex); 
@@ -57,7 +81,20 @@ v2f vert (appdata v)
 #else
 	o.normalWorld = UnityObjectToWorldNormal(v.normal);
 #endif
+
+#if GLOBAL_SH9
+	o.ambient = g_sh(half4(o.normalWorld, 1))  ;
+#else
+	o.ambient = UNITY_LIGHTMODEL_AMBIENT   ;
+#endif
+
 	UNITY_TRANSFER_FOG_EX(o, o.vertex);
+
+
+#if _VIRTUAL_LIGHT_SHADOW2
+		o.shadowCoord = mul(_depthVPBias, mul(unity_ObjectToWorld, v.vertex));
+		o.shadowCoord.z = -(mul(_depthV, mul(unity_ObjectToWorld, v.vertex)).z * _farplaneScale);
+#endif
 	return o;
 }
 			
@@ -69,17 +106,39 @@ fixed4 frag (v2f i) : SV_Target
 	fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
 	c.rgb *= lm;
 #else
-	half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
+
+	#if _VIRTUAL_LIGHT_ON
+			half3 lightDir = normalize(VirtualDirectLight0.xyz);
+			 
+
+	#else
+			half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
+
+	#endif
+	
+	#if _VIRTUAL_LIGHT_ON
+		fixed3 lightColor = VirtualDirectLightColor0.rgb*VirtualDirectLightColor0.a;
+	#else
+			fixed3 lightColor = _LightColor0;
+	#endif
+	
+	#if _VIRTUAL_LIGHT_SHADOW2
+	half attenuation = PCF4Samples(i.shadowCoord);
+	lightColor.rgb *= attenuation;
+	#endif
+
 	half nl = saturate(dot(i.normalWorld, lightDir));
-	c.rgb = UNITY_LIGHTMODEL_AMBIENT * c.rgb + _LightColor0 * nl * c.rgb;
+	c.rgb = UNITY_LIGHTMODEL_AMBIENT * c.rgb + lightColor * nl * c.rgb;
 #endif
 
 #ifdef BRIGHTNESS_ON
 	c.rgb = c.rgb * _Brightness * 2;
 #endif
+	c.rgb += c.rgb * i.ambient * _AmbientPower;
 	half3 viewDir = normalize(UnityWorldSpaceViewDir(i.wpos));
 	c.a = step( lerp(1,_Cutoff,FUR_MULTIPLIER),c.a );
 
+	
 	#if DONT_CLIP
 
 	#else
@@ -89,7 +148,7 @@ fixed4 frag (v2f i) : SV_Target
 
 	
 	APPLY_HEIGHT_FOG(c,i.wpos,i.normalWorld,i.fogCoord);
-	UNITY_APPLY_FOG(i.fogCoord, c);
+	UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
 
 
 
