@@ -1,4 +1,4 @@
-Shader "T4MShaders/ShaderModel3/BumpSpec/T4M 4 Textures Bump Spec Water" {
+Shader "TA/T4MShaders/ShaderModel3/BumpSpec/T4M 4 Textures Bump Spec Water" {
 	Properties{
 		//_SpecColor("高光颜色", Color) = (1, 1, 1, 1)
 		//_ShininessL0("Layer1Shininess", Range(0.03, 1)) = 0.078125
