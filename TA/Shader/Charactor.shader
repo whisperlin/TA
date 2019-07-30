@@ -108,7 +108,7 @@ Shader "TA/Charactor"
 			#pragma multi_compile _CLOTH_OFF _CLOTH_ON
 			#pragma multi_compile _ISMETADIFFUSECOLOR_OFF   _ISMETADIFFUSECOLOR_ON             
 			#pragma multi_compile _ISSUN_ON  _ISSUN_OFF 
-
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			//#pragma  multi_compile  _VIRTUAL_LIGHT_ON _VIRTUAL_LIGHT_OFF _VIRTUAL_LIGHT_SHADOW _VIRTUAL_LIGHT_SHADOW2
 			

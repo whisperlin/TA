@@ -1,6 +1,5 @@
 ﻿
 
-//#define ENABLE_DISTANCE_ENV 1
 
 #if GLOBAL_ENV_SH9
 
@@ -17,7 +16,7 @@ uniform float4 evn_sph7;
 uniform float4 evn_sph8;
 
 
- 
+
 
 
 float3 envsh9(float3 v)
@@ -32,108 +31,152 @@ float3 envsh9(float3 v)
 		evn_sph6.xyz * Y6(v) +
 		evn_sph7.xyz * Y7(v) +
 		evn_sph8.xyz * Y8(v)
-	);
+		);
 	return max(result, float3(0, 0, 0));
 }
 
 #endif
 
- fixed4 farSceneColor;
- #if _HEIGHT_FOG_ON
- half heightFogHeight;
- half heightFogHeight2;
+uniform float4 FogInfo;
+ 
+uniform float4 FogColor;
+uniform float4 FogColor2;
+uniform float4 HeightFogInfo;
+uniform float fog_b;
+ 
+uniform float height_fog_end_in_view;
+uniform float height_fog_height_a;
 
- #endif
+uniform float4 FarSceneInfo;
+uniform float4 FarSceneColor;
 
- uniform half env_density;
- uniform half height_density;
- uniform half color_density;
-
- ///float unityFogFactor = unity_FogParams.x * (coord); unityFogFactor = exp2(-unityFogFactor*unityFogFactor)
- //距离衰减.
-#define UNITY_CALC_ENV_FACTOR_RAW(coord) half4 unityEnvFactor = half4(unity_FogParams.x,color_density,height_density,env_density) * (coord); unityEnvFactor = exp2(-unityEnvFactor*unityEnvFactor)
+float3 GetFog( in float4 PosWorld){
  
 
+
+
+float fog_b = FogInfo.x;
+float fog_end_in_view = FogInfo.y;
+float fog_dis_density = FogColor.w;
+
+
+float env_b = FarSceneInfo.x;
+float env_end_in_view = FarSceneInfo.y;
+float env_dis_density = FarSceneColor.w;
+
+
+float fog_height_density = HeightFogInfo.x;
+float fog_hight_b = HeightFogInfo.z;
+
+float fog_begin_in_height = FogInfo.w;
+float fog_height = FogInfo.z;
+
+
+float3 delta_pos = (PosWorld.xyz - _WorldSpaceCameraPos.xyz);
+
+float fog_dis_height_val = length(delta_pos) / height_fog_end_in_view;
+
+
+
+float begin = fog_begin_in_height + fog_height * fog_dis_height_val;
  
-#define UNITY_FOG_COORDS_EX(idx) float4  fogCoord : TEXCOORD##idx; 
+float world_height_val = smoothstep(begin, fog_begin_in_height, PosWorld.y);
 
 
-#define UNITY_TRANSFER_FOG_EX(o,outpos) \
-	float ta_lineNear01 =  UNITY_Z_0_FAR_FROM_CLIPSPACE((outpos).z);\
-	UNITY_CALC_ENV_FACTOR_RAW(ta_lineNear01);\
-	o.fogCoord.xyzw = unityEnvFactor.xyzw;
+float hdis = (fog_dis_height_val - 1)*height_fog_height_a + 1;
+
+
+float _dis = length(delta_pos);
+float2 dis_val = smoothstep(float2(0,0), float2(fog_end_in_view ,env_end_in_view), float2(_dis,_dis));
+float2 dis_atten = pow(dis_val, float2(fog_b,env_b));
+
+
+float fog_height_atten = pow(world_height_val, fog_hight_b)  * hdis;
+
+//float fog_dis_val = smoothstep(0, fog_end_in_view, _dis);
+//float fog_dis_atten = pow(fog_dis_val,  fog_b )  ;
+//float env_dis_val = smoothstep(0, env_end_in_view, _dis);
+//float env_dis_atten = pow(env_dis_val, env_b);
+
+float3 atten = 0;
+#if _POW_FOG_ON
+atten.z = dis_atten .x* fog_dis_density;
+#endif
+#if _HEIGHT_FOG_ON
+atten.x = fog_height_atten* fog_height_density;
+#endif
+#if ENABLE_DISTANCE_ENV
+atten.y = dis_atten.y * env_dis_density;
+#endif
+return atten;
 
  
+}
+
+
+
+
+float3 CustomFogBlend(in float3 vsFogFactor, in float3 screen_clr){
+float3 fogFactor = vsFogFactor * vsFogFactor;
+ 
+float3 blend_val = min(fogFactor, HeightFogInfo.www);
+
+#if ENABLE_DISTANCE_ENV
+screen_clr = lerp(screen_clr, FarSceneColor, fogFactor.y); //lerp
+
+#endif
+
+#if _POW_FOG_ON
+screen_clr = lerp(screen_clr, FogColor2.xyz, blend_val.z);
+#endif
+
+screen_clr = lerp(screen_clr, FogColor.xyz, blend_val.x); //lerp
+
+return screen_clr;
+}
+
+uniform half color_density;
 
 float globalEnvOffset;
+ 
+ 
+#define UNITY_FOG_COORDS_EX(idx) float3  fogCoord : TEXCOORD##idx; 
+#define UNITY_TRANSFER_FOG_EX(o,worldPos)\
+	o.fogCoord.xyz = GetFog(worldPos);
+ 
+
+#define UNITY_APPLY_FOG_MOBILE(coord,col) \
+col.rgb = CustomFogBlend(coord,col.rgb);
+
+
+
+
+
 #if ENABLE_DISTANCE_ENV
-	//return float4(1,0,0,1);\
-	//half __gray = dot(c.rgb,half3(0.3,0.6,0.1));\
 
-	#if GLOBAL_ENV_SH9
-		#define APPLY_ENV_DISTANCE(c,posWorld,normal,fogCoord)\
-		float3 __viewDir = -normalize(UnityWorldSpaceViewDir(posWorld));\
-		__viewDir = lerp(__viewDir,float3(0,-1,0),globalEnvOffset);\
-		fixed3 __baseSkyColor = envsh9(__viewDir)   ;\
-		c.rgb = lerp(c.rgb , __baseSkyColor  ,(1-saturate(fogCoord.w))*farSceneColor.a) ; 
+#if GLOBAL_ENV_SH9
 
-		#define APPLY_ENV_DISTANCE_EX(c,posWorld,env,fogCoord)\
-		c.rgb = lerp(c.rgb ,env,(1-saturate(fogCoord.w))*farSceneColor.a) ; 
+#define APPLY_HEIGHT_FOG(col,posWorld,normal,fogCoord)  ; \
+	float3 __viewDir = -normalize(UnityWorldSpaceViewDir(posWorld));\
+	__viewDir = lerp(__viewDir,float3(0,-1,0),globalEnvOffset);\
+	FarSceneColor.xyz = envsh9(__viewDir)   ;
 
-	#else
-		#define APPLY_ENV_DISTANCE(c,posWorld,normal,fogCoord)\
-		c.rgb = lerp(c.rgb ,farSceneColor.rgb,(1-saturate(fogCoord.w))*farSceneColor.a) ;
+#define APPLY_HEIGHT_FOG_EX(col,posWorld,env,fogCoord)  ; \
+	FarSceneColor.xyz = env   ;
 
-		#define APPLY_ENV_DISTANCE_EX(c,posWorld,env,fogCoord)  APPLY_ENV_DISTANCE(c,posWorld,normal,fogCoord)
-	#endif
-	
 #else
-	#define APPLY_ENV_DISTANCE(c,posWorld,normal,fogCoord)
-	#define APPLY_ENV_DISTANCE_EX(c,posWorld,env,fogCoord)
-
-	
-#endif
-
-#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-    #define UNITY_APPLY_FOG_COLOR_MOBILE(coord,col,fogCol) UNITY_FOG_LERP_COLOR(col,fogCol,(coord).x)
-#else
-    #define UNITY_APPLY_FOG_COLOR_MOBILE(coord,col,fogCol)
-#endif
-
-#ifdef UNITY_PASS_FORWARDADD
-    #define UNITY_APPLY_FOG_MOBILE(coord,col) UNITY_APPLY_FOG_COLOR_MOBILE(coord,col,fixed4(0,0,0,0))
-#else
-    #define UNITY_APPLY_FOG_MOBILE(coord,col) UNITY_APPLY_FOG_COLOR_MOBILE(coord,col,unity_FogColor)
-#endif
-
-half fog_height_power;
-#ifdef _HEIGHT_FOG_ON
-	#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-		#define APPLY_HEIGHT_FOG_COL(c,posWorld,fogCoord)\
-			float fogCoord0 =   smoothstep(heightFogHeight,heightFogHeight+heightFogHeight2*(1-fogCoord.z), posWorld.y/posWorld.w);\
-			fogCoord0 = pow(fogCoord0,fog_height_power );\
-			unity_FogColor.rgb = lerp(unity_FogColor.rgb,c.rgb,fogCoord0  );
-		#define APPLY_HEIGHT_FOG(c,posWorld,normal,fogCoord)\
-			APPLY_ENV_DISTANCE(c,posWorld,normal,fogCoord)\
-			APPLY_HEIGHT_FOG_COL(c,posWorld,fogCoord)
-
-		#define APPLY_HEIGHT_FOG_EX(c,posWorld,env,fogCoord) \
-			APPLY_ENV_DISTANCE_EX(c,posWorld,env,fogCoord)\
-			APPLY_HEIGHT_FOG_COL(c,posWorld,fogCoord)
-	#else
  
-		#define APPLY_HEIGHT_FOG(c,posWorld,normal,fogCoord) APPLY_ENV_DISTANCE(c,posWorld,normal,fogCoord) 
-		#define APPLY_HEIGHT_FOG_EX(c,posWorld,env,fogCoord)  APPLY_ENV_DISTANCE_EX(c,posWorld,env,fogCoord)
-	#endif
-
+#define APPLY_HEIGHT_FOG(col,posWorld,normal,fogCoord)  ; 
+#define APPLY_HEIGHT_FOG_EX(col,posWorld,env,fogCoord)  ; 
+#endif
 #else
+
+#define APPLY_HEIGHT_FOG(col,posWorld,normal,fogCoord)  ; 
+#define APPLY_HEIGHT_FOG_EX(col,posWorld,env,fogCoord)  ; 
+#endif
+
+
+
+
 
  
-	#define APPLY_HEIGHT_FOG(c,posWorld,normal,fogCoord) APPLY_ENV_DISTANCE(c,posWorld,normal,fogCoord) 
-	#define APPLY_HEIGHT_FOG_EX(c,posWorld,env,fogCoord)  APPLY_ENV_DISTANCE_EX(c,posWorld,env,fogCoord)
-		 
-	
-		
-#endif
-
-

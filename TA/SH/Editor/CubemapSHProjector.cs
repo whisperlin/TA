@@ -143,7 +143,7 @@ public class CubemapSHProjector : EditorWindow
 
 				EditorGUILayout.Space ();
 
-				if (GUILayout.Button ("GPU Uniform 9 Coefficients")) {
+				/*if (GUILayout.Button ("GPU Uniform 9 Coefficients")) {
 					Cubemap cm = input_cubemap;
 					if (isCopyNew)
 						input_cubemap = cm = CopyFromEnvMap ();
@@ -169,7 +169,7 @@ public class CubemapSHProjector : EditorWindow
 					}
 					if (isCopyNew)
 						GameObject.DestroyImmediate (cm, true);
-				}
+				}*/
 
 				EditorGUILayout.Space ();
 

@@ -211,7 +211,7 @@
 		
 		#endif
 			
-		UNITY_TRANSFER_FOG_EX(o, o.pos);
+		UNITY_TRANSFER_FOG_EX(o, o.posWorld);
 
 		#if _HEIGHT_FOG_ON
 		#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)

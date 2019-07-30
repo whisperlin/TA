@@ -85,6 +85,6 @@
 				o.color = v.color;
 
 				
-				UNITY_TRANSFER_FOG_EX(o, o.vertex);
+				UNITY_TRANSFER_FOG_EX(o, o.wpos);
 				return o;
 			}

@@ -56,7 +56,7 @@ public class SphericalHarmonicsBasis
 
 public class SphericalHarmonics
 {
-    //Convert a RenderTextureFormat to TextureFormat
+ 
     public static TextureFormat ConvertFormat(RenderTextureFormat input_format)
     {
         TextureFormat output_format = TextureFormat.RGBA32;
@@ -361,24 +361,7 @@ public class SphericalHarmonics
         return true;
     }
 
-    /*
-     inline float2 ToRadialCoords(float3 coords)
-	{
-		float3 normalizedCoords = normalize(coords);
-		float latitude = acos(normalizedCoords.y);
-		float longitude = atan2(normalizedCoords.z, normalizedCoords.x);
-		float2 sphereCoords = float2(longitude, latitude) * float2(0.5 / UNITY_PI, 1.0 / UNITY_PI);
-		return float2(0.5, 1.0) - sphereCoords;
-	}
-     * 
-     * inline float2 ToRadialCoords(float3 coords)
-	{
-		float3 normalizedCoords = normalize(coords);
-		float latitude = acos(normalizedCoords.y);
-		float longitude = atan2(normalizedCoords.z, normalizedCoords.x);
-		float2 sphereCoords = float2(longitude, latitude) * float2(0.5/UNITY_PI, 1.0/UNITY_PI);
-		return float2(0.5,1.0) - sphereCoords;
-	}*/
+ 
     public static Vector2 ToRadialCoords(Vector3 coords)
 	{
         Matrix4x4 m = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(new Vector3(0, 90, 0)), Vector3.one);
@@ -414,9 +397,7 @@ public class SphericalHarmonics
 			return false;
 		}
 
-        
-
-
+       
         Color[] cls = null;
 		if(tex)
 			cls = tex.GetPixels ();

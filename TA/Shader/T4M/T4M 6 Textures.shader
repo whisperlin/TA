@@ -27,6 +27,7 @@ SubShader
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+	#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
@@ -87,7 +88,7 @@ SubShader
 #endif
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
 				
-				UNITY_TRANSFER_FOG_EX(o, o.pos);
+				UNITY_TRANSFER_FOG_EX(o, o.wpos);
 				return o;
 			}
 			

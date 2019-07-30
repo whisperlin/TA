@@ -117,7 +117,7 @@ Shader "TA/BumpedAOSpecular"
 		#pragma shader_feature S_DEVELOP
 		#pragma shader_feature HARD_SNOW
 		#pragma shader_feature MELT_SNOW
-
+			#pragma   multi_compile  _  _POW_FOG_ON
 		#pragma   multi_compile  _  _HEIGHT_FOG_ON
 		#pragma   multi_compile  _  GLOBAL_ENV_SH9
 		#pragma   multi_compile  _ ENABLE_DISTANCE_ENV

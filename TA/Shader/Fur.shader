@@ -36,6 +36,7 @@
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
@@ -56,6 +57,7 @@
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
@@ -76,6 +78,7 @@
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
@@ -95,6 +98,7 @@
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
@@ -114,6 +118,7 @@
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
@@ -134,6 +139,7 @@
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#define FUR_MULTIPLIER 0.55
@@ -153,6 +159,7 @@
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#define FUR_MULTIPLIER 0.65
@@ -172,6 +179,7 @@
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#define FUR_MULTIPLIER 0.75
@@ -191,6 +199,7 @@
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#define FUR_MULTIPLIER 0.85
@@ -212,6 +221,7 @@
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#define FUR_MULTIPLIER 0.95

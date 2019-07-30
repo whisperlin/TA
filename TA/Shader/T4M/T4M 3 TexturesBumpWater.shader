@@ -80,7 +80,7 @@ CGPROGRAM
 
  
 #include "UnityCG.cginc"
-#include "height-fog.cginc"
+#include "../height-fog.cginc"
 	struct Input {
 		float3 worldPos;
 		float2 uv_Control : TEXCOORD0;

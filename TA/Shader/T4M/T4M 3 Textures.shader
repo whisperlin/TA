@@ -22,6 +22,7 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 3 Textures"
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
@@ -81,7 +82,7 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 3 Textures"
 #endif
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
 				
-				UNITY_TRANSFER_FOG_EX(o, o.pos);
+				UNITY_TRANSFER_FOG_EX(o, o.wpos);
 				return o;
 			}
 			
@@ -120,6 +121,7 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 3 Textures"
 				
 	 
 				APPLY_HEIGHT_FOG(c,i.wpos,i.normalWorld, i.fogCoord);
+
 				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
 				return c;
 			}

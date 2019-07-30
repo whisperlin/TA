@@ -18,6 +18,7 @@ Shader "TA/CutoutSoftEdgeEx"
 			#pragma fragment frag
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#include "UnityCG.cginc"
 			#include "height-fog.cginc"
@@ -87,6 +88,7 @@ Shader "TA/CutoutSoftEdgeEx"
 			#pragma fragment frag
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
+				#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#include "UnityCG.cginc"
@@ -125,7 +127,7 @@ Shader "TA/CutoutSoftEdgeEx"
 				o.uv = v.uv;
 				o.uv2 = v.uv2 * unity_LightmapST.xy + unity_LightmapST.zw;
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
-				UNITY_TRANSFER_FOG_EX(o, o.vertex);
+				UNITY_TRANSFER_FOG_EX(o, o.wpos);
 				return o;
 			}
 			

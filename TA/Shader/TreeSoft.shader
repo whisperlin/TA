@@ -29,13 +29,15 @@ Shader "TA/Scene/TreeSoft"
 			#pragma multi_compile_fwdbase
 			#pragma multi_compile_fog
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#pragma multi_compile _FADEPHY_OFF _FADEPHY_ON
 
 			#include "UnityCG.cginc"
 			#include "Lighting.cginc"
-			#include "../height-fog.cginc"
+			#include "height-fog.cginc"
 			#include "grass.cginc"
 			
 			 
@@ -61,6 +63,7 @@ Shader "TA/Scene/TreeSoft"
 				//return i.color;
 				clip(c.a - _AlphaCut);
 				APPLY_HEIGHT_FOG(c,i.wpos,i.normalWorld,i.fogCoord);
+				
 				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
 				return c;
 			}

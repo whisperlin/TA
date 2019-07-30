@@ -88,7 +88,7 @@ v2f vert (appdata v)
 	o.ambient = UNITY_LIGHTMODEL_AMBIENT   ;
 #endif
 
-	UNITY_TRANSFER_FOG_EX(o, o.vertex);
+	UNITY_TRANSFER_FOG_EX(o, o.wpos);
 
 
 #if _VIRTUAL_LIGHT_SHADOW2

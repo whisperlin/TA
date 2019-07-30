@@ -33,14 +33,15 @@ Shader "TA/Scene/Tree"
 			#pragma multi_compile_fwdbase
 			#pragma multi_compile_fog
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
-
+			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#pragma multi_compile _FADEPHY_OFF _FADEPHY_ON
 			
 
 			#include "UnityCG.cginc"
 			#include "Lighting.cginc"
-			#include "../height-fog.cginc"
+			#include "height-fog.cginc"
 			#include "grass.cginc"
 			
 			 
