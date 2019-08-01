@@ -18,9 +18,8 @@
 ![image](https://github.com/whisperlin/TA/blob/master/pic/water.png)<br>
 卡通简单水（参考妖精的尾巴）
 ![image](https://github.com/whisperlin/TA/blob/master/pic/waterSimple.png)<br>
-
-卡通1
+卡通角色
 ![image](https://github.com/whisperlin/TA/blob/master/pic/ct1.png)<br>
-卡通2
+卡通水
 ![image](https://github.com/whisperlin/TA/blob/master/pic/ct2.png)<br>
  
