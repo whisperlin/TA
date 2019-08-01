@@ -35,7 +35,7 @@ public class SetGlobalSH9 : MonoBehaviour {
     [Space]
     [Space]
     [Header("距离雾开关")]
-    public bool enable_dis = true;
+    public bool enable_dis = false;
 
     [Header("雾最远距离")]
     [Range(1f, 150f)]
@@ -55,7 +55,7 @@ public class SetGlobalSH9 : MonoBehaviour {
     [Space]
     [Space]
     [Header("高度雾")]
-     public bool heightFog = true;
+     public bool heightFog = false;
 
     [Header("雾初始高度")]
     public float fog_begin_in_height = 0;

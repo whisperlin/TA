@@ -14,29 +14,45 @@ Shader "TA/CutoutSoftEdge"
 
 		Pass
 		{
-		Blend SrcAlpha OneMinusSrcAlpha
+			Name "FORWARD"
+			Tags {
+				"LightMode" = "ForwardBase"
+			}
+			Blend SrcAlpha OneMinusSrcAlpha
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			#pragma multi_compile_fog
+			#pragma multi_compile_fwdbase
+			#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+			//#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
 			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#include "UnityCG.cginc"
+			#include "Lighting.cginc"
+			#include "AutoLight.cginc" 
 			#include "height-fog.cginc"
 			struct appdata
 			{
 				float4 vertex : POSITION;
 				float2 uv : TEXCOORD0;
+#if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				float2 uv2 : TEXCOORD1;
+#else
+
+#endif
 				float3 normal : NORMAL;
 			};
 
 			struct v2f
 			{
 				float2 uv : TEXCOORD0;
+#if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				float2 uv2 : TEXCOORD1;
+#else
+				LIGHTING_COORDS(5, 6)
+#endif
 				UNITY_FOG_COORDS_EX(2)
 				float4 wpos:TEXCOORD3;
 				float3 normalWorld : TEXCOORD4;
@@ -57,7 +73,11 @@ Shader "TA/CutoutSoftEdge"
 				float4 wpos = mul(unity_ObjectToWorld, v.vertex); 
 				o.wpos = wpos;
 				o.uv = v.uv;
+#if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				o.uv2 = v.uv2 * unity_LightmapST.xy + unity_LightmapST.zw;
+#else
+				TRANSFER_VERTEX_TO_FRAGMENT(o);
+#endif
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
 				UNITY_TRANSFER_FOG_EX(o, o.wpos);
 				return o;
@@ -68,8 +88,16 @@ Shader "TA/CutoutSoftEdge"
 				fixed4 c = tex2D(_MainTex, i.uv);
 				 
 				clip(c.a - _CutAlpha);
+#if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
-				c.rgb *= lm;
+				c.rgb = UNITY_LIGHTMODEL_AMBIENT * c.rgb + c.rgb * lm;
+#else
+
+				half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
+				half nl = saturate(dot(i.normalWorld, lightDir));
+				c.rgb = UNITY_LIGHTMODEL_AMBIENT * c.rgb + _LightColor0 * nl * c.rgb* LIGHT_ATTENUATION(i);
+
+#endif
 
 #ifdef BRIGHTNESS_ON
 				c.rgb = c.rgb * _Brightness * 2;
@@ -80,6 +108,10 @@ Shader "TA/CutoutSoftEdge"
 			}
 			ENDCG
 		}
+
+
+
+			 
 	}
 }
 

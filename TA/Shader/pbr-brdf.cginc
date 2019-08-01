@@ -1,4 +1,4 @@
-#include "UnityCG.cginc"
+#include "LCHCommon.cginc"
 #include "AutoLight.cginc"
 #include "Lighting.cginc"
 #include "SceneWeather.inc" 
@@ -23,9 +23,8 @@
 		half4 pos : SV_POSITION;
 		half2 uv : TEXCOORD0;
 		UNITY_FOG_COORDS_EX(1)
-		half3 tspace0 : TEXCOORD2;
-		half3 tspace1 : TEXCOORD3;
-		half3 tspace2 : TEXCOORD4;
+		NORMAL_TANGENT_BITANGENT_COORDS(2,3,4)
+		
 		float4 posWorld : TEXCOORD5;
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 		half2 uv2 : TEXCOORD6;
@@ -152,30 +151,26 @@
 	v2f vert(appdata v)
 	{
 		v2f o;
-		o.pos = UnityObjectToClipPos(v.vertex);
+
+		WPAttribute wp = ToProjectPos(v.vertex);
+
+		o.pos = wp.pos;
 		o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-		float4 wpos = mul(unity_ObjectToWorld, v.vertex); 
-		o.posWorld = wpos;
+		o.posWorld = wp.wpos;
 
-		half3 normal = UnityObjectToWorldNormal(v.normal);
-		half3 tangent = UnityObjectToWorldDir(v.tangent.xyz);
-		half tangentSign = v.tangent.w * unity_WorldTransformParams.w;
-		half3 bitangent = cross(normal, tangent) * tangentSign;
+	 
 
-		o.tspace0 = half3(tangent.x, bitangent.x, normal.x);
-		o.tspace1 = half3(tangent.y, bitangent.y, normal.y);
-		o.tspace2 = half3(tangent.z, bitangent.z, normal.z);
+		NTBYAttribute ntb = GetWorldNormalTangentBitangent(v.normal,v.tangent);
+		o.normal = ntb. normal;
+		o.tangent = ntb. tangent;
+		o.bitangent = ntb. bitangent;
 
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 		o.uv2 = v.uv2 * unity_LightmapST.xy + unity_LightmapST.zw;
 #endif
 #if _VIRTUAL_LIGHT_SHADOW
 
-		//float2 uv = (o.pos.xy / o.pos.w + 1)*0.5;//   float2((o.pos.x + 1) / 2, (o.pos.y + 1) / 2);
-		//float2 uv =  float2( (o.pos.x+1)/2  , (o.pos.y+1)/2);
-		//uv.y = 1-uv.y;
-		//o.lvuv = uv;
-		//o.dep =  lv_pos.z / lv_pos.w;
+ 
 		TRANSFER_VERTEX_TO_FRAGMENT(o);
 #endif
 
@@ -192,9 +187,7 @@
 #if S_BAKE
 	
 	float2 uv0 = v.uv;
-//#if defined(SHADER_API_D3D9)||defined(SHADER_API_D3D11)||defined(SHADER_API_D3D11_9X)
-//	uv0.y = 1.0 - uv0.y;
-//#endif
+ 
 	
 	o.pos.xy = uv0 * 2 - float2(1, 1);
 	o.pos.z = 0.5;
@@ -206,7 +199,7 @@
 	 
 #endif
 		#if GLOBAL_SH9
-			o.ambient = g_sh(half4(normal, 1)) ;
+			o.ambient = g_sh(half4(o.normal, 1)) ;
 		#else
 		
 		#endif
@@ -215,20 +208,13 @@
 
 		#if _HEIGHT_FOG_ON
 		#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-		//o.fogCoord0 = 1-o.fogCoord.x;
-	 
-		//float b =   smoothstep(heightFogHeight,heightFogHeight2, o.posWorld.y/o.posWorld.w);
-		//o.fogCoord.x = o.fogCoord.x + b -  o.fogCoord.x*b;
-
-		//o.fogCoord0 = b;
+ 
 		
 		 
 		#endif
 		#endif
 
-		//o.fogCoord *= 1.0 ;
-		//o.fogCoord *= 1.0-smoothstep(heightFogHeight,heightFogHeight2, wpos.y/wpos.w);
-		//o.fogCoord
+ 
 		return o;
 	}
 
@@ -277,13 +263,7 @@
 
 	}
 
-	inline fixed3 UnpackNormalRG(fixed4 packednormal)
-	{
-		fixed3 normal;
-		normal.xy = packednormal.xy * 2 - 1;
-		normal.z = sqrt(1 - saturate(dot(normal.xy, normal.xy)));
-		return normal;
-	}
+	 
 	fixed4 frag(v2f i) : SV_Target
 	{
 		fixed4 c_base = tex2D(_MainTex, i.uv);
@@ -330,12 +310,15 @@
 		#endif
 
 
-		half3 normal;
-		normal.x = dot(i.tspace0, n);
-		normal.y = dot(i.tspace1, n);
-		normal.z = dot(i.tspace2, n);
+		//half3 normal;
 
-		normal = normalize(normal); 
+		 
+
+
+		float3x3 tangentTransform = GetNormalTranform(i.normal, i.tangent, i.bitangent);
+
+		half3 normal = normalize(mul(n, tangentTransform));
+		 
 
 	#if _ISWEATHER_ON
  
@@ -444,9 +427,9 @@
 	half b_nl = dot(normal, -lightDir);
 	half nl = saturate(_nl);
 	half nv = saturate(dot(normal, viewDir));
-	half2 rlPow4AndFresnelTerm = Pow4(half2(dot(reflDir, lightDir), 1 - nv));
-	half rlPow4 = rlPow4AndFresnelTerm.x;
-	half LUT_RANGE = 16.0 * step(0.001, nl);
+	//half2 rlPow4AndFresnelTerm = Pow4(half2(dot(reflDir, lightDir), 1 - nv));
+	//half rlPow4 = rlPow4AndFresnelTerm.x;
+	//half LUT_RANGE = 16.0 * step(0.001, nl);
 
 	float3 halfDirection = normalize(viewDir + lightDir);
 	float LdotH = saturate(dot(lightDir, halfDirection));
@@ -622,14 +605,11 @@ fixed3 InDirspec = 0;
 	#endif
 #endif 
 
-
-
 	c.rgb = diffuse + spec + InDirspec ;
 
 #ifdef _ISMEMISSION_ON
 	c.rgb += c0.rgb*_Emission*nor_val.b;
 #endif
-
 
 
 #if ALPHA_CLIP

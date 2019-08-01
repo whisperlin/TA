@@ -124,5 +124,5 @@
 		}
 	}
 
-	FallBack "Mobile/Diffuse"
+	FallBack "Legacy Shaders/Transparent/VertexLit"
 }
