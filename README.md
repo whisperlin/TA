@@ -1,7 +1,7 @@
 # TA
 假光晕<br>
 ![image](https://github.com/whisperlin/TA/blob/master/pic/sun.png)<br>
-各种环境球转球谐(2-order,3-order两张实现)<br>
+各种环境球转球谐(2-order和3-order实现支持)<br>
 ![image](https://github.com/whisperlin/TA/blob/master/pic/shtool.png)<br>
 环境色过渡（球谐）<br>
 ![image](https://github.com/whisperlin/TA/blob/master/pic/env.jpg)<br>
