@@ -175,7 +175,7 @@
 
 
 			#if ENABLE_FOG_EX
-				UNITY_TRANSFER_FOG_EX(o, o.wpos);
+				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos,o.normalWorld);
 			#else
 				UNITY_TRANSFER_FOG(o, o.pos);
 			#endif

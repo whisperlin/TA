@@ -93,7 +93,7 @@ Shader "TA/CharactorAlpha"
 			#pragma multi_compile_fog
 			//#pragma multi_compile __ SHADOW_ON
 			#pragma multi_compile __ BRIGHTNESS_ON
-			#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+			//#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
  
 			#pragma multi_compile _ISMETALLIC_OFF _ISMETALLIC_ON  
 			#pragma multi_compile _ISMEMISSION_OFF   _ISMEMISSION_ON  _ISMEMISSION_COL
@@ -106,10 +106,13 @@ Shader "TA/CharactorAlpha"
 			#pragma shader_feature S_DEVELOP
 			#pragma shader_feature HARD_SNOW
 			#pragma shader_feature MELT_SNOW
+
+		#pragma   multi_compile  _  ENABLE_NEW_FOG
 			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 	 		#define GLOBAL_SH9 1
 			#define _CHARACTOR 1
 			#define ALPHA_CLIP 1

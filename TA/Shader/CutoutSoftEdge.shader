@@ -26,9 +26,12 @@ Shader "TA/CutoutSoftEdge"
 			#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 			//#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
+
+			#pragma   multi_compile  _  ENABLE_NEW_FOG
 			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#include "UnityCG.cginc"
 			#include "Lighting.cginc"
 			#include "AutoLight.cginc" 
@@ -79,7 +82,7 @@ Shader "TA/CutoutSoftEdge"
 				TRANSFER_VERTEX_TO_FRAGMENT(o);
 #endif
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
-				UNITY_TRANSFER_FOG_EX(o, o.wpos);
+				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos, o.normalWorld);
 				return o;
 			}
 			
@@ -90,7 +93,7 @@ Shader "TA/CutoutSoftEdge"
 				clip(c.a - _CutAlpha);
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
-				c.rgb = UNITY_LIGHTMODEL_AMBIENT * c.rgb + c.rgb * lm;
+				c.rgb =  c.rgb * lm;
 #else
 
 				half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);

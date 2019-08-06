@@ -123,6 +123,8 @@ public class ShaderGUIHelper  {
     public static void LoadTextureFormSaveMat(Material targetMat,string [] param)
     {
         string path = AssetDatabase.GetAssetPath(targetMat);
+        if (path == null || path.Length == 0)
+            return;
         path = path.Substring(0, path.Length - 3) + "sav";
         if (System.IO.File.Exists(path))
         {

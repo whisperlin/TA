@@ -3,6 +3,7 @@
 #include "Lighting.cginc"
 #include "SHGlobal.cginc"
 
+#include "virtuallight.cginc"
 #if _VIRTUAL_LIGHT_SHADOW2
 #include "shadowmap.cginc"
 #endif
@@ -13,9 +14,10 @@ struct appdata
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 	float2 uv2 : TEXCOORD1;
 #else
-	float3 normal : NORMAL;
+	
 	float4 color : COLOR;
 #endif
+	float3 normal : NORMAL;
 };
 
 struct v2f
@@ -51,10 +53,7 @@ uniform fixed _GravityStrength;
 uniform half _AmbientPower;
 
 
-#if _VIRTUAL_LIGHT_ON
-	half4 VirtualDirectLight0;
-	half4 VirtualDirectLightColor0;
-#endif
+ 
 
 #ifdef BRIGHTNESS_ON
 fixed3 _Brightness;
@@ -79,16 +78,16 @@ v2f vert (appdata v)
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 	o.uv2 = v.uv2 * unity_LightmapST.xy + unity_LightmapST.zw;
 #else
-	o.normalWorld = UnityObjectToWorldNormal(v.normal);
+	
 #endif
-
+	o.normalWorld = UnityObjectToWorldNormal(v.normal);
 #if GLOBAL_SH9
 	o.ambient = g_sh(half4(o.normalWorld, 1))  ;
 #else
 	o.ambient = UNITY_LIGHTMODEL_AMBIENT   ;
 #endif
 
-	UNITY_TRANSFER_FOG_EX(o, o.wpos);
+	UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos,o.normalWorld);
 
 
 #if _VIRTUAL_LIGHT_SHADOW2

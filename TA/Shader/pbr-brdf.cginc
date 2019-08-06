@@ -4,6 +4,7 @@
 #include "SceneWeather.inc" 
 #include "SHGlobal.cginc"
 #include "Shadow.cginc"
+#include "virtuallight.cginc"
 #include "height-fog.cginc"
 #if _VIRTUAL_LIGHT_SHADOW2
 #include "shadowmap.cginc"
@@ -111,10 +112,7 @@
 	sampler2D _GlossMap;
 	half4 _Emission;
 
-	#if _VIRTUAL_LIGHT_ON
-	half4 VirtualDirectLight0;
-	half4 VirtualDirectLightColor0;
-	#endif
+	 
 	sampler2D sam_environment_reflect;
 
 	half _SpPower;
@@ -204,7 +202,7 @@
 		
 		#endif
 			
-		UNITY_TRANSFER_FOG_EX(o, o.posWorld);
+		UNITY_TRANSFER_FOG_EX(o, o.pos, o.posWorld, o.normal);
 
 		#if _HEIGHT_FOG_ON
 		#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
@@ -629,24 +627,15 @@ fixed3 InDirspec = 0;
 #endif
 	 
  
-	//APPLY_HEIGHT_FOG(c,i.posWorld,normal,i.fogCoord);
-	//APPLY_HEIGHT_FOG_EX(c,i.posWorld,baseSkyColor,i.fogCoord);
-
-	//APPLY_HEIGHT_FOG(c,i.posWorld,normal,i.fogCoord);
- 
-	#if GLOBAL_ENV_SH9
-	float3 l__viewDir = lerp(-viewDir,float3(0,-1,0),globalEnvOffset);
+#if GLOBAL_ENV_SH9
+	float3 l__viewDir = lerp(-viewDir, float3(0, -1, 0), globalEnvOffset);
 	//half __gray = dot(c.rgb,half3(0.3,0.6,0.1));
-	APPLY_HEIGHT_FOG_EX(c,i.posWorld,envsh9(l__viewDir),i.fogCoord);
-	#else
-	APPLY_HEIGHT_FOG(c,i.posWorld,normal,i.fogCoord);
-	#endif
+	APPLY_HEIGHT_FOG_EX(c, i.posWorld, envsh9(l__viewDir), i.fogCoord);
+#else
+	APPLY_HEIGHT_FOG(c, i.posWorld, normal, i.fogCoord);
+#endif
 
-	
-	
-
-	//APPLY_HEIGHT_FOG(c,i.posWorld,normal,i.fogCoord);
-
-	UNITY_APPLY_FOG(i.fogCoord.r, c);
+ 
+	UNITY_APPLY_FOG_MOBILE(i.fogCoord,c);
 	return c;
 	}

@@ -29,9 +29,11 @@ Shader "TA/Scene/TreeSoft"
 			#pragma multi_compile_fwdbase
 			#pragma multi_compile_fog
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+		#pragma   multi_compile  _  ENABLE_NEW_FOG
 			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#pragma multi_compile _FADEPHY_OFF _FADEPHY_ON
 

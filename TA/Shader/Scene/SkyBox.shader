@@ -98,9 +98,10 @@
 				//skyUV.y = 1 - skyUV.y;
 				// sample the texture
 				fixed4 col = tex2D(_MainTex, skyUV);
-				half p = (col.w+_SunBright) *_SunPower ;
+				
 	 
 				#if OPEN_SUN
+				half p = (col.w + _SunBright) *_SunPower;
 				col *= max(0,exp2(p));
 				#endif
 

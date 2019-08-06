@@ -24,9 +24,12 @@ Shader "TA/Cutout"
 			#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 			//#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
+			
+			#pragma   multi_compile  _  ENABLE_NEW_FOG
 			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#include "UnityCG.cginc"
 			#include "Lighting.cginc"
 			#include "AutoLight.cginc" 
@@ -77,7 +80,7 @@ Shader "TA/Cutout"
 				TRANSFER_VERTEX_TO_FRAGMENT(o);
 #endif
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
-				UNITY_TRANSFER_FOG_EX(o, o.wpos);
+				UNITY_TRANSFER_FOG_EX(o, o.vertex,o.wpos, o.normalWorld);
 				return o;
 			}
 
@@ -101,6 +104,7 @@ Shader "TA/Cutout"
 
 				half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
 				half nl = saturate(dot(i.normalWorld, lightDir));
+				//c.rgb = UNITY_LIGHTMODEL_AMBIENT * c.rgb + _LightColor0 * nl * c.rgb* LIGHT_ATTENUATION(i);
 				c.rgb = UNITY_LIGHTMODEL_AMBIENT * c.rgb + _LightColor0 * nl * c.rgb* LIGHT_ATTENUATION(i);
 
 #endif
@@ -131,9 +135,12 @@ Shader "TA/Cutout"
 			#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 			//#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
+
+			#pragma   multi_compile  _  ENABLE_NEW_FOG
 			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#include "UnityCG.cginc"
 			#include "Lighting.cginc"
 			#include "AutoLight.cginc" 
@@ -184,7 +191,7 @@ Shader "TA/Cutout"
 				TRANSFER_VERTEX_TO_FRAGMENT(o);
 #endif
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
-				UNITY_TRANSFER_FOG_EX(o, o.wpos);
+				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos, o.normalWorld);
 				return o;
 			}
 

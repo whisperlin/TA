@@ -131,7 +131,7 @@
 			{
 				vertexOutput o;
 
-				//o.normalWorld = UnityObjectToWorldNormal(v.normal);
+				float3 normalWorld = UnityObjectToWorldNormal(input.normal);
 
 				float4 posWorld = mul(unity_ObjectToWorld, input.vertex);
 				
@@ -153,7 +153,7 @@
 
 
 				#if ENABLE_FOG_EX
-					UNITY_TRANSFER_FOG_EX(o, o.wpos);
+					UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos, normalWorld);
 				#else
 					UNITY_TRANSFER_FOG(o, o.pos);
 				#endif

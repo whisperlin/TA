@@ -99,7 +99,7 @@ Shader "TA/Charactor"
 
 	 		//#pragma multi_compile __ SHADOW_ON
 			#pragma multi_compile __ BRIGHTNESS_ON
-			#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+			//#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
  
 			#pragma multi_compile _ISMETALLIC_OFF _ISMETALLIC_ON  
 			#pragma multi_compile _ISMEMISSION_OFF   _ISMEMISSION_ON _ISMEMISSION_COL
@@ -108,6 +108,8 @@ Shader "TA/Charactor"
 			#pragma multi_compile _CLOTH_OFF _CLOTH_ON
 			#pragma multi_compile _ISMETADIFFUSECOLOR_OFF   _ISMETADIFFUSECOLOR_ON             
 			#pragma multi_compile _ISSUN_ON  _ISSUN_OFF 
+
+			#pragma   multi_compile  _  ENABLE_NEW_FOG
 			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			//#pragma  multi_compile  _VIRTUAL_LIGHT_ON _VIRTUAL_LIGHT_OFF _VIRTUAL_LIGHT_SHADOW _VIRTUAL_LIGHT_SHADOW2
@@ -120,6 +122,7 @@ Shader "TA/Charactor"
 			#pragma shader_feature MELT_SNOW
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 		
 			//#pragma multi_compile __ GLOBAL_SH9
 	 

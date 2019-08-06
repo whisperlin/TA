@@ -18,33 +18,32 @@ Shader "TA/Diffuse"
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+
+		#pragma   multi_compile  _  ENABLE_NEW_FOG
 		#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#include "UnityCG.cginc"
 			#include "height-fog.cginc"
 			#include "Lighting.cginc"
 			#include "AutoLight.cginc" //µÚÈý²½// 
+			#include "bake.cginc"
 
 			struct appdata
 			{
 				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
-#if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
-				float2 uv2 : TEXCOORD1;
-#else
- 
-#endif
+				LIGHTMAP_UVS(0,1,2)
 				
 				float3 normal : NORMAL;
 			};
 
 			struct v2f
 			{
-				float2 uv : TEXCOORD0;
+				float2 uv0 : TEXCOORD0;
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
-				float2 uv2 : TEXCOORD1;
+				float2 uv1 : TEXCOORD1;
 #else
 				LIGHTING_COORDS(5,6)
 #endif
@@ -53,7 +52,7 @@ Shader "TA/Diffuse"
 				UNITY_FOG_COORDS_EX(3)
 				float3 normalWorld : TEXCOORD4;
 				
-				float4 pos : SV_POSITION;
+				float4 vertex : SV_POSITION;
 			};
 
 			sampler2D _MainTex;
@@ -66,27 +65,27 @@ Shader "TA/Diffuse"
 			{
 				v2f o;
 				UNITY_INITIALIZE_OUTPUT(v2f, o);
-				o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
 				float4 wpos = mul(unity_ObjectToWorld, v.vertex); 
 				o.wpos = wpos;
-				o.uv = v.uv;
+				o.uv0 = v.uv0;
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
-				o.uv2 = v.uv2 * unity_LightmapST.xy + unity_LightmapST.zw;
+				o.uv1 = v.uv1 * unity_LightmapST.xy + unity_LightmapST.zw;
 #else
 				TRANSFER_VERTEX_TO_FRAGMENT(o);
 #endif
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
 				
-				UNITY_TRANSFER_FOG_EX(o, o.wpos );
+				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos, o.normalWorld);
 				return o;
 			}
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				fixed4 c = tex2D(_MainTex, i.uv);
+				fixed4 c = tex2D(_MainTex, i.uv0);
 
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
-				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
+				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv1));
 				c.rgb *= lm;
 #else
 				

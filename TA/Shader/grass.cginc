@@ -17,9 +17,9 @@
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				float2 uv2 : TEXCOORD1;
 #else
-				float3 normalWorld : TEXCOORD1;
+				
 #endif
-
+				float3 normalWorld : TEXCOORD1;
 				float4 color: TEXCOORD2;
 				float4 wpos:TEXCOORD3;
 				UNITY_FOG_COORDS_EX(4)
@@ -80,11 +80,12 @@
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				o.uv2 = v.uv2 * unity_LightmapST.xy + unity_LightmapST.zw;
 #else
-				o.normalWorld = UnityObjectToWorldNormal(v.normal);
+				
 #endif
+				o.normalWorld = UnityObjectToWorldNormal(v.normal);
 				o.color = v.color;
 
 				
-				UNITY_TRANSFER_FOG_EX(o, o.wpos);
+				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos, o.normalWorld);
 				return o;
 			}

@@ -30,6 +30,8 @@ public class SetGlobalSH9 : MonoBehaviour {
     [Range(0f,1f)]
     public float sss_scatter0 = 0.0f;
 
+    [Header("启动unity原生雾")]
+    public bool oldFog = true;
 
     [Space]
     [Space]
@@ -50,6 +52,10 @@ public class SetGlobalSH9 : MonoBehaviour {
 
     [Header("雾颜色")]
     public Color FogColor2 = Color.white;
+
+    [Header("雾透明")]
+    [Range(0.001f, 1f)]
+    public float fog_max2 = 1f;
 
     [Space]
     [Space]
@@ -76,10 +82,13 @@ public class SetGlobalSH9 : MonoBehaviour {
     [Range(0f,15f)]
      public float fog_height_density = 1f;
     
-    [Range(0.001f, 1f)]
-     public float fog_max = 1f;
+    
     [Header("雾颜色")]
      public Color FogColor = Color.white;
+
+    [Header("雾透明")]
+    [Range(0.001f, 1f)]
+    public float fog_max = 1f;
 
     [Space]
     [Space]
@@ -93,29 +102,23 @@ public class SetGlobalSH9 : MonoBehaviour {
     SH9Data curFarEnv;
     [Header("远景色")]
     public Color farSceneColor = new Color(1, 1, 1, 1);
-
-
     [Header("远近变色最远距离")]
     [Range(1f,150f)]
-    public float env_end_in_view = 100f;
-   
+    public float env_end_in_view = 100f;   
     [Range(0.01f, 1f)]
     [Header("远近变色强度调节")]
     public float env_dis_density = 1f;
     [Range(0.01f, 1f)]
     [Header("远近变色曲线调节（远近过渡）")]
-    
     public float env_b = 1f;
 
-
-
-    [Space]
-    [Space]
-    [Space]
-
+    [Header("雾透明")]
     [Range(0.001f, 1f)]
-    private float fog_decay_speed = 0.005f;
-    [Header("雾高度换算比例")]
+    public float fog_max1 = 1f;
+
+
+
+
 
     private float fog_acc_density_in_height = 150f;
 
@@ -124,7 +127,6 @@ public class SetGlobalSH9 : MonoBehaviour {
     public float _CullSepe = 0.0f;
 
     
-
     [Header("高度雾地平线")]
     private float heightFogHeight = 0;
 
@@ -154,7 +156,49 @@ public class SetGlobalSH9 : MonoBehaviour {
     [Header("雾色过渡")]
     private float color_density = 1f;
 
-    
+   
+
+    [Space]
+    [Space]
+    [Space]
+
+
+
+    [Header("远景背光变色")]
+    public bool enable_back_light = false;
+ 
+    [Header("远景背光强度调节")]
+    [Range(0.5f,1)]
+    public float back_dis_density = 1f;
+
+    [Range(0.9f, 1)]
+    [Header("雾背光强度调节")]
+    public float fog_back_dis_density = 1f;
+
+    [Range(0.9f, 1)]
+    [Header("高度雾背光强度调节")]
+    public float height_fog_back_dis_density = 1f;
+
+    [Space]
+    [Space]
+    [Space]
+
+
+
+    [Header("场景虚拟光颜色")]
+    public Color virtualSceneDirectLightColor0 = Color.white;
+
+    [Header("场景光方向(烘培后用于打高光背光等)")]
+    public Vector3 VirtualSceneDirectLight0;
+    [Header("场景光强度")]
+    [Range(0, 3)]
+
+    public float virtualSceneDirectLightColor0Intensity = 1.0f;
+
+
+
+     
+   
 
     // Use this for initialization
     void Start () {
@@ -169,7 +213,15 @@ public class SetGlobalSH9 : MonoBehaviour {
     private void setSH9Global()
     {
 
+        if (oldFog)
+        {
+            Shader.DisableKeyword("ENABLE_NEW_FOG");
 
+        }
+        else
+        {
+            Shader.EnableKeyword("ENABLE_NEW_FOG");
+        }
 
         //Shader.SetGlobalFloat("fog_b", fog_b* fog_b* fog_b);
  
@@ -181,6 +233,17 @@ public class SetGlobalSH9 : MonoBehaviour {
 
         Shader.SetGlobalVector("FarSceneInfo", new Vector4(env_b * env_b * env_b, env_end_in_view, 0, 0));
         Shader.SetGlobalColor("FarSceneColor", new Color(farSceneColor.r, farSceneColor.g, farSceneColor.b, env_dis_density) );
+
+
+
+        Shader.SetGlobalVector("global_fog_max", new Vector4(fog_max, fog_max1, fog_max2, 1));
+        Shader.SetGlobalFloat("back_dis_density", back_dis_density*2);
+
+        Shader.SetGlobalVector("FogBackInfor", new Vector4((1f-height_fog_back_dis_density ) * 0.5f, (1f-back_dis_density) * 0.5f, (1f-fog_back_dis_density)*0.5f));
+        //Shader.SetGlobalFloat("back_dis_density", back_dis_density * 2);
+
+        //public float fog_back_dis_density = 1f;
+        //public float height_fog_back_dis_density = 1f;
 
         Shader.SetGlobalVector("HeightFogInfo", new Vector4(fog_height_density, fog_b * fog_b * fog_b, fog_hight_b, fog_max));
         Shader.SetGlobalFloat("height_fog_end_in_view", height_fog_end_in_view);
@@ -232,6 +295,14 @@ public class SetGlobalSH9 : MonoBehaviour {
         {
             Shader.DisableKeyword("ENABLE_DISTANCE_ENV");
         }
+        if (enable_back_light)
+        {
+            Shader.EnableKeyword("ENABLE_BACK_LIGHT");
+        }
+        else
+        {
+            Shader.DisableKeyword("ENABLE_BACK_LIGHT");
+        }
         if (farEvn)
         {
             Shader.EnableKeyword("GLOBAL_ENV_SH9");
@@ -241,15 +312,29 @@ public class SetGlobalSH9 : MonoBehaviour {
             Shader.DisableKeyword("GLOBAL_ENV_SH9");
         }
         Shader.SetGlobalFloat("fog_height_power", fog_height_power);
+
         var v = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(new Vector3(VirtualDirectLight0.x, VirtualDirectLight0.y, VirtualDirectLight0.z)), Vector3.one).MultiplyVector(Vector3.back);
         v.Normalize();
         //Vector3.forward
         Shader.SetGlobalVector("VirtualDirectLight0", v);
+        Shader.SetGlobalVector("VirtualDirectLightColor0", new Vector4(virtualDirectLightColor0.r, virtualDirectLightColor0.g, virtualDirectLightColor0.b, virtualDirectLightColor0Intensity));
+
+
+
+        //virtualSceneDirectLightColor0
+
+        var v2 = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(new Vector3(VirtualSceneDirectLight0.x, VirtualSceneDirectLight0.y, VirtualSceneDirectLight0.z)), Vector3.one).MultiplyVector(Vector3.back);
+        v2.Normalize();
+        Shader.SetGlobalVector("VirtualDirectSceneLight0", v2);
+
+        Shader.SetGlobalVector("VirtualScenDirectLightColor0", new Vector4(virtualSceneDirectLightColor0.r, virtualSceneDirectLightColor0.g, virtualSceneDirectLightColor0.b, virtualSceneDirectLightColor0Intensity));
+
+        // VirtualSceneDirectLight0  ；VirtualSceneDirectLight0；
         Shader.SetGlobalFloat("_DifSC", _DifSC);
         Shader.SetGlobalColor("_BackColor", _BackColor);
         Shader.SetGlobalFloat("sss_scatter0", sss_scatter0);
         Shader.SetGlobalFloat("_CullSepe", _CullSepe);
-        Shader.SetGlobalVector("VirtualDirectLightColor0",new Vector4(virtualDirectLightColor0.r, virtualDirectLightColor0.g, virtualDirectLightColor0.b, virtualDirectLightColor0Intensity));
+        
 
         if (heightFog)
         {
