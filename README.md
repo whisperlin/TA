@@ -22,4 +22,9 @@
 ![image](https://github.com/whisperlin/TA/blob/master/pic/ct1.png)<br>
 卡通水
 ![image](https://github.com/whisperlin/TA/blob/master/pic/ct2.png)<br>
+box project 360环境球
+![image](https://github.com/whisperlin/TA/blob/master/pic/boxproject.png)<br>
+box project 360环境球水投影
+![image](https://github.com/whisperlin/TA/blob/master/pic/boxproject2.png)<br>
+
  
