@@ -118,7 +118,7 @@ atten.y = dis_atten.y * env_dis_density;
 
 #if ENABLE_BACK_LIGHT
 
-float nl0 = dot(worldNormal, -_WorldSpaceLightPos0.xyz);//[-1,1]
+float nl0 = dot(worldNormal, -VirtualDirectSceneLight0.xyz);//[-1,1]
 
 //float _power = dis_atten.z* back_dis_density*2;
 float3 _power = FogBackInfor.xyz;

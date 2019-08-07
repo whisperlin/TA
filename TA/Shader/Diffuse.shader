@@ -19,8 +19,8 @@ Shader "TA/Diffuse"
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 
-		#pragma   multi_compile  _  ENABLE_NEW_FOG
-		#pragma   multi_compile  _  _POW_FOG_ON
+			#pragma   multi_compile  _  ENABLE_NEW_FOG
+			#pragma   multi_compile  _  _POW_FOG_ON
 			#pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			#pragma   multi_compile  _ ENABLE_BACK_LIGHT
@@ -52,7 +52,7 @@ Shader "TA/Diffuse"
 				UNITY_FOG_COORDS_EX(3)
 				float3 normalWorld : TEXCOORD4;
 				
-				float4 vertex : SV_POSITION;
+				float4 pos : SV_POSITION;
 			};
 
 			sampler2D _MainTex;
@@ -65,7 +65,7 @@ Shader "TA/Diffuse"
 			{
 				v2f o;
 				UNITY_INITIALIZE_OUTPUT(v2f, o);
-				o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
 				float4 wpos = mul(unity_ObjectToWorld, v.vertex); 
 				o.wpos = wpos;
 				o.uv0 = v.uv0;
@@ -76,7 +76,7 @@ Shader "TA/Diffuse"
 #endif
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
 				
-				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos, o.normalWorld);
+				UNITY_TRANSFER_FOG_EX(o, o.pos, o.wpos, o.normalWorld);
 				return o;
 			}
 			

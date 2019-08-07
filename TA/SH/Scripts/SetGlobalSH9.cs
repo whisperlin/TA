@@ -168,14 +168,14 @@ public class SetGlobalSH9 : MonoBehaviour {
     public bool enable_back_light = false;
  
     [Header("远景背光强度调节")]
-    [Range(0.5f,1)]
+    [Range(0f,1)]
     public float back_dis_density = 1f;
 
-    [Range(0.9f, 1)]
+    [Range(0.7f, 1)]
     [Header("雾背光强度调节")]
     public float fog_back_dis_density = 1f;
 
-    [Range(0.9f, 1)]
+    [Range(0.7f, 1)]
     [Header("高度雾背光强度调节")]
     public float height_fog_back_dis_density = 1f;
 

@@ -28,11 +28,11 @@
 		[Toggle(OPEN_SUN)] _OPEN_SUN("开启太阳", Float) = 0
 		_SunPower("Sun Power",Range(1,14)) = 1
 		_SunBright("_SunBright",Range(-0.25,0.25)) = 0
-
+		[Space]
 			//[HideInInspector]
-		cubemapCenter("cubemapCenter",Vector) = (1, 1, 1, 1)
-		boxMin("boxMin",Vector) = (1, 1, 1, 1)
-		boxMax("boxMax",Vector) = (1, 1, 1, 1)
+		[HideInInspector]cubemapCenter("cubemapCenter",Vector) = (1, 1, 1, 1)
+		[HideInInspector]boxMin("boxMin",Vector) = (1, 1, 1, 1)
+		[HideInInspector]boxMax("boxMax",Vector) = (1, 1, 1, 1)
 
 
 			//[NoScaleOffset] _developCamera("调试相机", 2D) = "white" { }
@@ -45,6 +45,13 @@
 #pragma multi_compile __  __CREATE_DEPTH_MAP 
 #pragma multi_compile __  __CREATE_DEPTH_MAP2 
 #pragma multi_compile __  BOX_PROJECT_SKY_BOX
+
+#pragma   multi_compile  _  ENABLE_NEW_FOG
+#pragma   multi_compile  _  _POW_FOG_ON
+#pragma   multi_compile  _  _HEIGHT_FOG_ON
+#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+#pragma   multi_compile  _ ENABLE_BACK_LIGHT
+#pragma   multi_compile  _  GLOBAL_ENV_SH9
 
 #pragma shader_feature OPEN_SUN
 #include "UnityCG.cginc"
@@ -162,7 +169,8 @@
 #endif
 
 #if ENABLE_FOG_EX
-			UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos, wNormal);
+			 
+			UNITY_TRANSFER_FOG_EX(o, o.pos, o.wpos, o.normal);
 #else
 			UNITY_TRANSFER_FOG(o, o.pos);
 #endif
@@ -224,7 +232,7 @@
 
 					half4 c0 = tex2D(_ColorControl, i.uv);
 					half inWater = c0.r*c0.a;
-
+					half3 worldView = UnityWorldSpaceViewDir(i.wpos);
 					//return float4(inWater, 0, 0,1);
 
 #ifdef __CREATE_DEPTH_MAP
@@ -264,7 +272,7 @@
  
 					//平面的法线默认向上.
 					//half3 planeNormal = half3(0,1,0);
-					half ndotl = dot(i.viewDir, wNormal);
+					half ndotl = dot(worldView, wNormal);
 
 				
 
@@ -274,7 +282,7 @@
 
 					half3 light_dir = _WorldSpaceLightPos0.xyz;
 
-					half3 h = normalize(light_dir + i.viewDir);
+					half3 h = normalize(light_dir + worldView);
 
 
 
@@ -286,7 +294,7 @@
 
 
 
-					half3 viewReflectDirection = reflect(-i.viewDir, wNormal);
+					half3 viewReflectDirection = reflect(-worldView, wNormal);
 
 
 #if BOX_PROJECT_SKY_BOX

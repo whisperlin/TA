@@ -274,7 +274,7 @@ v2f_surf vert_surf (appdata_full v) {
 	  TRANSFER_SHADOW(o); // pass shadow coordinates to pixel shader
 	  //UNITY_CALC_FOG_FACTOR((o.pos).z); o.fogCoord.x = unityFogFactor;
 	  // o.fogCoord.x = (o.pos).z;
-	  UNITY_TRANSFER_FOG_EX(o, o.vertex,float4(worldPos,1)); // pass fog coordinates to pixel shader
+	  UNITY_TRANSFER_FOG_EX(o, o.vertex,float4(worldPos,1), worldNormal); // pass fog coordinates to pixel shader
 	  return o;
 }
  
