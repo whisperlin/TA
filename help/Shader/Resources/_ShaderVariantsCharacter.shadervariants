@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: _ShaderVariantsCharacter
+  m_Shaders:
+    data:
+      first: {fileID: 4800000, guid: 0246cb4ce9e8440449b065ac5551bf3c, type: 3}
+      second:
+        variants:
+        - keywords: FOG_LINEAR
+          passType: 0
+        - keywords: FOG_LINEAR RIM_ON
+          passType: 0
+    data:
+      first: {fileID: 4800000, guid: 21030ed5505ea94439b93256be32b0ab, type: 3}
+      second:
+        variants:
+        - keywords: FOG_LINEAR
+          passType: 0
+        - keywords: FOG_LINEAR RIM_ON
+          passType: 0
+    data:
+      first: {fileID: 4800000, guid: 4e6b46571b1f0524aaec3916dbb5bc04, type: 3}
+      second:
+        variants:
+        - keywords: FOG_LINEAR
+          passType: 0
+        - keywords: FOG_LINEAR RIM_ON
+          passType: 0
+    data:
+      first: {fileID: 4800000, guid: 62f0abac7444b094c8b6461f8a7ec2d8, type: 3}
+      second:
+        variants:
+        - keywords: FOG_LINEAR
+          passType: 0
+        - keywords: FOG_LINEAR RIM_ON
+          passType: 0
+    data:
+      first: {fileID: 4800000, guid: 6ae0620b63a36cf4e9266d2417ce0b38, type: 3}
+      second:
+        variants:
+        - keywords: FOG_LINEAR
+          passType: 0
+        - keywords: DISSOLVE_ON FOG_LINEAR
+          passType: 0
+        - keywords: FOG_LINEAR RIM_ON
+          passType: 0
+        - keywords: DISSOLVE_ON FOG_LINEAR RIM_ON
+          passType: 0
+    data:
+      first: {fileID: 4800000, guid: 7b6494e0788a9fb48b07c1cb14df0f80, type: 3}
+      second:
+        variants:
+        - keywords: FOG_LINEAR
+          passType: 0
+        - keywords: FOG_LINEAR RIM_ON
+          passType: 0
+        - keywords: DISSOLVE_ON FOG_LINEAR
+          passType: 0
+        - keywords: DISSOLVE_ON FOG_LINEAR RIM_ON
+          passType: 0
+    data:
+      first: {fileID: 4800000, guid: a101e97dc04178a44bb759797eddc689, type: 3}
+      second:
+        variants:
+        - keywords: FOG_LINEAR
+          passType: 0
+        - keywords: FOG_LINEAR RIM_ON
+          passType: 0
+    data:
+      first: {fileID: 4800000, guid: a882194490a90fc40a42149ac51774d5, type: 3}
+      second:
+        variants:
+        - keywords: FOG_LINEAR
+          passType: 0
+        - keywords: FOG_LINEAR RIM_ON
+          passType: 0
+    data:
+      first: {fileID: 4800000, guid: caae5841ae450894a901aca092be8d92, type: 3}
+      second:
+        variants: []

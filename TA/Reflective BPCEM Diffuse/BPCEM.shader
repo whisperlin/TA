@@ -8,6 +8,7 @@ Shader "TA/BoxProjectSkyReflection"
 		cubemapCenter("cubemapCenter", vector) = (0,0,0,1)
 		boxMin("boxMin", vector) = (-5,-5,-5,1)
 		boxMax("boxMax", vector) = (5,5,5,1)
+
 	}
 		SubShader
 		{

@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: _ShaderVariantsShadow
+  m_Shaders:
+    data:
+      first: {fileID: 4800000, guid: 34ee0d0f1dd68864d980dab2b0e0e15e, type: 3}
+      second:
+        variants:
+        - keywords: FOG_LINEAR
+          passType: 0
+        - keywords: BRIGHTNESS_ON FOG_LINEAR
+          passType: 0
+        - keywords: FOG_LINEAR SHADOW_ON
+          passType: 0
+        - keywords: BRIGHTNESS_ON FOG_LINEAR SHADOW_ON
+          passType: 0
+    data:
+      first: {fileID: 4800000, guid: 50b5f876bc04db341a86aea7e15d6308, type: 3}
+      second:
+        variants:
+        - keywords: FOG_LINEAR
+          passType: 0
+        - keywords: BRIGHTNESS_ON FOG_LINEAR
+          passType: 0
+        - keywords: FOG_LINEAR SHADOW_ON
+          passType: 0
+        - keywords: BRIGHTNESS_ON FOG_LINEAR SHADOW_ON
+          passType: 0
+    data:
+      first: {fileID: 4800000, guid: 5d4177fb5621e5e4f9b925d56d79f78e, type: 3}
+      second:
+        variants:
+        - keywords: FOG_LINEAR
+          passType: 0
+        - keywords: BRIGHTNESS_ON FOG_LINEAR
+          passType: 0
+        - keywords: FOG_LINEAR SHADOW_ON
+          passType: 0
+        - keywords: BRIGHTNESS_ON FOG_LINEAR SHADOW_ON
+          passType: 0
