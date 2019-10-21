@@ -16,7 +16,7 @@ public class ShadowMap : MonoBehaviour {
     public Shader shader;
  
     public TEXTURESIZE TextureSize = TEXTURESIZE.S1024;
-    [Range(0, 0.1f)]
+    [Range(0, 0.01f)]
     public float Bias;
     [Range(0, 1)]
     public float Strength;
@@ -37,9 +37,13 @@ public class ShadowMap : MonoBehaviour {
         oldHardShadow = !hardShadow;
 
     }
-
+    private void OnEnable()
+    {
+        Shader.EnableKeyword("_SCENE_SHADOW2");
+    }
     private void OnDisable()
     {
+        Shader.DisableKeyword("_SCENE_SHADOW2");
         if (null != depthTexture)
         {
             depthCamera.targetTexture = null;
@@ -65,6 +69,7 @@ public class ShadowMap : MonoBehaviour {
             int s = TextureSize == TEXTURESIZE.S1024 ? 1024 :512;
             depthTexture = new RenderTexture(s, s, 16, RenderTextureFormat.ARGB32);
             depthTexture.filterMode = FilterMode.Bilinear;
+            depthTexture.wrapMode = TextureWrapMode.Clamp;
         }
         depthTexture.hideFlags = HideFlags.HideAndDontSave;
         depthCamera.targetTexture = depthTexture;

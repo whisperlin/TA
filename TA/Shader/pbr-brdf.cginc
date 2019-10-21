@@ -6,7 +6,8 @@
 #include "Shadow.cginc"
 #include "virtuallight.cginc"
 #include "height-fog.cginc"
-#if _VIRTUAL_LIGHT_SHADOW2
+
+#if defined(_SCENE_SHADOW2)  
 #include "shadowmap.cginc"
 #endif
 
@@ -37,7 +38,7 @@
 		LIGHTING_COORDS(7,8)
 #endif
 
-#if _VIRTUAL_LIGHT_SHADOW2
+#if defined(_SCENE_SHADOW2) 
 
 		float4 shadowCoord : TEXCOORD7;
 #endif
@@ -173,7 +174,7 @@
 #endif
 
 
-#if _VIRTUAL_LIGHT_SHADOW2
+#if defined(_SCENE_SHADOW2) 
 		o.shadowCoord = mul(_depthVPBias, mul(unity_ObjectToWorld, v.vertex));
 		o.shadowCoord.z = -(mul(_depthV, mul(unity_ObjectToWorld, v.vertex)).z * _farplaneScale);
 #endif
@@ -344,7 +345,7 @@
 			 #endif
 			 //float nt2 = step(snoize,snoize);
 			 c0.rgb = lerp(c0.rgb,_SnowColor.rgb,nt *_SnowColor.a);
-			 half3 up0 = half3(i.tspace0.z,i.tspace1.z,i.tspace2.z);
+			 float3 up0 = i.normal.xyz;
 
 			 normal = lerp( up0,normal , _SnowNormalPower );
 	 
@@ -461,8 +462,12 @@
 
 #endif
 
-#if _VIRTUAL_LIGHT_SHADOW2
-	half attenuation = PCF4Samples(i.shadowCoord);
+#if defined(_SCENE_SHADOW2)  
+
+	//return tex2D(_kkShadowMap, i.shadowCoord.xy);
+	 
+	half attenuation = PCF4SamplesSafe(i.shadowCoord);
+	//return float4(attenuation, attenuation, attenuation, 1);
 	lightColor.rgb *= attenuation;
 
 #endif
@@ -588,7 +593,7 @@ fixed3 InDirspec = 0;
 		skyColor *= lerp(_MetalShadow,1,attenuation);
 	#endif
 
-	#if _VIRTUAL_LIGHT_SHADOW2
+	#if defined(_SCENE_SHADOW2)  
 		skyColor *= lerp(_MetalShadow,1,attenuation);
 
 	#endif

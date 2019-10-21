@@ -59,3 +59,26 @@ half4 PCF4Samples(float4 shadowCoord)
 
 	return sum ;
 }
+
+half4 PCF4SamplesSafe(float4 shadowCoord)
+{
+	float sum = 0;
+	half r0 = step(abs(shadowCoord.x), 0.95)*step(abs(shadowCoord.y), 0.95);
+	
+	 
+ 
+
+	float depth = DecodeFloat(offset_lookup(_kkShadowMap, shadowCoord, float2(0.5, 0.5)));
+	sum += max(step(shadowCoord.z - _bias, depth), _strength) * 0.25;
+
+	depth = DecodeFloat(offset_lookup(_kkShadowMap, shadowCoord, float2(-0.5, 0.5)));
+	sum += max(step(shadowCoord.z - _bias, depth), _strength) * 0.25;
+
+	depth = DecodeFloat(offset_lookup(_kkShadowMap, shadowCoord, float2(-0.5, -0.5)));
+	sum += max(step(shadowCoord.z - _bias, depth), _strength) * 0.25;
+
+	depth = DecodeFloat(offset_lookup(_kkShadowMap, shadowCoord, float2(0.5, -0.5)));
+	sum += max(step(shadowCoord.z - _bias, depth), _strength) * 0.25;
+
+	return sum *r0 + (1-r0);
+}

@@ -58,7 +58,7 @@ float3 GetFog( in float4 PosWorld ,in float3 worldNormal){
 
 float fog_b = FogInfo.x;
 float fog_end_in_view = FogInfo.y;
-float fog_dis_density = FogColor.w;
+//float fog_dis_density = FogColor.w;
 
 
 float env_b = FarSceneInfo.x;
@@ -102,9 +102,9 @@ float fog_height_atten = pow(world_height_val, fog_hight_b)  * hdis;
 
 
 float4 atten = 0;
-#if _POW_FOG_ON
-atten.z = dis_atten .x* fog_dis_density;
-#endif
+//#if _POW_FOG_ON
+//atten.z = dis_atten .x* fog_dis_density;
+//#endif
 
 //back_dis_density
 #if _HEIGHT_FOG_ON
@@ -112,7 +112,6 @@ atten.x = fog_height_atten* fog_height_density;
 #endif
 #if ENABLE_DISTANCE_ENV
 atten.y = dis_atten.y * env_dis_density;
-
 
 #endif
 
@@ -147,9 +146,9 @@ float3 blend_val = min(fogFactor, global_fog_max.xyz);
 screen_clr = lerp(screen_clr, FarSceneColor, blend_val.y); //lerp
 #endif
 
-#if _POW_FOG_ON
-screen_clr = lerp(screen_clr, FogColor2.xyz, blend_val.z);
-#endif
+//#if _POW_FOG_ON
+//screen_clr = lerp(screen_clr, FogColor2.xyz, blend_val.z);
+//#endif
 
 screen_clr = lerp(screen_clr, FogColor.xyz, blend_val.x); //lerp
 

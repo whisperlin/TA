@@ -7,9 +7,9 @@ using UnityEngine;
 public class WeatherPreview : MonoBehaviour {
 
     //[Header("雨贴图")]
-    [HideInInspector]public Texture rain_normal = null;
+    public Texture rain_normal = null;
     //[Header("雪 噪点")]
-    [HideInInspector]public Texture _SnowNoise;
+    public Texture _SnowNoise;
 
     [Header("是否开启雨")]
 	public bool openRain = false;
@@ -128,7 +128,24 @@ public class WeatherPreview : MonoBehaviour {
         
         
     }
+    public void UploadParams()
+    {
+        if (null == _SnowNoise)
+            _SnowNoise = Resources.Load("snow_noise") as Texture;
+        if (null == rain_normal)
+            rain_normal = Resources.Load("rain_normal") as Texture;
 
+        Shader.SetGlobalVector("weather_intensity", new Vector4(weatherColorIntensity, rainBumpPower, 0, 0));
+        Shader.SetGlobalTexture("_WeatherCtrlTex0", rain_normal);
+        Shader.SetGlobalFloat("SmoothnessRate", SmoothnessRate);
+
+        Shader.SetGlobalFloat("_SnowPower", 1.0f - _SnowPower);
+        Shader.SetGlobalColor("_SnowColor", _SnowColor);
+        Shader.SetGlobalTexture("_SnowNoise", _SnowNoise);
+
+        Shader.SetGlobalFloat("_SnowGloss", _SnowGloss);
+        Shader.SetGlobalFloat("_SnowMeltPower", _SnowMeltPower);
+    }
     // Update is called once per frame
     void Update() {
 
@@ -156,22 +173,9 @@ public class WeatherPreview : MonoBehaviour {
 
         if(Application.platform == RuntimePlatform.WindowsEditor )
         {
-			
-            if (null== _SnowNoise)
-                _SnowNoise = Resources.Load("snow_noise") as Texture;
-            if (null == rain_normal)
-                rain_normal = Resources.Load("rain_normal") as Texture;
 
-            Shader.SetGlobalVector("weather_intensity", new Vector4(weatherColorIntensity, rainBumpPower, 0, 0));
-            Shader.SetGlobalTexture("_WeatherCtrlTex0", rain_normal);
-			Shader.SetGlobalFloat ("SmoothnessRate", SmoothnessRate);
-
-			Shader.SetGlobalFloat ("_SnowPower", 1.0f-_SnowPower);
-			Shader.SetGlobalColor ("_SnowColor", _SnowColor);
-			Shader.SetGlobalTexture("_SnowNoise", _SnowNoise);
-
-			Shader.SetGlobalFloat ("_SnowGloss", _SnowGloss);
-			Shader.SetGlobalFloat ("_SnowMeltPower", _SnowMeltPower);
+            UploadParams();
+            
         }
         
         Shader.SetGlobalFloat("FrameTime", Time.time);

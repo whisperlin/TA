@@ -10,7 +10,7 @@ using UnityEngine;
  
 public class BoxProjectReflectMaker : MonoBehaviour {
     public Vector3 scale = new Vector3(10,10,10);
-
+    Camera cam;
 #if UNITY_EDITOR
 
     private RenderTexture target;
@@ -20,7 +20,7 @@ public class BoxProjectReflectMaker : MonoBehaviour {
     private GameObject plane;
     [Header("开发者模式")]
     public bool develop = true;
-    Camera cam;
+    
 
     private void OnDestroy()
     {

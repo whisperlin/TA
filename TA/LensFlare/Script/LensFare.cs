@@ -9,6 +9,7 @@ public class LensFare : MonoBehaviour {
     public Texture2D sunTexure;
     public int sunCount = 5;
     public float sunRange = 0.3f;
+    [Header("x图片缩影，y离太阳距离，z缩放，w透明度")]
     public Vector4[] indexs = new Vector4[] { 
         new Vector4(0,0f,0.3f,1f)
     };
@@ -117,7 +118,8 @@ public class LensFare : MonoBehaviour {
 
         float wh = ((float)Screen.height) / ((float)Screen.width);
 
-        bool b = sdotv > 0 && Mathf.Abs(projPos.x)-1f < sunRange* wh && Mathf.Abs(projPos.y)-1f < sunRange;
+        //bool b = sdotv > 0 && Mathf.Abs(projPos.x)-1f < sunRange* wh && Mathf.Abs(projPos.y)-1f < sunRange;
+        bool b = sdotv > 0;
 
         bool vis = Application.isPlaying;
 #if UNITY_EDITOR
@@ -159,7 +161,7 @@ public class LensFare : MonoBehaviour {
             mOccludieCameraTransform = g.transform;
             mOccludieCamera.clearFlags = CameraClearFlags.SolidColor;
             mOccludieCamera.orthographic = true;
-            mOccludieCamera.orthographicSize = 0.2f;
+            mOccludieCamera.orthographicSize = 0.5f;
             //mOccludieCamera.enabled = false;
             mOccludieCamera.targetTexture = rt;
             g.hideFlags = HideFlags.DontSave;

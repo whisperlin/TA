@@ -2,7 +2,7 @@
 	Properties{
 		[NoScaleOffset] _ColorControl("深度控制图", 2D) = "white" { }
 		[NoScaleOffset] _BumpMap("NormalTexture", 2D) = "" { }
-		__BumpMapPower("法线强度",Range(0,1)) = 1
+		_BumpMapPower("法线强度",Range(0,1)) = 0.13
 		_TopColor("浅水色", Color) = (0.619, 0.759, 1, 1)
 		_ButtonColor("深水色", COLOR) = (.172 , .463 , .435 , 0)
 		_WaveScale("水波浪缩放", Range(0.02,0.15)) = .07
@@ -47,10 +47,10 @@
 #pragma multi_compile __  BOX_PROJECT_SKY_BOX
 
 #pragma   multi_compile  _  ENABLE_NEW_FOG
-#pragma   multi_compile  _  _POW_FOG_ON
-#pragma   multi_compile  _  _HEIGHT_FOG_ON
-#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
-#pragma   multi_compile  _ ENABLE_BACK_LIGHT
+//#pragma   multi_compile  _  _POW_FOG_ON
+#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
+#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 #pragma   multi_compile  _  GLOBAL_ENV_SH9
 
 #pragma shader_feature OPEN_SUN
@@ -226,7 +226,7 @@
 
 				half _Alpha;
 				//samplerCUBE _Cube;
-				half __BumpMapPower;
+				half _BumpMapPower;
 				half4 frag(v2f i) : COLOR
 				{
 
@@ -265,7 +265,7 @@
 					half3 bump2 = UnpackNormal(tex2Dlod(_BumpMap, float4(i.bumpuv[1],0,_lodLevel))).rgb;
 					half3 bump0 = (bump1 + bump2) * 0.5;
 
-					bump0 = lerp(half3(0, 0, 1), bump0, __BumpMapPower);
+					bump0 = lerp(half3(0, 0, 1), bump0, _BumpMapPower);
 					//half3 _normal_val = UnpackNormalRG(e);
 					float3x3 tangentTransform = GetNormalTranform(i.normal, i.tangent, i.bitangent);
 					half3 wNormal = normalize(mul(bump0, tangentTransform));

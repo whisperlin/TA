@@ -5,9 +5,10 @@
 				float2 uv : TEXCOORD0;
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				float2 uv2 : TEXCOORD1;
-#else
-				float3 normal : NORMAL;
+ 
+				
 #endif
+				float3 normal : NORMAL;
 				float4 color: COLOR;
 			};
 

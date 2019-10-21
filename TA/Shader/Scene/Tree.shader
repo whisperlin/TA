@@ -33,7 +33,7 @@ Shader "TA/Scene/Tree"
 			#pragma multi_compile_fwdbase
 			#pragma multi_compile_fog
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-			#pragma   multi_compile  _  _HEIGHT_FOG_ON
+			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
 
 			#pragma multi_compile _FADEPHY_OFF _FADEPHY_ON
 			

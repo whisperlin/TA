@@ -19,9 +19,12 @@ public class CharactorGUI :  ShaderGUI
         ShaderGUIHelper.RemoveRroperty(result, "S_BAKE");
 
         bool b_m = targetMat.IsKeywordEnabled("_ISMETALLIC_ON");
-		bool b_e = targetMat.IsKeywordEnabled("_ISMEMISSION_ON");
-		bool b_c = targetMat.IsKeywordEnabled("_ISMEMISSION_COL");
-		bool b_3s = targetMat.IsKeywordEnabled("_ISS3_ON");
+		//bool b_e = targetMat.IsKeywordEnabled("_ISMEMISSION_ON");
+		//bool b_c = targetMat.IsKeywordEnabled("_ISMEMISSION_COL");
+
+        bool b_e = false;
+        bool b_c = false;
+        bool b_3s = targetMat.IsKeywordEnabled("_ISS3_ON");
 		ShaderGUIHelper.RemoveExclusion(properties, b_3s, new string[] { "_DifSC", "_BackColor"  },new string[] { "_S3SPower", "_BRDFTex"  }, result);
 
 

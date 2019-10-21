@@ -56,7 +56,15 @@
 				//float2 pos = float2(unity_ObjectToWorld[0].a,-unity_ObjectToWorld[1].a);
 				o.vertex = v.vertex;
 				//o.vertex.xy *= unity_ObjectToWorld[0].xx;
+
+				// Gamma space... Gah.
+
 				o.color = v.color;
+#if UNITY_COLORSPACE_GAMMA
+				
+				o.color.rgb = LinearToGammaSpace(o.color.rgb);
+				//o.color.rgb = GammaToLinearSpace(o.color.rgb); 
+#endif
 				//o.vertex.x *= _ScreenParams.y/_ScreenParams.x;
 				//o.vertex.xy += pos.xy;
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);

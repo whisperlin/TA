@@ -34,8 +34,8 @@ Shader "TA/CharactorAlpha"
 
 		[KeywordEnum(Off, On)] _IsMetallic("是否开启金属度", Float) = 0
 
-		[KeywordEnum(Off,On)] _IsSun("是否开启太阳", Float) = 0
-		[KeywordEnum(OFF,ON )] _IsMetaDiffuseColor("金属乘漫反射", Float) = 0
+		//[KeywordEnum(Off,On)] _IsSun("是否开启太阳", Float) = 0
+		//[KeywordEnum(OFF,ON )] _IsMetaDiffuseColor("金属乘漫反射", Float) = 0
 		environment_reflect("金属反射贴图", 2D) = "black" {}
 		metallic_color("金属颜色", Color) = (1, 1, 1, 0)
 		metallic_power("金属强度", Range(0,2)) = 1
@@ -48,9 +48,10 @@ Shader "TA/CharactorAlpha"
 
 
 
-		[KeywordEnum( On,Off, Shadow2)] _virtual_light ("非场景光照方向", Float) = 0
+		//[KeywordEnum( On,Off, Shadow2)] _virtual_light ("非场景光照方向", Float) = 0
 
-		[KeywordEnum(Off, On,Col)] _IsMEmission("自发光或变色", Float) = 0
+		//[KeywordEnum(Off, On,Col)] _IsMEmission("自发光或变色", Float) = 0
+		
 		_ClothColor("衣服颜色1", Color) = (1, 0, 0, 0.5)
 		_ClothColor2("衣服颜色2", Color) = (0, 0, 1, 0.5)
 		_Emission("自发光", Color) = (0.5, 0.5, 0.5, 1)
@@ -90,29 +91,34 @@ Shader "TA/CharactorAlpha"
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			#pragma multi_compile_fog
+			//#pragma multi_compile_fog
 			//#pragma multi_compile __ SHADOW_ON
 			#pragma multi_compile __ BRIGHTNESS_ON
 			//#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
  
 			#pragma multi_compile _ISMETALLIC_OFF _ISMETALLIC_ON  
-			#pragma multi_compile _ISMEMISSION_OFF   _ISMEMISSION_ON  _ISMEMISSION_COL
-			#pragma multi_compile _ISMETADIFFUSECOLOR_OFF   _ISMETADIFFUSECOLOR_ON         
-			#pragma multi_compile _ISSUN_ON  _ISSUN_OFF
+			
+			#define _ISMEMISSION_OFF 1
+			//#pragma multi_compile _ISMEMISSION_OFF   _ISMEMISSION_ON  _ISMEMISSION_COL
+			//#pragma multi_compile _ISMETADIFFUSECOLOR_OFF   _ISMETADIFFUSECOLOR_ON         
+			#define _ISSUN_ON 1
+			//#pragma multi_compile _ISSUN_ON  _ISSUN_OFF
 			#pragma multi_compile _ISS3_OFF _ISS3_ON _ISS3_BACK
-			#pragma  multi_compile  _VIRTUAL_LIGHT_ON _VIRTUAL_LIGHT_OFF  _VIRTUAL_LIGHT_SHADOW2
+			//#pragma  multi_compile  _VIRTUAL_LIGHT_ON _VIRTUAL_LIGHT_OFF  _VIRTUAL_LIGHT_SHADOW2
+			#pragma  multi_compile  _ _SCENE_SHADOW2
+			#define _VIRTUAL_LIGHT_ON 1
 
 			#pragma shader_feature S_BAKE
 			#pragma shader_feature S_DEVELOP
 			#pragma shader_feature HARD_SNOW
 			#pragma shader_feature MELT_SNOW
-
+//#define ENABLE_NEW_FOG 1
 		#pragma   multi_compile  _  ENABLE_NEW_FOG
-			#pragma   multi_compile  _  _POW_FOG_ON
-			#pragma   multi_compile  _  _HEIGHT_FOG_ON
+			//#pragma   multi_compile  _  _POW_FOG_ON
+			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
-			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
-			#pragma   multi_compile  _ ENABLE_BACK_LIGHT
+			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 	 		#define GLOBAL_SH9 1
 			#define _CHARACTOR 1
 			#define ALPHA_CLIP 1

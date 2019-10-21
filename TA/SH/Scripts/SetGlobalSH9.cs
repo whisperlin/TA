@@ -36,32 +36,35 @@ public class SetGlobalSH9 : MonoBehaviour {
     [Space]
     [Space]
     [Space]
-    [Header("距离雾开关")]
-    public bool enable_dis = false;
+    //[Header("距离雾开关")]
+    //public bool enable_dis = false;
 
     [Header("雾最远距离")]
     [Range(1f, 150f)]
     public float fog_end_in_view = 100f;
     
-    [Header("雾距离强度调节")]
-    [Range(0.01f, 1f)]
-    public float fog_dis_density = 1f;
+    //[Header("雾距离强度调节")]
+    //[Range(0.01f, 1f)]
+    //public 
+    float fog_dis_density = 1f;
+
     [Range(0.01f,1f)]
     [Header("雾距离曲线调节（远近过渡）")]
     public float fog_b = 1f;
 
-    [Header("雾颜色")]
-    public Color FogColor2 = Color.white;
+    //[Header("雾颜色")]
+    //public Color FogColor2 = Color.white;
 
-    [Header("雾透明")]
-    [Range(0.001f, 1f)]
-    public float fog_max2 = 1f;
+    //[Header("雾透明")]
+    //[Range(0.001f, 1f)]
+    //public 
+        float fog_max2 = 1f;
 
     [Space]
     [Space]
     [Space]
-    [Header("高度雾")]
-     public bool heightFog = false;
+    //[Header("高度雾")]
+    // public bool heightFog = false;
 
     [Header("雾初始高度")]
     public float fog_begin_in_height = 0;
@@ -95,8 +98,8 @@ public class SetGlobalSH9 : MonoBehaviour {
     [Space]
 
 
-    [Header("远景变色")]
-    public bool enable_env = false;
+    //[Header("远景变色")]
+    //public bool enable_env = false;
     [Header("反射环境色")]
     public SH9Data farEvn;
     SH9Data curFarEnv;
@@ -227,8 +230,9 @@ public class SetGlobalSH9 : MonoBehaviour {
  
 
         Shader.SetGlobalVector("FogInfo", new Vector4(fog_b * fog_b * fog_b, fog_end_in_view, fog_height, fog_begin_in_height));
+
         Shader.SetGlobalColor("FogColor", new Color(FogColor.r, FogColor.g, FogColor.b, fog_dis_density));
-        Shader.SetGlobalColor("FogColor2", new Color(FogColor2.r, FogColor2.g, FogColor2.b, fog_dis_density));
+        //Shader.SetGlobalColor("FogColor2", new Color(FogColor2.r, FogColor2.g, FogColor2.b, fog_dis_density));
 
 
         Shader.SetGlobalVector("FarSceneInfo", new Vector4(env_b * env_b * env_b, env_end_in_view, 0, 0));
@@ -278,23 +282,23 @@ public class SetGlobalSH9 : MonoBehaviour {
 
         Shader.SetGlobalFloat("globalEnvOffset", globalEnvOffset);
         //_POW_FOG_ON
-        if (enable_dis)
+        /*if (enable_dis)
         {
             Shader.EnableKeyword("_POW_FOG_ON");
         }
         else
         {
             Shader.DisableKeyword("_POW_FOG_ON");
-        }
+        }*/
 
-        if (enable_env)
+        /*if (enable_env)
         {
             Shader.EnableKeyword("ENABLE_DISTANCE_ENV");
         }
         else
         {
             Shader.DisableKeyword("ENABLE_DISTANCE_ENV");
-        }
+        }*/
         if (enable_back_light)
         {
             Shader.EnableKeyword("ENABLE_BACK_LIGHT");
@@ -334,9 +338,14 @@ public class SetGlobalSH9 : MonoBehaviour {
         Shader.SetGlobalColor("_BackColor", _BackColor);
         Shader.SetGlobalFloat("sss_scatter0", sss_scatter0);
         Shader.SetGlobalFloat("_CullSepe", _CullSepe);
-        
 
-        if (heightFog)
+
+
+        //var v3 = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(new Vector3(0f,140f, 0f)), Vector3.one).MultiplyVector(Vector3.back);
+        //v3.Normalize();
+        //Debug.LogError(_BackColor);
+
+        /*if (heightFog)
         {
             Shader.EnableKeyword("_HEIGHT_FOG_ON");
             //Shader.SetGlobalFloat("heightFogHeight", heightFogHeight);
@@ -346,11 +355,11 @@ public class SetGlobalSH9 : MonoBehaviour {
         else
         {
             Shader.DisableKeyword("_HEIGHT_FOG_ON");
-        }
-        
+        }*/
 
 
 
 
-}
+
+    }
 }

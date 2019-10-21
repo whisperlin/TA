@@ -68,46 +68,7 @@ float Y8(float3 v)
 //GET TEXEL DIRECTION VECTOR FROM UV
 float3 RfromUV(uint face, float u, float v)
 {
-	float3 dir;
+	 
 
-	switch (face)
-	{
-	case 0: //+X
-		dir.x = 1;
-		dir.y = v * -2.0f + 1.0f;
-		dir.z = u * -2.0f + 1.0f;
-		break;
-
-	case 1: //-X
-		dir.x = -1;
-		dir.y = v * -2.0f + 1.0f;
-		dir.z = u * 2.0f - 1.0f;
-		break;
-
-	case 2: //+Y
-		dir.x = u * 2.0f - 1.0f;
-		dir.y = 1.0f;
-		dir.z = v * 2.0f - 1.0f;
-		break;
-
-	case 3: //-Y
-		dir.x = u * 2.0f - 1.0f;
-		dir.y = -1.0f;
-		dir.z = v * -2.0f + 1.0f;
-		break;
-
-	case 4: //+Z
-		dir.x = u * 2.0f - 1.0f;
-		dir.y = v * -2.0f + 1.0f;
-		dir.z = 1;
-		break;
-
-	case 5: //-Z
-		dir.x = u * -2.0f + 1.0f;
-		dir.y = v * -2.0f + 1.0f;
-		dir.z = -1;
-		break;
-	}
-
-	return dir;
+	return 1;
 }

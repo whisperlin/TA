@@ -30,7 +30,7 @@
 
 			v2f vert(appdata_img v)
 			{
-				v2f_img o;
+				v2f o;
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.pos = o.pos * float4(0.3333, 0.3333, 1, 1) + float4(-0.6666, 0.6666, 0, 0);
 				o.uv = o.pos.xy * 0.5 + 0.5;// MultiplyUV(UNITY_MATRIX_TEXTURE0, v.texcoord);
@@ -77,7 +77,7 @@
 
 			v2f vert(appdata_img v)
 			{
-				v2f_img o;
+				v2f o;
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.pos = o.pos * float4(0.3333, 0.3333, 1, 1) + float4(0, 0.6666, 0, 0);
 				o.uv = o.pos.xy * 0.5 + 0.5;// MultiplyUV(UNITY_MATRIX_TEXTURE0, v.texcoord);
@@ -124,7 +124,7 @@
 
 			v2f vert(appdata_img v)
 			{
-				v2f_img o;
+				v2f o;
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.pos = o.pos * float4(0.3333, 0.3333, 1, 1) + float4(0.6666, 0.6666, 0, 0);
 				o.uv = o.pos.xy * 0.5 + 0.5;// MultiplyUV(UNITY_MATRIX_TEXTURE0, v.texcoord);
@@ -171,7 +171,7 @@
 
 			v2f vert(appdata_img v)
 			{
-				v2f_img o;
+				v2f o;
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.pos = o.pos * float4(0.3333, 0.3333, 1, 1) + float4(-0.6666, 0, 0, 0);
 				o.uv = o.pos.xy * 0.5 + 0.5;// MultiplyUV(UNITY_MATRIX_TEXTURE0, v.texcoord);
@@ -218,7 +218,7 @@
 
 			v2f vert(appdata_img v)
 			{
-				v2f_img o;
+				v2f o;
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.pos = o.pos * float4(0.3333, 0.3333, 1, 1) + float4(0, 0, 0, 0);
 				o.uv = o.pos.xy * 0.5 + 0.5;// MultiplyUV(UNITY_MATRIX_TEXTURE0, v.texcoord);
@@ -265,7 +265,7 @@
 
 			v2f vert(appdata_img v)
 			{
-				v2f_img o;
+				v2f o;
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.pos = o.pos * float4(0.3333, 0.3333, 1, 1) + float4(0.6666, 0, 0, 0);
 				o.uv = o.pos.xy * 0.5 + 0.5;// MultiplyUV(UNITY_MATRIX_TEXTURE0, v.texcoord);
@@ -312,7 +312,7 @@
 
 			v2f vert(appdata_img v)
 			{
-				v2f_img o;
+				v2f o;
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.pos = o.pos * float4(0.3333, 0.3333, 1, 1) + float4(-0.6666, -0.6666, 0, 0);
 				o.uv = o.pos.xy * 0.5 + 0.5;// MultiplyUV(UNITY_MATRIX_TEXTURE0, v.texcoord);
@@ -359,7 +359,7 @@
 
 			v2f vert(appdata_img v)
 			{
-				v2f_img o;
+				v2f o;
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.pos = o.pos * float4(0.3333, 0.3333, 1, 1) + float4(0, -0.6666, 0, 0);
 				o.uv = o.pos.xy * 0.5 + 0.5;// MultiplyUV(UNITY_MATRIX_TEXTURE0, v.texcoord);
@@ -406,7 +406,7 @@
 
 			v2f vert(appdata_img v)
 			{
-				v2f_img o;
+				v2f o;
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.pos = o.pos * float4(0.3333, 0.3333, 1, 1) + float4(0.6666, -0.6666, 0, 0);
 				o.uv = o.pos.xy * 0.5 + 0.5;// MultiplyUV(UNITY_MATRIX_TEXTURE0, v.texcoord);

@@ -5,10 +5,6 @@
 		_MainTex ("Texture", 2D) = "white" {}
 		_Emission ("Emission (Lightmapper)", Range(0,1)) = 0.0
 		_Normal("法线", 2D) = "bump" {}
-		_Color("颜色",Color) = (1,1,1,1)
- 
-		[Toggle(ClIP_ENABLE)] _WIND_ENABLE("裁切开启", Float) = 0
-		_CutAlpha("CutAlpha", Range(0, 1)) = 0.5
 	}
 
 	SubShader
@@ -25,14 +21,12 @@
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
+		#pragma   multi_compile  _  ENABLE_NEW_FOG
 			#pragma   multi_compile  _  _POW_FOG_ON
-			#pragma   multi_compile  _  _HEIGHT_FOG_ON
-			#pragma   multi_compile  _ ENABLE_DISTANCE_ENV
-			#pragma   multi_compile  _ ENABLE_BACK_LIGHT
+			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
+			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
-			#pragma   multi_compile  _  ClIP_ENABLE
-			
 			#include "UnityCG.cginc"
 			#include "height-fog.cginc"
 			#include "Lighting.cginc"
@@ -88,21 +82,16 @@
 #endif
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
 				
-				UNITY_TRANSFER_FOG_EX(o, o.pos, o.wpos, o.normalWorld);
+				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos, o.normalWorld);
 				return o;
 			}
-			fixed4 _Color;
-			half _CutAlpha;
+			
 			fixed4 frag (v2f i) : SV_Target
 			{
 				fixed4 c = tex2D(_MainTex, i.uv);
 				fixed4 e = tex2D(_Normal, i.uv);
 				
-				fixed4 c0 = c * _Color;
-				
-#if ClIP_ENABLE
-					clip(c.a - _CutAlpha);
-#endif
+				fixed4 c0 = c;
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
 				c.rgb *= lm;
