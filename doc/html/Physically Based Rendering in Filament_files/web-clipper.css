@@ -1,0 +1,291 @@
+input,button,select,textarea{outline:none}
+
+.a-normal{color:#4E93E2;font-size:12px;float: right;text-decoration:none;}
+#ydNoteWebClipper{padding-bottom:10px;font:12px/100% arial,sans-serif;width: 279px}
+#ydNoteWebClipper p,#ydNoteWebClipper form{margin:0;padding:0;}
+#ydNoteWebClipper .a-normal:hover{text-decoration:underline}
+#ydNoteWebClipper input[type='text']{outline:none}
+#ydNoteWebClipper select{width:160px;}
+#ydNoteWebClipper img{border:none; vertical-align:center;}
+
+.straight-line{
+    margin-bottom: 14px;
+    height: 1px;
+    background: #E2E2E2;
+}
+
+/* ------- dialog ------- */
+#ydNoteWebClipper .ydnwc-dialog{position:absolute;z-index:1000;padding:5px;background-color:rgba(92,184,229,.5)!important;background:#5cb8e5;
+    border-radius:5px;box-shadow:0 0 2px #5cb8e5;
+    -khtml-border-radius:5px;
+    -webkit-border-radius:5px;-webkit-box-shadow:0 0 2px #5cb8e5;
+    -moz-border-radius:5px;-moz-box-shadow:0 0 2px #5cb8e5;
+    width:400px;
+}
+#ydNoteWebClipper .ydnwc-dialog-inner{border:1px solid #5cb8e5}
+#ydNoteWebClipper .ydnwc-dialog-hd{position:relative;height:30px;line-height:30px;border-bottom:1px solid #d9d9d9;background:#f5f5f5;
+    background:-webkit-gradient(linear, 0 0, 0 100%, from(#fff), to(#f5f5f5));
+    background:-moz-linear-gradient(top, #fff, #f5f5f5 100%);
+}
+#ydNoteWebClipper .ydnwc-dialog-login-hd{padding-top: 26px}
+/*#logout{position:absolute;right:30px;top:0px; text-decoration:underline;color:#06C;cursor:pointer;}*/
+#ydNoteWebClipper .ydnwc-dialog-hd-closable{padding-right:30px; padding-left: 10px;}
+#ydNoteWebClipper .ydnwc-dialog-title{display:inline-block;zoom:1;font-weight:bold;_margin-top:6px;}
+#ydNoteWebClipper .ydnwc-dialog-title img{vertical-align:-5px;margin:-1px 0 1px;_vertical-align:middle;}
+#ydNoteWebClipper .ydnwc-dialog-title .login{margin-left: 10px;font-size: 12px;color: #758090;}
+#ydNoteWebClipper .ydnwc-dialog-title .separator{margin-left: 10px}
+
+#ydNoteWebClipper .ydnwc-dialog-close{margin-right: -10px;float: right;position:relative;top:17px;width:10px;height:10px;overflow:hidden;background:url(../images/webclipper/close_normal.svg) no-repeat;}
+#ydNoteWebClipper .ydnwc-dialog-close:hover{background:url(../images/webclipper/close_hover.svg) no-repeat;}
+#ydNoteWebClipper .ydnwc-dialog-bd{padding:10px; border-top:1px solid #f2f2f2;background:#fff}
+#ydNoteWebClipper .ydnwc-dialog-login-bd{padding:9px}
+#ydNoteWebClipper .ydnwc-dialog-login-form{margin-top: 6px}
+#ydNoteWebClipper .openid a:hover{text-decoration:none;}
+
+.left,.right{display:inline-block;*display:inline;zoom:1;vertical-align:middle;}
+.right{width:264px;}
+.left{height:180px;width:225px;border-left:1px solid #dedede;margin-left:15px;}
+.left iframe{width:100%;height:100%;border:0;}
+.left .openid{padding:20px 0 0 40px;}
+.left a:hover{text-decoration:none;background-color:#ffffff;}
+.login-icon{margin-left: 24px;display: block;width: 48px;text-decoration:none;color: #797979}
+.login-icon:hover{margin-left: 24px;display: block;width: 48px;text-decoration:underline;}
+.tencentWeibo,.huawei,.email,.dingding{display:inline-block;}
+.tencentWeibo{background:url(../images/webclipper/tencent_weibo.svg) no-repeat;width:18px;height:18px;line-height:18px;font-family:微软雅黑;margin-left: 20px;}
+.huawei{background:url(../images/webclipper/huawei.svg) no-repeat;width:18px;height:18px;line-height:18px;font-family:微软雅黑;margin-left: 10px;}
+.email{background:url(../images/webclipper/email.svg) no-repeat;width:18px;height:18px;line-height:18px;font-family:微软雅黑;margin-left: 10px;}
+.dingding{background:url(../images/webclipper/dingding.svg) no-repeat;width:18px;height:18px;line-height:18px;font-family:微软雅黑;margin-left: 10px;}
+
+.sina{background:url(../images/webclipper/sina_weibo.svg) no-repeat;width:48px;height:18px;line-height:18px;padding-left: 24px;margin-left: 14px;color: #797979;text-decoration: none;display: inline-block;}
+.qq{background:url(../images/webclipper/qq.svg) no-repeat;width:24px;height:18px;line-height:18px;padding-left: 24px;margin-left: 14px;color: #797979;text-decoration: none;display: inline-block;}
+.weChat{background:url(../images/webclipper/weChat.svg) no-repeat;width:24px;height:18px;line-height:18px;padding-left: 24px;margin-left: 22px;color: #797979;text-decoration: none;display: inline-block;}
+
+.folder-up,.folder-down{display:inline-block;}
+.folder-up{background:url(../images/webclipper/folder_up.svg) no-repeat;width:10px;height:6px;line-height:6px;font-family:微软雅黑;margin-left: 10px;position: absolute;top: 400px;left: 212px;}
+.folder-up-text{background:url(../images/webclipper/folder_up.svg) no-repeat;background-position: left;padding-left: 14px;width: 24px;color: #398dee;position: absolute;top: 396px;left: 214px;text-decoration: none;}
+.folder-down{background:url(../images/webclipper/folder_down.svg) no-repeat;width:10px;height:6px;line-height:6px;margin-left: 10px;position: absolute;top: 400px;left: 184px;}
+.folder-down-text{background:url(../images/webclipper/folder_down.svg) no-repeat;background-position: right;padding-right: 18px;color: #797979;position: absolute;top: 396px;left: 92px;text-decoration: none;}
+#login-table{visibility: hidden}
+#login-more{visibility: visible}
+#login-folder-up{visibility: hidden}
+
+.commonClipper .left {display:none;}
+
+
+:root #ydNoteWebClipper .ydnwc-dialog-bd{padding:15px 10px \0/IE9;}
+#ydNoteWebClipper .ydnwc-dialog-form .row-1{font-size:14px;margin-bottom:20px;line-height:26px}
+#ydNoteWebClipper .ydnwc-dialog-form .row-1 .register-id{margin-top:10px;font-size:14px;
+    float: right;
+    border: 1px solid #8AC0ff;
+    width: 218px;
+    height: 38px;
+    text-align: center;
+    line-height: 40px;
+    text-decoration: none;
+    color: #398DEE;
+    margin-bottom: 20px;
+}
+#ydNoteWebClipper .register-id:hover{border-color:#06c;background-position:left -548px;
+    box-shadow:0 0 3px #06c;
+    -webkit-box-shadow:0 0 3px #06c;
+    -moz-box-shadow:0 0 3px #06c;
+}
+#ydNoteWebClipper .ydnwc-dialog-form .row-2{font-size:14px;margin-bottom:14px;line-height:26px;}
+#ydNoteWebClipper .ydnwc-dialog-form .ydnwc-dialog-error{margin-bottom:5px;line-height:120%}
+#ydNoteWebClipper .ydnwc-dialog-form .row:last-child{margin-bottom:0}
+#ydNoteWebClipper .ydnwc-dialog-form .row-hd,#ydNoteWebClipper .ydnwc-dialog-form .row-bd{display:inline-block;vertical-align:middle}
+#ydNoteWebClipper .ydnwc-dialog-form .row-hd{min-width:3em;_width:3em;margin-right:.7em;text-align:right}
+#ydNoteWebClipper .ydnwc-dialog-form .btns-row{margin-left:3.7em;padding-left:3px}
+#ydNoteWebClipper .ydnwc-dialog-text{_width:220px;min-width:220px;border:1px inset;border-color:#BBBBBB;
+    height:34px;line-height:34px;
+    fill: #F9F9F9;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.1);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.1);
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.1);
+}
+#ydNoteWebClipper .title{min-width:256px;}
+#ydNoteWebClipper .ydnwc-dialog-text:focus{border:1px inset;border-color:#8AC0FF;
+    fill: #FFFFFF;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.1);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.1);
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.1);
+}
+#ydNoteWebClipper-Login {margin: 0 20px 0 29px; width: 220px;}
+#rem{vertical-align:-3px;}
+#loginbtn{margin-right:30px;}
+#ydNoteWebClipper .ydnwc-dialog-btn{width:220px;height:40px;font-size:14px;cursor:pointer;border:1px solid #d9d9d9;
+    background: #398DEE;
+    color: #FFFFFF;
+    border-radius:3px;
+    -khtml-border-radius:3px;
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+}
+#ydNoteWebClipper .ydnwc-dialog-btn:hover{border-color:#06c;background-position:left -548px;
+    box-shadow:0 0 3px #06c;
+    -webkit-box-shadow:0 0 3px #06c;
+    -moz-box-shadow:0 0 3px #06c;
+}
+#ydNoteWebClipper .ydnwc-dialog-btn:active{background-position:left -576px}
+#ydNoteWebClipper .ydnwc-dialog-btn-gray{background:#fff}
+#ydNoteWebClipper .ydnwc-dialog-btn-gray:hover{border-color:#999;background:#f2f2f2;
+    box-shadow:0 0 0;
+    -webkit-box-shadow:0 0 0;
+    -moz-box-shadow:0 0 0;
+}
+#ydNoteWebClipper .ydnwc-dialog-btn-gray:active{background:url(../images/note-web-sprite-x.png) repeat-x left -576px}
+#ydNoteWebClipper .ydnwc-dialog-btn-disabled{background:#e2e2e2;cursor:default}
+#ydNoteWebClipper .ydnwc-dialog-btn-disabled:hover{border-color:#d9d9d9;
+    box-shadow:0 0 0;
+    -webkit-box-shadow:0 0 0;
+    -moz-box-shadow:0 0 0;
+}
+#ydNoteWebClipper .ydnwc-dialog p{margin-bottom:10px}
+#ydNoteWebClipper .ydnwc-dialog-headline{font-size:1.6em}
+#ydNoteWebClipper .ydnwc-dialog-highlight{color:red}
+#ydNoteWebClipper .ydnwc-dialog-ft{height:20px;*height:30px;padding:10px;background:#fafafa;border-top:1px solid #f2f2f2}
+.ydnwc-dialog-ft { padding:15px; background: #FAFAFA;border-top: 1px solid #F2F2F2;color:#666 }
+/* ------- loading ------- */
+#ydNoteWebClipper .ydnwc-dialog-loading{position:absolute;z-index:9999;top:50%;left:50%;width:180px;height:22px;margin:-12px 0 0 -91px;font-weight:bold;text-align:center;line-height:22px;border:1px solid #fff999;background-color:rgba(255,249,153,.9)!important;background:#fff999;
+    border-radius:5px;
+    -khtml-border-radius:5px;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+}
+
+#ydNoteWebClipper-Login .ydnwc-dialog-text-password{position: absolute;top: 135px;left: 45px;color: #898989;font-size: 12px;}
+#ydNoteWebClipper-Login .ydnwc-dialog-text-id{position: absolute;top: 77px;left: 45px;color: #898989;font-size: 12px;}
+#ydNoteWebClipper-Login .ydnwc-dialog-text-label{font-size: 12px;color: #797979;}
+.ydnwc-dialog-text-input{
+    font-size: 12px;
+    height:34px;
+    line-height:22px;
+    width: 204px;
+    padding-left: 14px;
+    border: 1px solid;
+    border-color:#BBBBBB;
+    background: #F9F9F9;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.1);
+    -moz-box-shadow:inset 0 1px 2px rgba(0,0,0,.1);
+    -webkit-box-shadow:inset 0 1px 2px rgba(0,0,0,.1);
+}
+.ydnwc-dialog-text-input:focus{
+    border-color:#8AC0FF;
+    fill: #FFFFFF;
+}
+
+#ydNoteWebClipper-New .ydnwc-dialog-form .row-hd{min-width:3.5em;_width:3.5em}
+#ydNoteWebClipper-New .ydnwc-dialog-form .btns-row{margin-left:4.2em}
+
+/* ie7 */
+#sb{*margin-left:-4.2em;}
+#ydNoteWebClipper .ydnwc-dialog-form .row-hd,#ydNoteWebClipper .ydnwc-dialog-form .row-bd{display:inline;}
+
+/* fullPageClipper */
+#ydNoteWebClipper-New{margin: 24px 30px 0 29px;}
+#ydNoteWebClipper-New .ydnwc-dialog-close-fullPage{margin-right: -14px;margin-top: -14px;float: right;position:relative;width:10px;height:10px;overflow:hidden;background:url(../images/webclipper/close_normal.svg) no-repeat;}
+#ydNoteWebClipper-New .ydnwc-dialog-close-fullPage:hover{background:url(../images/webclipper/close_hover.svg) no-repeat;}
+#ydNoteWebClipper-New .ydnwc-dialog-textarea{
+    width: 215px;
+    height: 48px;
+    word-wrap: break-word;
+    overflow: hidden;
+    resize: none;
+    font-size: 14px;
+    color: #4B5A6B;
+    line-height: 1.8;
+    background: #FFFFFF;
+    border-radius: 2px;
+    border: none;
+}
+#ydNoteWebClipper-New .ydnwc-dialog-textarea:focus{
+    border-color:#8AC0FF;
+    background: #F9F9F9;
+    fill: #FFFFFF;
+    border: 1px solid;
+    border-color: #BBBBBB;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+    -moz-box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+    -webkit-box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+}
+#ydNoteWebClipper-New .ydnwc-dialog-form .row-3{font-size:14px;margin-bottom:17px}
+#ydNoteWebClipper-New .ydnwc-dialog-form .row-4{font-size:14px;margin-bottom:24px;height: 36px}
+#ydNoteWebClipper-New .ydnwc-dialog-form .row-5{font-size:12px;margin-bottom:8px;color: #595959;text-align: center;text-align: center;height: 12px}
+#ydNoteWebClipper-New .ydnwc-dialog-form .row-6{margin-bottom:6px;height: 80px;}
+#ydNoteWebClipper-New .ydnwc-dialog-form .row-7{margin-bottom:20px;}
+#ydNoteWebClipper .row-8{
+    margin: 12px 12px 12px 18px;
+    color: #595959;
+    font-size: 12px;
+    height: 12px;
+}
+#ydNoteWebClipper-New .ydnwc-dialog-form .row-9{font-size:14px;margin-bottom:20px}
+#ydNoteWebClipper-New .ydnwc-dialog-form .note-title-error{
+    color: red;
+    position: absolute;
+    z-index: 100;
+    margin-top: -14px;
+    display: none;
+}
+#ydNoteWebClipper .a-response{
+    font-size: 12px;
+    color: #595959;
+    float: left;
+    text-decoration:none;
+}
+#ydNoteWebClipper .a-response:hover{
+    text-decoration:underline;
+}
+
+.folder-up-fullPage{background:url(../images/webclipper/folder_up.svg) no-repeat;width:10px;height:6px;line-height:6px;display:inline-block;cursor: pointer;float: right;margin-top: 3px;margin-left: 8px;vertical-align: middle;border: none;display: none;}
+.folder-down-fullPage{background:url(../images/webclipper/folder_down.svg) no-repeat;width:10px;height:6px;line-height:6px;display:inline-block;cursor: pointer;border: none;float: right;margin-top: 3px;margin-left: 8px;vertical-align: middle;}
+#ydNoteWebClipper-New .ydnwc-dialog-form .row-radio-image{
+    border: 1px solid;
+    border-color: #797979;
+    width: 68px;
+    height: 78px;
+    line-height: 80px;
+    text-align: center;
+    cursor: pointer;
+    float: left;
+}
+.url{background:url(../images/webclipper/url.png) no-repeat;width:48px;height:50px;line-height:50px;display:inline-block;margin-top: 15px;}
+.website{background:url(../images/webclipper/website.png) no-repeat;width:48px;height:50px;line-height:50px;display:inline-block;margin-top: 15px;}
+.content-page{background:url(../images/webclipper/pagetext.png) no-repeat;width:48px;height:50px;line-height:50px;display:inline-block;margin-top: 15px;}
+.logout{background:url(../images/webclipper/logeout.svg) no-repeat;width:13px;height:13px;text-align: right;
+    color: #595959;
+    cursor:pointer;
+    display: inline-block;
+    width: 43px;
+    margin-left: 190px;
+    margin-top: 6px;
+}
+
+#ydNoteWebClipper-New .note-save-path-border
+{
+    width: 220px;
+    height: 34px;
+    border: 1px inset #BBBBBB;
+    border-radius: 2px;
+    background: #F9F9F9;
+}
+
+/* successClipper */
+#ydNoteWebClipper-Success .ydnwc-dialog-close-success{margin-right: 20px;margin-top: 14px;float: right;position:relative;width:10px;height:10px;overflow:hidden;background:url(../images/webclipper/close_normal.svg) no-repeat;}
+#ydNoteWebClipper-Success .ydnwc-dialog-close-success:hover{background:url(../images/webclipper/close_hover.svg) no-repeat;}
+#ydNoteWebClipper-Success .a-success-response{
+    color: #595959;
+    text-decoration:none;
+}
+#ydNoteWebClipper-Success .a-success-response:hover{
+    text-decoration:underline;
+}
+#ydNoteWebClipper-Success .view-ynote-website{
+    background:url(../images/webclipper/view-on-website.svg) no-repeat;width:72px;height:13px;padding-left: 20px;
+}
+#ydNoteWebClipper-Success .view-ynote-vip{
+    background:url(../images/webclipper/getVIPTips.svg) no-repeat;width:72px;height:13px;padding-left: 20px;
+}
+
+.folder-up-selectPage{background:url(../images/webclipper/folder_up.svg) no-repeat;width:10px;height:6px;line-height:6px;display:inline-block;cursor: pointer;position: absolute;top: 382px;left: 260px;border: none;visibility: hidden;}
+.folder-down-selectPage{background:url(../images/webclipper/folder_down.svg) no-repeat;width:10px;height:6px;line-height:6px;display:inline-block;cursor: pointer;position: absolute;top: 382px;left: 260px;border: none;}
