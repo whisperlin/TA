@@ -1,0 +1,16 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_1190d985d441c523125e524f6cb4327b.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float3 diffuseColor = _Color.rgb * (1-_Metallic) ;
+float3 specColor = lerp(_SpecularColor.rgb, _Color.rgb, _Metallic * 0.5);
+</code></pre></body></html>

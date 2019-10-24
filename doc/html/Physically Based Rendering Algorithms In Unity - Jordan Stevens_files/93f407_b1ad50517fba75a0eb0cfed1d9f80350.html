@@ -1,0 +1,26 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_b1ad50517fba75a0eb0cfed1d9f80350.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+    #ifdef _ENABLE_NDF_ON
+ 	 return float4(float3(1,1,1)* SpecularDistribution,1);
+    #endif
+    #ifdef _ENABLE_G_ON 
+ 	 return float4(float3(1,1,1) * GeometricShadow,1) ;
+    #endif
+    #ifdef _ENABLE_F_ON 
+ 	 return float4(float3(1,1,1)* FresnelFunction,1);
+    #endif
+    #ifdef _ENABLE_D_ON 
+ 	 return float4(float3(1,1,1)* diffuseColor,1);
+    #endif
+</code></pre></body></html>

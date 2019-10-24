@@ -1,0 +1,47 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_3260d94c0e6455f2b50887752554767e.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float4 frag(VertexOutput i) : COLOR {
+
+//normal direction calculations
+     float3 normalDirection = normalize(i.normalDir);
+
+     float3 lightDirection = normalize(lerp(_WorldSpaceLightPos0.xyz, _WorldSpaceLightPos0.xyz
+ - i.posWorld.xyz,_WorldSpaceLightPos0.w));
+
+     float3 lightReflectDirection = reflect( -lightDirection, normalDirection );
+
+     float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
+
+     float3 viewReflectDirection = normalize(reflect( -viewDirection, normalDirection ));
+
+     float3 halfDirection = normalize(viewDirection+lightDirection); 
+
+     float NdotL = max(0.0, dot( normalDirection, lightDirection ));
+
+     float NdotH =  max(0.0,dot( normalDirection, halfDirection));
+
+     float NdotV =  max(0.0,dot( normalDirection, viewDirection));
+
+     float VdotH = max(0.0,dot( viewDirection, halfDirection));
+
+     float LdotH =  max(0.0,dot(lightDirection, halfDirection));
+ 
+     float LdotV = max(0.0,dot(lightDirection, viewDirection)); 
+
+     float RdotV = max(0.0, dot( lightReflectDirection, viewDirection ));
+
+     float attenuation = LIGHT_ATTENUATION(i);
+
+     float3 attenColor = attenuation * _LightColor0.rgb;
+</code></pre></body></html>

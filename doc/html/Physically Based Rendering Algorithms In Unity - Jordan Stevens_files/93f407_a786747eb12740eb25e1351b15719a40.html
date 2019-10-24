@@ -1,0 +1,20 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_a786747eb12740eb25e1351b15719a40.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float DuerGeometricShadowingFunction (float3 lightDirection,float3 viewDirection, 
+float3 normalDirection,float NdotL, float NdotV){
+    float3 LpV = lightDirection + viewDirection;
+    float Gs = dot(LpV,LpV) * pow(dot(LpV,normalDirection),-4);
+    return  (Gs);
+}
+</code></pre></body></html>

@@ -1,0 +1,26 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_4612ae70f5fb719482d1110801a34974.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float WalterEtAlGeometricShadowingFunction (float NdotL, float NdotV, float alpha){
+    float alphaSqr = alpha*alpha;
+    float NdotLSqr = NdotL*NdotL;
+    float NdotVSqr = NdotV*NdotV;
+
+    float SmithL = 2/(1 + sqrt(1 + alphaSqr * (1-NdotLSqr)/(NdotLSqr)));
+    float SmithV = 2/(1 + sqrt(1 + alphaSqr * (1-NdotVSqr)/(NdotVSqr)));
+
+
+	float Gs =  (SmithL * SmithV);
+	return Gs;
+}
+</code></pre></body></html>

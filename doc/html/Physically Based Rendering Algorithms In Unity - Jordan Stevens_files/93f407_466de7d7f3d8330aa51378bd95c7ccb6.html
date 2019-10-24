@@ -1,0 +1,25 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_466de7d7f3d8330aa51378bd95c7ccb6.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float SchlickGeometricShadowingFunction (float NdotL, float NdotV, float roughness)
+{
+    float roughnessSqr = roughness*roughness;
+
+
+	float SmithL = (NdotL)/(NdotL * (1-roughnessSqr) + roughnessSqr);
+	float SmithV = (NdotV)/(NdotV * (1-roughnessSqr) + roughnessSqr);
+
+
+	return (SmithL * SmithV); 
+}
+</code></pre></body></html>

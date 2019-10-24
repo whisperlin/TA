@@ -1,0 +1,49 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_8be111e6e529823484f49fc3cd4a5596.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+struct VertexInput {
+    float4 vertex : POSITION;       //local vertex position
+    float3 normal : NORMAL;         //normal direction
+    float4 tangent : TANGENT;       //tangent direction    
+    float2 texcoord0 : TEXCOORD0;   //uv coordinates
+    float2 texcoord1 : TEXCOORD1;   //lightmap uv coordinates
+};
+
+struct VertexOutput {
+    float4 pos : SV_POSITION;              //screen clip space position and depth
+    float2 uv0 : TEXCOORD0;                //uv coordinates
+    float2 uv1 : TEXCOORD1;                //lightmap uv coordinates
+
+//below we create our own variables with the texcoord semantic. 
+    float3 normalDir : TEXCOORD3;          //normal direction   
+    float3 posWorld : TEXCOORD4;          //normal direction   
+    float3 tangentDir : TEXCOORD5;
+    float3 bitangentDir : TEXCOORD6;
+    LIGHTING_COORDS(7,8)                   //this initializes the unity lighting and shadow
+    UNITY_FOG_COORDS(9)                    //this initializes the unity fog
+};
+
+VertexOutput vert (VertexInput v) {
+     VertexOutput o = (VertexOutput)0;           
+     o.uv0 = v.texcoord0;
+     o.uv1 = v.texcoord1;
+     o.normalDir = UnityObjectToWorldNormal(v.normal);
+     o.tangentDir = normalize( mul( _Object2World, float4( v.tangent.xyz, 0.0 ) ).xyz );
+     o.bitangentDir = normalize(cross(o.normalDir, o.tangentDir) * v.tangent.w);
+     o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+     o.posWorld = mul(_Object2World, v.vertex);
+     UNITY_TRANSFER_FOG(o,o.pos);
+     TRANSFER_VERTEX_TO_FRAGMENT(o)
+     return o;
+}
+</code></pre></body></html>

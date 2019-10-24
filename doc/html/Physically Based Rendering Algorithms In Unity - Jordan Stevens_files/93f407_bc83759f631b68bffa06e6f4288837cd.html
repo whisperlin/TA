@@ -1,0 +1,31 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_bc83759f631b68bffa06e6f4288837cd.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float MixFunction(float i, float j, float x) {
+	 return  j * x + i * (1.0 - x);
+}
+
+float SchlickFresnel(float i){
+    float x = clamp(1.0-i, 0.0, 1.0);
+    float x2 = x*x;
+    return x2*x2*x;
+}
+
+//normal incidence reflection calculation
+float F0 (float NdotL, float NdotV, float LdotH, float roughness){
+    float FresnelLight = SchlickFresnel(NdotL); 
+    float FresnelView = SchlickFresnel(NdotV);
+    float FresnelDiffuse90 = 0.5 + 2.0 * LdotH*LdotH * roughness;
+    return  MixFunction(1, FresnelDiffuse90, FresnelLight) * MixFunction(1, FresnelDiffuse90, FresnelView);
+}
+</code></pre></body></html>

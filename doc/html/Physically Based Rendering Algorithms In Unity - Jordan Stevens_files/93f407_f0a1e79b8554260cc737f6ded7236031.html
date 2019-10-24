@@ -1,0 +1,18 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_f0a1e79b8554260cc737f6ded7236031.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float SchlickIORFresnelFunction(float ior ,float LdotH){
+    float f0 = pow(ior-1,2)/pow(ior+1, 2);
+    return f0 + (1-f0) * SchlickFresnel(LdotH);
+}
+</code></pre></body></html>

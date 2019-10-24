@@ -1,0 +1,19 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_5bb2f5b82f206054df3086e10528291a.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float SphericalGaussianFresnelFunction(float LdotH,float SpecularColor)
+{	
+  float power = ((-5.55473 * LdotH) - 6.98316) * LdotH;
+  return SpecularColor + (1 - SpecularColor) * pow(2,power);
+}
+</code></pre></body></html>

@@ -1,0 +1,27 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_dd493e425c9cffa5878983f2dfa0140a.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float SchlickBeckmanGeometricShadowingFunction (float NdotL, float NdotV,
+ float roughness){
+    float roughnessSqr = roughness*roughness;
+    float k = roughnessSqr * 0.797884560802865;
+
+
+    float SmithL = (NdotL)/ (NdotL * (1- k) + k);
+    float SmithV = (NdotV)/ (NdotV * (1- k) + k);
+
+
+	float Gs =  (SmithL * SmithV);
+	return Gs;
+}
+</code></pre></body></html>

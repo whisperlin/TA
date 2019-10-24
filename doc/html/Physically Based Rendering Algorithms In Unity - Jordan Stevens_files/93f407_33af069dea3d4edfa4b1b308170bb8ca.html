@@ -1,0 +1,29 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_33af069dea3d4edfa4b1b308170bb8ca.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float GGXGeometricShadowingFunction (float NdotL, float NdotV, float roughness){
+    float roughnessSqr = roughness*roughness;
+    float NdotLSqr = NdotL*NdotL;
+    float NdotVSqr = NdotV*NdotV;
+
+
+    float SmithL = (2 * NdotL)/ (NdotL + sqrt(roughnessSqr +
+ ( 1-roughnessSqr) * NdotLSqr));
+    float SmithV = (2 * NdotV)/ (NdotV + sqrt(roughnessSqr + 
+( 1-roughnessSqr) * NdotVSqr));
+
+
+	float Gs =  (SmithL * SmithV);
+	return Gs;
+}
+</code></pre></body></html>

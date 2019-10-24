@@ -1,0 +1,22 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_6692762a99f4bae194b6c4d1d1897971.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float TrowbridgeReitzAnisotropicNormalDistribution(float anisotropic, float NdotH, float HdotX, float HdotY){
+
+    float aspect = sqrt(1.0h-anisotropic * 0.9h);
+    float X = max(.001, sqr(1.0-_Glossiness)/aspect) * 5;
+    float Y = max(.001, sqr(1.0-_Glossiness)*aspect) * 5;
+    
+    return 1.0 / (3.1415926535 * X*Y * sqr(sqr(HdotX/X) + sqr(HdotY/Y) + NdotH*NdotH));
+}
+</code></pre></body></html>

@@ -1,0 +1,35 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_c8212038591b49de02d98c4b3a466870.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float BeckmanGeometricShadowingFunction (float NdotL, float NdotV, float roughness){
+    float roughnessSqr = roughness*roughness;
+    float NdotLSqr = NdotL*NdotL;
+    float NdotVSqr = NdotV*NdotV;
+
+
+    float calulationL = (NdotL)/(roughnessSqr * sqrt(1- NdotLSqr));
+    float calulationV = (NdotV)/(roughnessSqr * sqrt(1- NdotVSqr));
+
+
+    float SmithL = calulationL &lt; 1.6 ? (((3.535 * calulationL)
+ + (2.181 * calulationL * calulationL))/(1 + (2.276 * calulationL) + 
+(2.577 * calulationL * calulationL))) : 1.0;
+    float SmithV = calulationV &lt; 1.6 ? (((3.535 * calulationV) 
++ (2.181 * calulationV * calulationV))/(1 + (2.276 * calulationV) +
+ (2.577 * calulationV * calulationV))) : 1.0;
+
+
+	float Gs =  (SmithL * SmithV);
+	return Gs;
+}
+</code></pre></body></html>

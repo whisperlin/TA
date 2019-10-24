@@ -1,0 +1,22 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_00b0277b3da5065716aed617c2def794.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float ModifiedKelemenGeometricShadowingFunction (float NdotV, float NdotL,
+ float roughness)
+{
+	float c = 0.797884560802865;    // c = sqrt(2 / Pi)
+	float k = roughness * roughness * c;
+	float gH = NdotV  * k +(1-k);
+	return (gH * gH * NdotL);
+}
+</code></pre></body></html>

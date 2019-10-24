@@ -1,0 +1,45 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_69bbab115cad017356c6a1719584da37.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+Shader "Physically-Based-Lighting" {
+    Properties { 
+    _Color ("Main Color", Color) = (1,1,1,1)                    //diffuse Color
+    _SpecularColor ("Specular Color", Color) = (1,1,1,1)        //Specular Color (Not Used)
+    _Glossiness("Smoothness",Range(0,1)) = 1                    //My Smoothness
+    _Metallic("Metalness",Range(0,1)) = 0                    //My Metal Value      
+
+    }
+    SubShader {
+	Tags {
+            "RenderType"="Opaque"  "Queue"="Geometry"
+        } 
+        Pass {
+            Name "FORWARD"
+            Tags {
+                "LightMode"="ForwardBase"
+            }
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #define UNITY_PASS_FORWARDBASE
+            #include "UnityCG.cginc"
+            #include "AutoLight.cginc"
+            #include "Lighting.cginc"
+            #pragma multi_compile_fwdbase_fullshadows      
+            #pragma target 3.0
+
+float4 _Color;
+float4 _SpecularColor;
+float _Glossiness;
+float _Metallic;
+</code></pre></body></html>

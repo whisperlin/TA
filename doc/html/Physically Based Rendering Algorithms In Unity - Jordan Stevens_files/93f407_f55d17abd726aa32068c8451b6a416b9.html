@@ -1,0 +1,18 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_f55d17abd726aa32068c8451b6a416b9.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float3 lightingModel = (diffuseColor + specularity);
+lightingModel *= NdotL;
+float4 finalDiffuse = float4(lightingModel * attenColor,1);
+return finalDiffuse;
+</code></pre></body></html>

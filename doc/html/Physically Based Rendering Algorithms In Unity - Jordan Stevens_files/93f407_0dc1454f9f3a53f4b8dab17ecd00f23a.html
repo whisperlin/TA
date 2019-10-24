@@ -1,0 +1,20 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_0dc1454f9f3a53f4b8dab17ecd00f23a.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float GaussianNormalDistribution(float roughness, float NdotH)
+{
+    float roughnessSqr = roughness*roughness;
+	float thetaH = acos(NdotH);
+    return exp(-thetaH*thetaH/roughnessSqr);
+}
+</code></pre></body></html>

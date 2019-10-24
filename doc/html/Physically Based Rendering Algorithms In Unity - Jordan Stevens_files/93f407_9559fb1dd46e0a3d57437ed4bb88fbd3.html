@@ -1,0 +1,20 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_9559fb1dd46e0a3d57437ed4bb88fbd3.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float CookTorrenceGeometricShadowingFunction (float NdotL, float NdotV, 
+float VdotH, float NdotH){
+	float Gs = min(1.0, min(2*NdotH*NdotV / VdotH, 
+2*NdotH*NdotL / VdotH));
+	return  (Gs);
+}
+</code></pre></body></html>

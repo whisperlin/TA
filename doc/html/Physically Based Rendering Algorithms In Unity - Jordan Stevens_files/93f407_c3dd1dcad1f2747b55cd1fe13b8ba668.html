@@ -1,0 +1,19 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_c3dd1dcad1f2747b55cd1fe13b8ba668.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float TrowbridgeReitzNormalDistribution(float NdotH, float roughness){
+    float roughnessSqr = roughness*roughness;
+    float Distribution = NdotH*NdotH * (roughnessSqr-1.0) + 1.0;
+    return roughnessSqr / (3.1415926535 * Distribution*Distribution);
+}
+</code></pre></body></html>

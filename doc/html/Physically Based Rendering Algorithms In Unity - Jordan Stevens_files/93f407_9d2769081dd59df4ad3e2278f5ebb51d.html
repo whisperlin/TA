@@ -1,0 +1,19 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_9d2769081dd59df4ad3e2278f5ebb51d.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float KurtGeometricShadowingFunction (float NdotL, float NdotV, 
+float VdotH, float roughness){
+	float Gs =  NdotL*NdotV/(VdotH*pow(NdotL*NdotV, roughness));
+	return  (Gs);
+}
+</code></pre></body></html>

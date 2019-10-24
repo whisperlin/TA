@@ -1,0 +1,91 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_17d650a9f6fa5422e85bd99fae927891.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+//Normal Distribution Function/Specular Distribution-----------------------------------------------------	      
+
+           
+	#ifdef _NORMALDISTMODEL_BLINNPHONG 
+		 SpecularDistribution *=  BlinnPhongNormalDistribution(NdotH, _Glossiness,  max(1,_Glossiness * 40));
+ 	#elif _NORMALDISTMODEL_PHONG
+		 SpecularDistribution *=  PhongNormalDistribution(RdotV, _Glossiness, max(1,_Glossiness * 40));
+ 	#elif _NORMALDISTMODEL_BECKMANN
+		 SpecularDistribution *=  BeckmannNormalDistribution(roughness, NdotH);
+ 	#elif _NORMALDISTMODEL_GAUSSIAN
+		 SpecularDistribution *=  GaussianNormalDistribution(roughness, NdotH);
+ 	#elif _NORMALDISTMODEL_GGX
+		 SpecularDistribution *=  GGXNormalDistribution(roughness, NdotH);
+ 	#elif _NORMALDISTMODEL_TROWBRIDGEREITZ
+		 SpecularDistribution *=  TrowbridgeReitzNormalDistribution(NdotH, roughness);
+ 	#elif _NORMALDISTMODEL_TROWBRIDGEREITZANISOTROPIC
+		 SpecularDistribution *=  TrowbridgeReitzAnisotropicNormalDistribution(_Anisotropic,NdotH, dot(halfDirection, i.tangentDir), dot(halfDirection,  i.bitangentDir));
+	#elif _NORMALDISTMODEL_WARD
+	 	 SpecularDistribution *=  WardAnisotropicNormalDistribution(_Anisotropic,NdotL, NdotV, NdotH, dot(halfDirection, i.tangentDir), dot(halfDirection,  i.bitangentDir));
+	#else
+		SpecularDistribution *=  GGXNormalDistribution(roughness, NdotH);
+	#endif
+
+
+	 //Geometric Shadowing term----------------------------------------------------------------------------------
+	#ifdef _SMITHGEOSHADOWMODEL_NONE
+	 	#ifdef _GEOSHADOWMODEL_ASHIKHMINSHIRLEY
+			GeometricShadow *= AshikhminShirleyGeometricShadowingFunction (NdotL, NdotV, LdotH);
+	 	#elif _GEOSHADOWMODEL_ASHIKHMINPREMOZE
+			GeometricShadow *= AshikhminPremozeGeometricShadowingFunction (NdotL, NdotV);
+	 	#elif _GEOSHADOWMODEL_DUER
+			GeometricShadow *= DuerGeometricShadowingFunction (lightDirection, viewDirection, normalDirection, NdotL, NdotV);
+	 	#elif _GEOSHADOWMODEL_NEUMANN
+			GeometricShadow *= NeumannGeometricShadowingFunction (NdotL, NdotV);
+	 	#elif _GEOSHADOWMODEL_KELEMAN
+			GeometricShadow *= KelemenGeometricShadowingFunction (NdotL, NdotV, LdotH,  VdotH);
+	 	#elif _GEOSHADOWMODEL_MODIFIEDKELEMEN
+			GeometricShadow *=  ModifiedKelemenGeometricShadowingFunction (NdotV, NdotL, roughness);
+	 	#elif _GEOSHADOWMODEL_COOK
+			GeometricShadow *= CookTorrenceGeometricShadowingFunction (NdotL, NdotV, VdotH, NdotH);
+	 	#elif _GEOSHADOWMODEL_WARD
+			GeometricShadow *= WardGeometricShadowingFunction (NdotL, NdotV, VdotH, NdotH);
+	 	#elif _GEOSHADOWMODEL_KURT
+			GeometricShadow *= KurtGeometricShadowingFunction (NdotL, NdotV, VdotH, roughness);
+	 	#else 			
+ 			GeometricShadow *= ImplicitGeometricShadowingFunction (NdotL, NdotV);
+ 		#endif
+	////SmithModelsBelow
+	////Gs = F(NdotL) * F(NdotV);
+  	#elif _SMITHGEOSHADOWMODEL_WALTER
+		GeometricShadow *= WalterEtAlGeometricShadowingFunction (NdotL, NdotV, roughness);
+	#elif _SMITHGEOSHADOWMODEL_BECKMAN
+		GeometricShadow *= BeckmanGeometricShadowingFunction (NdotL, NdotV, roughness);
+ 	#elif _SMITHGEOSHADOWMODEL_GGX
+		GeometricShadow *= GGXGeometricShadowingFunction (NdotL, NdotV, roughness);
+	#elif _SMITHGEOSHADOWMODEL_SCHLICK
+		GeometricShadow *= SchlickGeometricShadowingFunction (NdotL, NdotV, roughness);
+ 	#elif _SMITHGEOSHADOWMODEL_SCHLICKBECKMAN
+		GeometricShadow *= SchlickBeckmanGeometricShadowingFunction (NdotL, NdotV, roughness);
+ 	#elif _SMITHGEOSHADOWMODEL_SCHLICKGGX
+		GeometricShadow *= SchlickGGXGeometricShadowingFunction (NdotL, NdotV, roughness);
+	#elif _SMITHGEOSHADOWMODEL_IMPLICIT
+		GeometricShadow *= ImplicitGeometricShadowingFunction (NdotL, NdotV);
+	#else
+		GeometricShadow *= ImplicitGeometricShadowingFunction (NdotL, NdotV);
+ 	#endif
+	 //Fresnel Function-------------------------------------------------------------------------------------------------
+
+	#ifdef _FRESNELMODEL_SCHLICK
+		FresnelFunction *=  SchlickFresnelFunction(specColor, LdotH);
+	#elif _FRESNELMODEL_SCHLICKIOR
+		FresnelFunction *=  SchlickIORFresnelFunction(_Ior, LdotH);
+	#elif _FRESNELMODEL_SPHERICALGAUSSIAN
+		FresnelFunction *= SphericalGaussianFresnelFunction(LdotH, specColor);
+ 	#else
+		FresnelFunction *=  SchlickIORFresnelFunction(_Ior, LdotH);	
+ 	#endif
+</code></pre></body></html>

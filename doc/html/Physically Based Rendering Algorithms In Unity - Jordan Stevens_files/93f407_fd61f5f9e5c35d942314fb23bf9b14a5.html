@@ -1,0 +1,17 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_fd61f5f9e5c35d942314fb23bf9b14a5.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float3 SchlickFresnelFunction(float3 SpecularColor,float LdotH){
+    return SpecularColor + (1 - SpecularColor)* SchlickFresnel(LdotH);
+}
+</code></pre></body></html>

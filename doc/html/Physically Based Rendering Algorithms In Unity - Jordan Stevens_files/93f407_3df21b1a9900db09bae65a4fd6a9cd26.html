@@ -1,0 +1,19 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_3df21b1a9900db09bae65a4fd6a9cd26.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float PhongNormalDistribution(float RdotV, float specularpower, float speculargloss){
+    float Distribution = pow(RdotV,speculargloss) * specularpower;
+    Distribution *= (2+specularpower) / (2*3.1415926535);
+    return Distribution;
+}
+</code></pre></body></html>

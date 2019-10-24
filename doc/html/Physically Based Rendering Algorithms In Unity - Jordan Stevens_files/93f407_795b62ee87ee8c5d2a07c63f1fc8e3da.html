@@ -1,0 +1,20 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_795b62ee87ee8c5d2a07c63f1fc8e3da.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float grazingTerm = saturate(roughness + _Metallic);
+float3 unityIndirectSpecularity =  indirectSpecular * FresnelLerp(specColor,grazingTerm,NdotV) * 
+max(0.15,_Metallic) * (1-roughness*roughness* roughness);
+
+float3 lightingModel = (diffuseColor + specularity 
++ (unityIndirectSpecularity *_UnityLightingContribution));
+</code></pre></body></html>

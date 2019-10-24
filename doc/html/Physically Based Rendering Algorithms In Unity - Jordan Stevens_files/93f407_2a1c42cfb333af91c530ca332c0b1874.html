@@ -1,0 +1,19 @@
+
+<!-- saved from url=(0099)https://www-jordanstevenstechart-com.filesusr.com/html/93f407_2a1c42cfb333af91c530ca332c0b1874.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+<style>
+body{
+   background: gray;
+}
+code {
+    background: gray;
+    color: white;
+}
+</style>
+<pre><code>
+float BlinnPhongNormalDistribution(float NdotH, float specularpower, float speculargloss){
+    float Distribution = pow(NdotH,speculargloss) * specularpower;
+    Distribution *= (2+specularpower) / (2*3.1415926535);
+    return Distribution;
+}
+</code></pre></body></html>
