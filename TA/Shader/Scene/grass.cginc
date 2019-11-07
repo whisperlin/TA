@@ -5,9 +5,10 @@
 				float2 uv : TEXCOORD0;
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				float2 uv2 : TEXCOORD1;
-#else
-				float3 normal : NORMAL;
+ 
+				
 #endif
+				float3 normal : NORMAL;
 				float4 color: COLOR;
 			};
 
@@ -85,7 +86,8 @@
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
 				o.color = v.color;
 
-				
-				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos,o.normalWorld);
+				APPLY_HEIGHT_FOG(c, i.wpos, i.normalWorld, i.fogCoord);
+				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
+				//UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos,o.normalWorld);
 				return o;
 			}

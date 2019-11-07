@@ -1,4 +1,6 @@
-﻿#include "UnityCG.cginc"
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+#include "UnityCG.cginc"
 #include "height-fog.cginc"
 #include "Lighting.cginc"
 #include "SHGlobal.cginc"
@@ -71,7 +73,7 @@ v2f vert (appdata v)
  
 	
 	//o.vertex.xyz = 0;
-	o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+	o.vertex = UnityObjectToClipPos(v.vertex);
 	float4 wpos = mul(unity_ObjectToWorld, v.vertex); 
 	o.wpos = wpos;
 	o.uv = v.uv;

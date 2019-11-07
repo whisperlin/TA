@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 6 Textures" {
 Properties {
 	_Splat0 ("Layer 1 (R)", 2D) = "white" {}
@@ -79,7 +81,7 @@ SubShader
 			{
 				v2f o;
 				UNITY_INITIALIZE_OUTPUT(v2f, o);
-				o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.pos = UnityObjectToClipPos(v.vertex);
 				float4 wpos = mul(unity_ObjectToWorld, v.vertex); 
 				o.wpos = wpos;
 				o.uv = v.uv;
@@ -90,7 +92,7 @@ SubShader
 #endif
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
 				
-				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos);
+				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos, o.normalWorld);
 				return o;
 			}
 			

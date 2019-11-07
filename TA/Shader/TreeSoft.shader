@@ -17,7 +17,7 @@ Shader "TA/Scene/TreeSoft"
 
 	SubShader
 	{
-		Tags{ "Queue" = "AlphaTest" "RenderType" = "Transparent" "IgnoreProjector" = "True" }
+		Tags{ "Queue" = "AlphaTest+40" "RenderType" = "Transparent" "IgnoreProjector" = "True" }
 		Cull  Off
 		Pass
 		{
@@ -29,7 +29,7 @@ Shader "TA/Scene/TreeSoft"
 			#pragma multi_compile_fwdbase
 			#pragma multi_compile_fog
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-		#pragma   multi_compile  _  ENABLE_NEW_FOG
+			#pragma   multi_compile  _  ENABLE_NEW_FOG
 //			#pragma   multi_compile  _  _POW_FOG_ON
 			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV

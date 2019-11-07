@@ -6,7 +6,7 @@
 #include "Shadow.cginc"
 #include "virtuallight.cginc"
 #include "height-fog.cginc"
-
+#include "snow.cginc"
 #if defined(_SCENE_SHADOW2)  
 #include "shadowmap.cginc"
 #endif
@@ -75,15 +75,8 @@
 	half metallic_power;
 
 
-	fixed _SnowPower;
-	fixed _SnowNormalPower;
-	fixed4 _SnowColor;
-	fixed _SnowEdge;
-	sampler2D _SnowNoise;
-	half _SnowNoiseScale;
-	half _SnowGloss;
-	half _SnowLocalPower;
-	half _SnowMeltPower;
+ 
+
 	half _MetalShadow ;
 
 	//fixed3 _IntensityColor;
@@ -318,47 +311,20 @@
 
 		half3 normal = normalize(mul(n, tangentTransform));
 		 
+#if _ISWEATHER_ON
 
-	#if _ISWEATHER_ON
- 
-		#if SNOW_ENABLE 
-
-
-			#if   defined(HARD_SNOW) || defined(MELT_SNOW) 
-			half snoize = tex2D(_SnowNoise, i.uv*_SnowNoiseScale).r;
-
-			#endif
-
-			#if MELT_SNOW
-				half snl  =  snoize * _SnowMeltPower;
-				 
-			#else
-				half snl  =  dot(normal, half3(0,1,0))   ;
-				snl = (1.0-_SnowLocalPower)*snl + _SnowLocalPower;
-			#endif
-	 
-			fixed nt = smoothstep(_SnowPower,_SnowPower+_SnowEdge,snl);
-	 
-
-		 	 #if HARD_SNOW
-			 nt = step(snoize,nt);
-			 #endif
-			 //float nt2 = step(snoize,snoize);
-			 c0.rgb = lerp(c0.rgb,_SnowColor.rgb,nt *_SnowColor.a);
-			 float3 up0 = i.normal.xyz;
-
-			 normal = lerp( up0,normal , _SnowNormalPower );
-	 
-		#endif
-
-	 
+	#if SNOW_ENABLE 
+		fixed nt;
+		CmpSnowNormalAndPower(i.uv, i.normal.xyz, nt, normal);
+		c0.rgb = lerp(c0.rgb, _SnowColor.rgb, nt *_SnowColor.a);
 	#endif
+#endif
+
+	 
 
 	#if _ISWEATHER_ON
 		#if RAIN_ENABLE 
 			calc_weather_info(i.posWorld.xyz, normal, n, c0, normal, c0.rgb);
-			 
-
 		#endif
 	#endif
   
@@ -516,16 +482,10 @@
 
 #endif
 
-	 
-	 
-
+ 
 	fixed3 spec = lightColor * specular * specColor;
 
-
-	 
-
  
-	
 #if S_BAKE
 
 #else
@@ -608,6 +568,9 @@ fixed3 InDirspec = 0;
 	#endif
 #endif 
 
+#if SNOW_ENABLE 
+	InDirspec.rgb = lerp(InDirspec.rgb, _SnowColor.rgb, nt *_SnowColor.a);
+#endif
 	c.rgb = diffuse + spec + InDirspec ;
 
 #ifdef _ISMEMISSION_ON
@@ -619,11 +582,6 @@ fixed3 InDirspec = 0;
 	clip(c.a - _AlphaClip);
 #endif
 
-#if _GOOD_HAIR
-	clip(c.a - 0.5);
-#endif
-
- 
  
 
  
@@ -640,6 +598,7 @@ fixed3 InDirspec = 0;
 	APPLY_HEIGHT_FOG(c, i.posWorld, normal, i.fogCoord);
 #endif
 
+ 
  
 	UNITY_APPLY_FOG_MOBILE(i.fogCoord,c);
 	return c;

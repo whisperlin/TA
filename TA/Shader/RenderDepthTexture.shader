@@ -1,4 +1,6 @@
-﻿Shader "Hidden/ShadowMap" {
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Hidden/ShadowMap" {
  Properties 
  {
 	 _MainTex("主贴图", 2D) = "white" {}
@@ -23,7 +25,7 @@
 	 v2f vert(appdata_base v)
 	 {
 		 v2f o;
-		 o.position = mul(UNITY_MATRIX_MVP, v.vertex);
+		 o.position = UnityObjectToClipPos(v.vertex);
 		 o.depth = COMPUTE_DEPTH_01;
 		 o.spos = o.position;
 		 return o;
@@ -72,7 +74,7 @@ SubShader{
 	 v2f vert(appdata v)
 	 {
 		 v2f o;
-		 o.position = mul(UNITY_MATRIX_MVP, v.vertex);
+		 o.position = UnityObjectToClipPos(v.vertex);
 		 o.depth = COMPUTE_DEPTH_01;
 		 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 		 o.spos = o.position;
@@ -123,7 +125,7 @@ SubShader{
 	 v2f vert(appdata v)
 	 {
 		 v2f o;
-		 o.position = mul(UNITY_MATRIX_MVP, v.vertex);
+		 o.position = UnityObjectToClipPos(v.vertex);
 		 o.depth = COMPUTE_DEPTH_01;
 		 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 		 o.spos = o.position;

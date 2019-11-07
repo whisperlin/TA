@@ -21,6 +21,7 @@ Shader "TA/Scene/Tree"
 
 	SubShader
 	{
+		Tags{ "Queue" = "AlphaTest+40" "RenderType" = "Transparent" "IgnoreProjector" = "True" }
 		Cull  Off
 		Pass
 		{

@@ -98,7 +98,7 @@ public class ImageEffectMgr : MonoBehaviour
 	{
 		var shader = _shader ? _shader : Shader.Find("Hidden/Bloom");
 		_material = new Material(shader);
-		_material.hideFlags = HideFlags.DontSave;
+		_material.hideFlags = HideFlags.DontSaveInEditor;
 	}
 
 	void OnDisable()

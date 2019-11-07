@@ -20,7 +20,7 @@
 #else
 				
 #endif
-				float3 normalWorld : TEXCOORD1;
+				float3 normalWorld : TEXCOORD5;
 				float4 color: TEXCOORD2;
 				float4 wpos:TEXCOORD3;
 				UNITY_FOG_COORDS_EX(4)

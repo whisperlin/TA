@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "TA/Diffuse"
 {
 	Properties
@@ -20,11 +22,12 @@ Shader "TA/Diffuse"
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 
 			#pragma   multi_compile  _  ENABLE_NEW_FOG
-			#pragma   multi_compile  _  _POW_FOG_ON
+ 
 			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
-			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
+ 
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
+
 			#include "UnityCG.cginc"
 			#include "height-fog.cginc"
 			#include "Lighting.cginc"
@@ -65,7 +68,7 @@ Shader "TA/Diffuse"
 			{
 				v2f o;
 				UNITY_INITIALIZE_OUTPUT(v2f, o);
-				o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.pos = UnityObjectToClipPos(v.vertex);
 				float4 wpos = mul(unity_ObjectToWorld, v.vertex); 
 				o.wpos = wpos;
 				o.uv0 = v.uv0;

@@ -85,7 +85,7 @@ public class LensFare : MonoBehaviour {
 			mCamera = GetComponent<Camera>();
 		var _CameraDir = mCamera.transform.forward;
 		float  sdotv = Vector3.Dot(_SunDirect, _CameraDir);
-		Debug.Log ("sdotv"+sdotv);
+ 
 		Shader.SetGlobalVector("_SunDirect", new Vector4(_SunDirect.x, _SunDirect.y, _SunDirect.z, 1.0f - sun_radius));
 
 #if UNITY_EDITOR
@@ -147,12 +147,12 @@ public class LensFare : MonoBehaviour {
         if (null == rt)
         {
             rt = new RenderTexture(32, 32, 16);
-            rt.hideFlags = HideFlags.DontSave;
+            rt.hideFlags = HideFlags.DontSaveInEditor;
         }
         if (null == rt1x1)
         {
             rt1x1 = new RenderTexture(1, 1, 16);
-            rt1x1.hideFlags = HideFlags.DontSave;
+            rt1x1.hideFlags = HideFlags.DontSaveInEditor;
         }
         if (null == mOccludieCamera)
         {
@@ -164,7 +164,7 @@ public class LensFare : MonoBehaviour {
             mOccludieCamera.orthographicSize = 0.5f;
             //mOccludieCamera.enabled = false;
             mOccludieCamera.targetTexture = rt;
-            g.hideFlags = HideFlags.DontSave;
+            g.hideFlags = HideFlags.DontSaveInEditor;
             mOccludieCamera.backgroundColor = Color.white;
         }
         mOccludieCamera.enabled = false;
@@ -185,14 +185,19 @@ public class LensFare : MonoBehaviour {
 #endif
         //if (vis)
         {
-           
+
+
+
+#if UNITY_2019_1_OR_NEWER
+        projPos.y = -projPos.y;
+#endif
             InitArray(count);
             if (null == mesh)
             {
                 mesh = new Mesh();
                 mesh.MarkDynamic();
                 mesh.bounds = new Bounds(Vector3.zero, new Vector3(100000, 100000, 100000));
-                mesh.hideFlags = HideFlags.DontSave;
+                mesh.hideFlags = HideFlags.DontSaveInEditor;
             }
             mesh.Clear();
            
@@ -243,7 +248,7 @@ public class LensFare : MonoBehaviour {
             if (null == sunObj)
             {
                 GameObject g = new GameObject("Sun sprite");
-                g.hideFlags = HideFlags.DontSave;
+                g.hideFlags = HideFlags.DontSaveInEditor;
                 MeshFilter mf = g.AddComponent<MeshFilter>();
                 mf.mesh = mesh;
                 MeshRenderer mr = g.AddComponent<MeshRenderer>();

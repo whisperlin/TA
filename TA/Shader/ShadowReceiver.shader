@@ -1,4 +1,6 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 
 Shader "Hidden/PostFX/ShadowReceiver" {
  Properties {
@@ -33,7 +35,7 @@ Shader "Hidden/PostFX/ShadowReceiver" {
 		  v2f vert(appdata_base v )
 		  {
 			   v2f o;
-			   o.position = mul(UNITY_MATRIX_MVP, v.vertex);
+			   o.position = UnityObjectToClipPos(v.vertex);
 			   o.shadowCoord = mul(_depthVPBias, mul(unity_ObjectToWorld, v.vertex));
 			   o.shadowCoord.z = -(mul(_depthV, mul(unity_ObjectToWorld, v.vertex)).z * _farplaneScale);
 			   o.uv = v.texcoord;
