@@ -9,7 +9,7 @@ Shader "TA/Cartoon bh3"
 		
 		_LightMapTex("r：高光强度 g:阴影控制b:高光加强a:阴影颜色标识，全黑为第二套阴影", 2D) = "gray" {}
 		_LightSpecColor("高光颜色", Color) = (1,1,1,1)
-		_LightArea("阴影范围1", Range(0, 1)) = 0.51
+		_ShadowFeather("阴影范围1", Range(0, 1)) = 0.51
 		_LightAreaMultColor("阴影颜色1", Color) = (0.70616,0.67565,0.816,1)
 		 _SecondShadow("阴影范围二", Range(0, 1)) = 0.51
 		_SecondShadowMultColor("阴影颜色2", Color) = (0.62292,0.53019,0.645,1)
@@ -117,7 +117,7 @@ Shader "TA/Cartoon bh3"
 				sampler2D _LightMapTex;
 				float4 _LightMapTex_ST;
 				float4 _Color;
-				float _LightArea;
+				float _ShadowFeather;
 				float _SecondShadow;
 				float4 _LightAreaMultColor;
 				float4 _SecondShadowMultColor;
@@ -149,8 +149,44 @@ Shader "TA/Cartoon bh3"
 
 				fixed4 frag(v2f i) : SV_Target
 				{
- 
+					
 					fixed4  maincolor = tex2D(_MainTex, i.uv);
+					fixed4  tex_Light_Color = tex2D(_LightMapTex, i.uv);
+					fixed4  diffuse = float4(1.0, 1.0, 1.0, _BloomFactor);
+
+					float hlambert = i.hlambert;
+ 
+					hlambert = hlambert * tex_Light_Color.g;
+
+					float4  _diffusemask =   tex_Light_Color.a;
+					if (_diffusemask.a > 0.1)
+					{
+						if (hlambert > _ShadowFeather)
+						{
+							diffuse.xyz = maincolor.xyz;
+						}
+						else
+						{
+							diffuse.xyz = maincolor.xyz*_LightAreaMultColor.xyz;
+						}
+					}
+					else
+					{
+						if (hlambert > _SecondShadow)
+						{
+							diffuse.xyz = maincolor.xyz;
+						}
+						else
+						{
+							diffuse.xyz = maincolor.xyz*_SecondShadowMultColor.xyz;
+						}
+					}
+					//return float4(i.wNormal.x, i.wNormal.y, -i.wNormal.z, 0);
+
+					diffuse = lerp(maincolor, diffuse, 1);
+
+
+					/*fixed4  maincolor = tex2D(_MainTex, i.uv);
 					fixed4  tex_Light_Color = tex2D(_LightMapTex, i.uv);
 					fixed4  diffuse = float4(1.0, 1.0, 1.0, _BloomFactor);
 
@@ -161,7 +197,7 @@ Shader "TA/Cartoon bh3"
 
 					if (_diffusemask.a > 0.1)
 					{
-						if ((hlambert + _diffusemask.g)*0.5 > _LightArea)
+						if (hlambert* _diffusemask.g > _ShadowFeather)
 						{
 							diffuse.xyz = maincolor.xyz;
 						}
@@ -174,7 +210,7 @@ Shader "TA/Cartoon bh3"
 					}
 					else
 					{
-						if ((hlambert + _diffusemask.g)*0.5 > _SecondShadow)
+						if (hlambert* _diffusemask.g  > _SecondShadow)
 						{
 							diffuse.xyz = maincolor.xyz;
 						}
@@ -187,7 +223,8 @@ Shader "TA/Cartoon bh3"
 					}
 					 
 					diffuse.a = 1;
-					diffuse = lerp(maincolor,diffuse, 1);
+					*/
+				 
 					//return diffuse;
 					//高光 
 					float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
@@ -206,7 +243,7 @@ Shader "TA/Cartoon bh3"
 					diffuse.rgb = diffuse.rgb + specColor;
 					diffuse.rgb = diffuse.rgb * _Color.rgb;
 
-					diffuse.a = _BloomFactor* tex_Light_Color.r;
+					diffuse.a = maincolor.a*_BloomFactor ;
 					return  diffuse;
 				}
 
