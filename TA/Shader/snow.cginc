@@ -75,3 +75,29 @@ void CmpSnowNormalAndPower(in half2 uv,in float3 VertexNormal,out fixed t, inout
  
 	normalDirection = lerp(VertexNormal.xyz, normalDirection, _SnowNormalPower);
 }
+
+//float snowT;
+void CmpSnowNormalAndPowerSurface(in half2 uv, in float3 normalDirection, out fixed t,  inout float3 LocalNormal)
+{
+#if   defined(HARD_SNOW) || defined(MELT_SNOW) 
+
+	half snoize = tex2D(_SnowNoise, uv*_SnowNoiseScale).r;
+
+#endif
+#if MELT_SNOW
+	half snl = snoize * _SnowMeltPower;
+
+#else
+	half snl = dot(normalDirection, half3(0, 1, 0));
+	snl = (1.0 - _SnowLocalPower)*snl + _SnowLocalPower;
+#endif
+
+	t = smoothstep(_SnowPower, _SnowPower + _SnowEdge, snl);
+
+#if HARD_SNOW
+	t = step(snoize, t);
+#endif
+	//LocalNormal = LocalNormal;
+
+	LocalNormal = lerp(LocalNormal,float3(0, 0, 1), _SnowNormalPower);
+}

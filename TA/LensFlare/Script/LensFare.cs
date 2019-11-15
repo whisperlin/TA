@@ -147,12 +147,12 @@ public class LensFare : MonoBehaviour {
         if (null == rt)
         {
             rt = new RenderTexture(32, 32, 16);
-            rt.hideFlags = HideFlags.DontSaveInEditor;
+            rt.hideFlags = HideFlags.DontSave;
         }
         if (null == rt1x1)
         {
             rt1x1 = new RenderTexture(1, 1, 16);
-            rt1x1.hideFlags = HideFlags.DontSaveInEditor;
+            rt1x1.hideFlags = HideFlags.DontSave;
         }
         if (null == mOccludieCamera)
         {
@@ -164,7 +164,7 @@ public class LensFare : MonoBehaviour {
             mOccludieCamera.orthographicSize = 0.5f;
             //mOccludieCamera.enabled = false;
             mOccludieCamera.targetTexture = rt;
-            g.hideFlags = HideFlags.DontSaveInEditor;
+            g.hideFlags = HideFlags.DontSave;
             mOccludieCamera.backgroundColor = Color.white;
         }
         mOccludieCamera.enabled = false;
@@ -197,7 +197,7 @@ public class LensFare : MonoBehaviour {
                 mesh = new Mesh();
                 mesh.MarkDynamic();
                 mesh.bounds = new Bounds(Vector3.zero, new Vector3(100000, 100000, 100000));
-                mesh.hideFlags = HideFlags.DontSaveInEditor;
+                mesh.hideFlags = HideFlags.DontSave;
             }
             mesh.Clear();
            
@@ -248,7 +248,7 @@ public class LensFare : MonoBehaviour {
             if (null == sunObj)
             {
                 GameObject g = new GameObject("Sun sprite");
-                g.hideFlags = HideFlags.DontSaveInEditor;
+                g.hideFlags = HideFlags.DontSave;
                 MeshFilter mf = g.AddComponent<MeshFilter>();
                 mf.mesh = mesh;
                 MeshRenderer mr = g.AddComponent<MeshRenderer>();

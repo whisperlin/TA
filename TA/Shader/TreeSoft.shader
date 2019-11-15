@@ -62,6 +62,7 @@ Shader "TA/Scene/TreeSoft"
 				half nl = saturate(dot(i.normalWorld, lightDir)) + saturate(dot(i.normalWorld, -lightDir)) ;
 				c.rgb = ( UNITY_LIGHTMODEL_AMBIENT + _LightColor0 * nl + _Emission*e.r) * c.rgb;
 #endif
+
 				//return i.color;
 				clip(c.a - _AlphaCut);
 				APPLY_HEIGHT_FOG(c,i.wpos,i.normalWorld,i.fogCoord);

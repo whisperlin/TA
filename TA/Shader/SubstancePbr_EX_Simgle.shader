@@ -29,30 +29,35 @@ Shader "TA/Substance PBR EX Simple" {
 		[Toggle(HARD_SNOW)] HARD_SNOW("  硬边雪", Float) = 0
 		[Toggle(MELT_SNOW)] MELT_SNOW("  消融雪", Float) = 0
 
-
-
-		//[KeywordEnum(ON, OFF)] _IsWeather("是否接收天气", Float) = 0
+		[Toggle(ANISOTROPIC_NORMAL)] ANISOTROPIC_NORMAL("各向异性高光", Float) = 0
+		anisotropy("anisotropy",Range(-1,1)) = 1
+		//ANISOTROPIC_NORMAL
+		//[Toggle(SSS_EFFECT)] SSS_EFFECT("  SSS", Float) = 0
+		//_BRDFTex("SSS brdf贴图", 2D) = "gray" {}
+		//_S3SPower("SSS强度",Range(0,1)) = 1
+		//[Enum(UnityEngine.Rendering.CullMode)] _Cull("Off为双面贴图", Float) = 2
 	
 	}
 		SubShader{
 			Tags {
 				"RenderType" = "Opaque"
 			}
+			//Cull[_Cull]
 			Pass {
 				Name "FORWARD"
 				Tags {
 					"LightMode" = "ForwardBase"
 				}
 
-
 				CGPROGRAM
 				#pragma vertex vert
 				#pragma fragment frag
-				#define UNITY_PASS_FORWARDBASE
+				//#pragma multi_compile_fwdbase
+
 				#define SHOULD_SAMPLE_SH ( defined (LIGHTMAP_OFF) && defined(DYNAMICLIGHTMAP_OFF) )
 				#define _GLOSSYENV 1
 				
-				//#pragma multi_compile_fwdbase_fullshadows
+				
 				#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 				#pragma multi_compile DIRLIGHTMAP_OFF DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
 				#pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
@@ -65,15 +70,23 @@ Shader "TA/Substance PBR EX Simple" {
 				#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
  
 				#define _ISWEATHER_ON 1
-				#pragma   multi_compile  _  GLOBAL_ENV_SH9
+				#pragma   multi_compile  __  GLOBAL_ENV_SH9
 				#pragma multi_compile __ SNOW_ENABLE
 				#pragma shader_feature HARD_SNOW
 				#pragma shader_feature MELT_SNOW
 				#pragma multi_compile __ RAIN_ENABLE
 
+				#pragma multi_compile __ GLOBAL_SH9
+				#pragma  multi_compile  __ _SCENE_SHADOW2
+
+				//#define _ISS3_ON 1
+				//#pragma multi_compile __ SSS_EFFECT  
+
+				#pragma shader_feature ANISOTROPIC_NORMAL
+
 				#include "AutoLight.cginc"
 				#include "Lighting.cginc"
-				#include "unity_pbr.cginc"
+				#include "unity_pbr-simple.cginc"   
 				ENDCG
 				}
 																											 

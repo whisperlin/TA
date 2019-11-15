@@ -2,26 +2,46 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 [ExecuteInEditMode]
 public class SetGlobalSH9 : MonoBehaviour {
 
-    public SH9Data data;
-    SH9Data curData;
+#if UNITY_EDITOR
+    public Cubemap ibl;
+    Cubemap curIbl;
+#endif
 
-   
+    [Header("反射球(sbl)")]
+    public Texture2D sbl;
+    Texture2D curSbl = null;
+    public Vector4[] iblCoefficients = new Vector4[0];
+    
+    public Vector4[] envCoefficients = new Vector4[0];
 
-    [Header("角色虚拟光颜色")]
-    public Color virtualDirectLightColor0 = Color.white;
-    [Header("虚拟光强度")]
+    [Header("ibl颜色调节")]
+    public Color AmbientColor = Color.white;
+    [Header("ibl亮度调节")]
     [Range(0, 3)]
-    public float virtualDirectLightColor0Intensity = 1.0f;
+    public float AmbientColorIntensity = 1f;
 
-    [Header("角色虚拟光方向")]
-    public Vector3 VirtualDirectLight0;
+    //[Header("角色虚拟光颜色")]
+    private Color virtualDirectLightColor0 = Color.white;
+    //[Header("虚拟光强度")]
+    //[Range(0, 3)]
+    private float virtualDirectLightColor0Intensity = 1.0f;
 
-    [Header("场景漫反射差")]
-    [Range(0f,1f)]
-    public float _DifSC = 0.0f;
+    //[Header("角色虚拟光方向")]
+    private Vector3 VirtualDirectLight0;
+
+    //[Header("场景漫反射差")]
+    //[Range(0f,1f)]
+    private float _DifSC = 0.0f;
+
+    
+
 
     [Header("场景背光")]
     public Color _BackColor = Color.black;
@@ -101,8 +121,16 @@ public class SetGlobalSH9 : MonoBehaviour {
     //[Header("远景变色")]
     //public bool enable_env = false;
     [Header("反射环境色")]
-    public SH9Data farEvn;
-    SH9Data curFarEnv;
+
+
+#if UNITY_EDITOR
+    public Cubemap env;
+    Cubemap curEnv;
+
+#endif
+
+
+
     [Header("远景色")]
     public Color farSceneColor = new Color(1, 1, 1, 1);
     [Header("远近变色最远距离")]
@@ -198,19 +226,81 @@ public class SetGlobalSH9 : MonoBehaviour {
 
     public float virtualSceneDirectLightColor0Intensity = 1.0f;
 
+#if UNITY_EDITOR
+    public void UpdateSH9FormCubeMap()
+    {
+        if (curIbl != ibl)
+        {
+            if (null == ibl)
+            {
+                iblCoefficients = new Vector4[0];
+            }
+            else
+            {
+                ModifyTextureReadable(ibl);
+                iblCoefficients = new Vector4[9];
+                if (SphericalHarmonics.CPU_Project_Uniform_9Coeff(ibl, iblCoefficients))
+                {
+                }
+            }
+            curIbl = ibl  ;
+        }
+
+        if (curEnv != env)
+        {
+            if (null == env)
+            {
+                envCoefficients = new Vector4[0];
+            }
+            else
+            {
+                ModifyTextureReadable(env);
+                envCoefficients = new Vector4[9];
+                if (SphericalHarmonics.CPU_Project_Uniform_9Coeff(env, envCoefficients))
+                {
+                }
+            }
+            curEnv = env;
+        }
 
 
-     
-   
+        
+
+
+    }
+
+
+    void ModifyTextureReadable(Cubemap input_cubemap)
+    {
+        string path = AssetDatabase.GetAssetPath(input_cubemap);
+        if (null == path || path.Length == 0)
+        {
+            return;
+        }
+        TextureImporter textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
+        if (null == textureImporter)
+            return;
+        textureImporter.isReadable = true;
+        textureImporter.SaveAndReimport();
+    }
+
+
+#endif
+
+    public bool updateSH9Data = true;
+
 
     // Use this for initialization
     void Start () {
-        curData = null;
-        curFarEnv = null;
+        curSbl = null;
+        updateSH9Data = true;
         setSH9Global();
     }
 	// Update is called once per frame
 	void Update () {
+#if UNITY_EDITOR
+        UpdateSH9FormCubeMap();
+#endif
         setSH9Global();
     }
     private void setSH9Global()
@@ -237,8 +327,15 @@ public class SetGlobalSH9 : MonoBehaviour {
 
         Shader.SetGlobalVector("FarSceneInfo", new Vector4(env_b * env_b * env_b, env_end_in_view, 0, 0));
         Shader.SetGlobalColor("FarSceneColor", new Color(farSceneColor.r, farSceneColor.g, farSceneColor.b, env_dis_density) );
-
-
+#if !UNITY_EDITOR
+        if (curSbl != sbl)
+        {
+#endif
+            Shader.SetGlobalTexture("GlobalSBL", sbl);
+#if !UNITY_EDITOR
+            curSbl = sbl  ;
+        }
+#endif
 
         Shader.SetGlobalVector("global_fog_max", new Vector4(fog_max, fog_max1, fog_max2, 1));
         Shader.SetGlobalFloat("back_dis_density", back_dis_density*2);
@@ -253,29 +350,37 @@ public class SetGlobalSH9 : MonoBehaviour {
         Shader.SetGlobalFloat("height_fog_end_in_view", height_fog_end_in_view);
         Shader.SetGlobalFloat("height_fog_height_a", 1f-height_fog_height_a);
         //VirtualDirectLight0
-        if (data != null && curData != data )
+
+#if !UNITY_EDITOR
+        if (updateSH9Data)
         {
-            curData = data;
+            updateSH9Data = false;
+#endif
+        if (iblCoefficients.Length>0)
+        { 
             for (int i = 0; i < 9; ++i)
             {
                 string param = "g_sph" + i.ToString();
-                Shader.SetGlobalVector(param, data.coefficients[i]);
+                Shader.SetGlobalVector(param, iblCoefficients[i]);
             }
         }
-        if (farEvn != null && curFarEnv != farEvn)
+        if (envCoefficients.Length>0)
         {
-            curFarEnv = farEvn;
             for (int i = 0; i < 9; ++i)
             {
                 string param = "evn_sph" + i.ToString();
-                Shader.SetGlobalVector(param, farEvn.coefficients[i]);
+                
+                Shader.SetGlobalVector(param, envCoefficients[i]);
             }
         }
+#if !UNITY_EDITOR
+        }
+#endif
         float _density = density / Mathf.Sqrt(Mathf.Log(2));
         float _densityH = densityH / Mathf.Sqrt(Mathf.Log(2));
 
         float _color_density = color_density /  Mathf.Sqrt(Mathf.Log(2));
-        //Shader.SetGlobalFloat("color_density", _color_density);
+ 
         Shader.SetGlobalFloat("env_density", _density);
         Shader.SetGlobalFloat("height_density", _densityH);
         Shader.SetGlobalFloat("color_density", color_density);
@@ -307,7 +412,8 @@ public class SetGlobalSH9 : MonoBehaviour {
         {
             Shader.DisableKeyword("ENABLE_BACK_LIGHT");
         }
-        if (farEvn)
+        
+        if (envCoefficients.Length>0)
         {
             Shader.EnableKeyword("GLOBAL_ENV_SH9");
         }
@@ -315,6 +421,16 @@ public class SetGlobalSH9 : MonoBehaviour {
         {
             Shader.DisableKeyword("GLOBAL_ENV_SH9");
         }
+        //Shader.DisableKeyword("GLOBAL_SH9");
+        if (iblCoefficients.Length > 0)
+        {
+            Shader.EnableKeyword("GLOBAL_SH9");
+        }
+        else
+        {
+            Shader.DisableKeyword("GLOBAL_SH9");
+        }
+        //GLOBAL_SH9
         Shader.SetGlobalFloat("fog_height_power", fog_height_power);
 
         var v = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(new Vector3(VirtualDirectLight0.x, VirtualDirectLight0.y, VirtualDirectLight0.z)), Vector3.one).MultiplyVector(Vector3.back);
@@ -324,6 +440,14 @@ public class SetGlobalSH9 : MonoBehaviour {
         Shader.SetGlobalVector("VirtualDirectLightColor0", new Vector4(virtualDirectLightColor0.r, virtualDirectLightColor0.g, virtualDirectLightColor0.b, virtualDirectLightColor0Intensity));
 
 
+
+
+        //public Color ambientColor = Color.white;
+        //[Header("ibl亮度调节")]
+        //[Range(0, 3)]
+        //public float ambientColorIntensity = 1f;
+
+        Shader.SetGlobalVector("AmbientColor", new Vector4(AmbientColor.r, AmbientColor.g, AmbientColor.b, AmbientColorIntensity));
 
         //virtualSceneDirectLightColor0
 

@@ -38,6 +38,8 @@ float3 envsh9(float3 v)
 
 #endif
 
+#define SURFACE_UNITY_FOG_PARAM float3  fogCoord;
+
 uniform float4 FogInfo;
  
 uniform float4 FogColor;
@@ -151,7 +153,6 @@ screen_clr = lerp(screen_clr, FarSceneColor, blend_val.y); //lerp
 //#endif
 
 screen_clr = lerp(screen_clr, FogColor.xyz, blend_val.x); //lerp
-
 return screen_clr;
 }
 
@@ -211,6 +212,22 @@ float globalEnvOffset;
 	
 #endif
 
+
+
+/*
+for surface
+
+void vertexDataFunc(inout appdata_full v, out Input o)
+		{
+			UNITY_INITIALIZE_OUTPUT(Input, o);
+			float4 worldPos = float4(mul(unity_ObjectToWorld, v.vertex).xyz,1);
+			float3 worldNormal = UnityObjectToWorldNormal(v.normal);
+			o.fogCoord = GetFog(worldPos, worldNormal);
+			o.posWorld = worldPos;
+
+		}
+
+*/
 
 
 

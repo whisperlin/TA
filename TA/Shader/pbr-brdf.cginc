@@ -87,6 +87,7 @@
 	//#endif
 	sampler2D _BRDFTex;
 	half _S3SPower;
+
 	half _DifSC;
 	//#ifdef SHADOW_ON
 	//	sampler2D _Shadow, _ShadowFade;
@@ -369,9 +370,7 @@
 
 	#if _ISWEATHER_ON
 		#if RAIN_ENABLE  
-		 
 			_Gloss = saturate(_Gloss* get_smoothnessRate());
-
 		#endif
 		#if(SNOW_ENABLE)
 		  
@@ -413,9 +412,7 @@
  
 
 #if GLOBAL_SH9
-	
 	fixed3 ambient = i.ambient * c.rgb ;
-	//fixed3 ambient = g_sh(half4(normal, 1))* c.rgb ;
 #else
 	fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT * c0.rgb ;
 #endif
@@ -429,13 +426,8 @@
 #endif
 
 #if defined(_SCENE_SHADOW2)  
-
-	//return tex2D(_kkShadowMap, i.shadowCoord.xy);
-	 
 	half attenuation = PCF4SamplesSafe(i.shadowCoord);
-	//return float4(attenuation, attenuation, attenuation, 1);
 	lightColor.rgb *= attenuation;
-
 #endif
 
 #if _CHARACTOR
@@ -455,10 +447,8 @@
 	brdfUV.x = NdotLBlur * 0.5 + 0.5;
 	brdfUV.y = Curvature * dot( _LightColor0.rgb, fixed3(0.22, 0.707, 0.071 ) );
 	half3 brdf = tex2D( _BRDFTex, brdfUV ).rgb;
-	//return float4(brdf,1);
-	//c.rgb = (lerp(c0.rgb * nl , c0.rgb * brdf.rgb*_S3STR , _S3SPower   ) * _LightColor0.rgb
+ 
 	fixed3 diffuse = ambient*_AmbientPower + lightColor * lerp(c0.rgb*  nl ,  c0.rgb*  brdf.rgb , _S3SPower *_AO_var )    ;
-
 #else
 
 	//return float4(calc_transmission_sss(nl, _nl, _DifSC, sss_scatter0, 1), 1);

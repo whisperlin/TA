@@ -25,7 +25,7 @@ public class BakeObjectWindow : EditorWindow
             plane.uv2 = plane.uv;
             plane.triangles = new int[] { 0, 2, 1, 1, 2, 3 };
             plane.RecalculateNormals();
-            plane.hideFlags = HideFlags.DontSaveInEditor;
+            plane.hideFlags = HideFlags.DontSave;
         }
         if (null == planeRender)
         {
@@ -33,7 +33,7 @@ public class BakeObjectWindow : EditorWindow
             g.name = "BakeObj";
             g.AddComponent<MeshFilter>().sharedMesh = plane;
             planeRender = g.AddComponent<MeshRenderer>();
-            g.hideFlags = HideFlags.DontSaveInEditor;
+            g.hideFlags = HideFlags.DontSave;
         }
         //UnityEditor.SceneView.GetAllSceneCameras();
 
@@ -208,7 +208,7 @@ public class BakeObjectWindow : EditorWindow
         float oldCull = _meshRender.sharedMaterial.GetFloat("_Cull");
         _meshRender.sharedMaterial.SetFloat("_Cull", 0f);
         _meshRender.sharedMaterial.EnableKeyword("S_BAKE");
-        bakeCam.gameObject.hideFlags = HideFlags.DontSaveInEditor;
+        bakeCam.gameObject.hideFlags = HideFlags.DontSave;
 
 
         Vector2 _MainTexOffset = _meshRender.sharedMaterial.mainTextureOffset;

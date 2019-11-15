@@ -69,5 +69,16 @@ float3 g_sh(float3 v)
 	);
 	return max(result, float3(0, 0, 0));
 }
+float3 g_sh3(float3 v)
+{
+	float3 result = (
+		g_sph0.xyz * Y0(v) +
+		g_sph1.xyz * Y1(v) +
+		g_sph2.xyz * Y2(v) +
+		g_sph3.xyz * Y3(v)
+
+		);
+	return max(result, float3(0, 0, 0));
+}
 
 #endif

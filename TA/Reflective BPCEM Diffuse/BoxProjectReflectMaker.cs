@@ -118,13 +118,13 @@ public class BoxProjectReflectMaker : MonoBehaviour {
             if (null == target)
             {
                 target = new RenderTexture(512, 256, 0);
-                target.hideFlags = HideFlags.DontSaveInEditor;
+                target.hideFlags = HideFlags.DontSave;
             }
 
             if (null == cube)
             {
                 cube = new Cubemap(512, TextureFormat.RGBA32, false);
-                cube.hideFlags = HideFlags.DontSaveInEditor;
+                cube.hideFlags = HideFlags.DontSave;
             }
             if (null == plane)
             {

@@ -445,10 +445,8 @@ public class SphericalHarmonics
             Debug.LogWarning("output size must be 9 for 9 coefficients");
             return false;
         }
-
         //cache the cubemap faces
         List<Color[]> faces = new List<Color[]>();
-        
         for (int f = 0; f < 6; ++f)
         {
             faces.Add(input.GetPixels((CubemapFace)f, 0));
@@ -473,13 +471,11 @@ public class SphericalHarmonics
                 output[c].z += radiance.b * sh;
                 output[c].w += radiance.a * sh;
             }
-
             output[c].x = output[c].x * 4.0f * Mathf.PI / (float)sample_count;
             output[c].y = output[c].y * 4.0f * Mathf.PI / (float)sample_count;
             output[c].z = output[c].z * 4.0f * Mathf.PI / (float)sample_count;
             output[c].w = output[c].w * 4.0f * Mathf.PI / (float)sample_count;
         }
-
         return true;
     }
 
@@ -494,20 +490,7 @@ public class SphericalHarmonics
 
         ComputeShader reduce = Resources.Load<ComputeShader>("Shaders/Reduce_Uniform");
 
-        //can't have direct access to the cubemap in the compute shader (I think), so i copy the cubemap faces onto a texture2d array
-        /*RenderTextureDescriptor desc = new RenderTextureDescriptor();
-        desc.autoGenerateMips = false;
-        desc.bindMS = false;
-        desc.colorFormat = ConvertRenderFormat(input.format);
-        desc.depthBufferBits = 0;
-        desc.dimension = UnityEngine.Rendering.TextureDimension.Tex2DArray;
-        desc.enableRandomWrite = false;
-        desc.height = input.height;
-        desc.width = input.width;
-        desc.msaaSamples = 1;
-        desc.sRGB = true;
-        desc.useMipMap = false;
-        desc.volumeDepth = 6;*/
+         
         RenderTexture converted_input = new RenderTexture(input.height,input.height,24);
         //RenderTexture converted_input = new RenderTexture(desc);
         converted_input.Create();

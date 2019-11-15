@@ -240,6 +240,7 @@ float4 frag(VertexOutput i) : COLOR{
  
 #else
 	float3 indirectSpecular = (gi.indirect.specular);
+	;
 
 
 	#if _ISWEATHER_ON
@@ -248,10 +249,11 @@ float4 frag(VertexOutput i) : COLOR{
 		#endif
 	#endif
 #endif
- 
+	
 	indirectSpecular *= FresnelLerp(specularColor, grazingTerm, NdotV);
 	indirectSpecular *= surfaceReduction;
-	float3 specular = (directSpecular + indirectSpecular) *_Metallic_var.b;
+	float3 specular = (directSpecular + indirectSpecular)  ;
+	
 	/////// Diffuse:
 	NdotL = max(0.0,dot(normalDirection, lightDirection));
 	half fd90 = 0.5 + 2 * LdotH * LdotH * (1 - gloss);
@@ -260,13 +262,13 @@ float4 frag(VertexOutput i) : COLOR{
 	float3 directDiffuse = ((1 + (fd90 - 1)*nlPow5) * (1 + (fd90 - 1)*nvPow5) * NdotL) * attenColor;
 	float3 indirectDiffuse = float3(0,0,0);
 	indirectDiffuse += gi.indirect.diffuse;
-	float3 diffuse = (directDiffuse*_Metallic_var.b + indirectDiffuse) * diffuseColor;
+	float3 diffuse = (directDiffuse  + indirectDiffuse) * diffuseColor;
 	////// Emissive:
-	float3 emissive = baseDiffuseColor * _Metallic_var.g;
+ 
 	 
  
 	/// Final Color:
-	float3 finalColor = diffuse + specular + emissive;
+	float3 finalColor = diffuse + specular    ;
 
 	fixed4 c = fixed4(finalColor,1);
 
