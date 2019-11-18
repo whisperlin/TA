@@ -31,8 +31,8 @@ Shader "TA/Cartoon Anpla Blend"
 			Tags { "Queue" = "Transparent-1" "RenderType" = "Transparent" "IgnoreProjector" = "True" }
 			Pass
 			{
-					ColorMask RGB
-					Blend Zero One
+					ColorMask 0
+					//Blend Zero One
 					CGPROGRAM
 					#pragma vertex vert
 					#pragma fragment frag

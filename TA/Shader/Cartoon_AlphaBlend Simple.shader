@@ -27,8 +27,7 @@ Shader "TA/Cartoon Anpla Blend Simple"
 			{
 	 
 					//ZWrite Off
-					ColorMask RGB
-					Blend Zero One
+					ColorMask 0
 					Cull Off
 					CGPROGRAM
 					#pragma vertex vert

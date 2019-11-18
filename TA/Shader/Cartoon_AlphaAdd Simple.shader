@@ -27,8 +27,8 @@ Shader "TA/Cartoon Anpla Add Simple"
 			{
 	 
 					//ZWrite Off
-					ColorMask RGB
-					Blend Zero One
+					ColorMask 0
+					//Blend Zero One
 					CGPROGRAM
 					#pragma vertex vert
 					#pragma fragment frag
