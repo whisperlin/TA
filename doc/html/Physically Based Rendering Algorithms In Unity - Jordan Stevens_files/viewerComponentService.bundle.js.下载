@@ -7,7 +7,7 @@
 		exports["viewerComponentService"] = factory(require("react"), require("prop-types"), require("lodash"), require("santa-components"), require("react-dom"));
 	else
 		root["viewerComponentService"] = factory(root["React"], root["prop-types"], root["_"], root["santaComponents"], root["ReactDOM"]);
-})((typeof self !== 'undefined' ? self : this), function(__WEBPACK_EXTERNAL_MODULE__0__, __WEBPACK_EXTERNAL_MODULE__1__, __WEBPACK_EXTERNAL_MODULE__2__, __WEBPACK_EXTERNAL_MODULE__12__, __WEBPACK_EXTERNAL_MODULE__14__) {
+})((typeof self !== 'undefined' ? self : this), function(__WEBPACK_EXTERNAL_MODULE__0__, __WEBPACK_EXTERNAL_MODULE__1__, __WEBPACK_EXTERNAL_MODULE__2__, __WEBPACK_EXTERNAL_MODULE__12__, __WEBPACK_EXTERNAL_MODULE__20__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// install a JSONP callback for chunk loading
 /******/ 	function webpackJsonpCallback(data) {
@@ -46,15 +46,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
 /******/ 	// Promise = chunk loading, 0 = chunk loaded
 /******/ 	var installedChunks = {
-/******/ 		40: 0,
-/******/ 		37: 0
+/******/ 		41: 0,
+/******/ 		38: 0
 /******/ 	};
 /******/
 /******/
 /******/
 /******/ 	// script path function
 /******/ 	function jsonpScriptSrc(chunkId) {
-/******/ 		return __webpack_require__.p + "" + ({"42":"wixui.AddressInput","43":"wixui.BarChart","44":"wixui.Captcha","45":"wixui.CustomElement","46":"wixui.Dropdown","47":"wixui.FileUploaderNew","48":"wixui.LineShareButton","49":"wixui.MusicPlayer","50":"wixui.Pagination","51":"wixui.ProgressBar","52":"wixui.RatingsDisplay","53":"wixui.RatingsInput","54":"wixui.RichTextBox","55":"wixui.SearchBox","56":"wixui.SelectionTagsList","57":"wixui.SignatureInput","58":"wixui.Slider","59":"wixui.StylableButton","60":"wixui.StylableLine","61":"wixui.Tags","62":"wixui.TimePicker","63":"wixui.ToggleSwitch","64":"wixui.VideoPlayer"}[chunkId]||chunkId) + ".chunk.js"
+/******/ 		return __webpack_require__.p + "" + ({"43":"wixui.AddressInput","44":"wixui.BarChart","45":"wixui.Captcha","46":"wixui.CustomElement","47":"wixui.Dropdown","48":"wixui.FileUploaderNew","49":"wixui.LineShareButton","50":"wixui.MusicPlayer","51":"wixui.Pagination","52":"wixui.ProgressBar","53":"wixui.RatingsDisplay","54":"wixui.RatingsInput","55":"wixui.RichTextBox","56":"wixui.SearchBox","57":"wixui.SelectionTagsList","58":"wixui.SignatureInput","59":"wixui.Slider","60":"wixui.StylableButton","61":"wixui.StylableHorizontalMenu","62":"wixui.StylableLine","63":"wixui.Tags","64":"wixui.TimePicker","65":"wixui.ToggleSwitch","66":"wixui.VideoPlayer"}[chunkId]||chunkId) + ".chunk.js"
 /******/ 	}
 /******/
 /******/ 	// The require function
@@ -190,7 +190,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "https://static.parastorage.com/services/wix-ui-santa/1.456.0/";
+/******/ 	__webpack_require__.p = "https://static.parastorage.com/services/wix-ui-santa/1.652.0/";
 /******/
 /******/ 	// on error function for async loading
 /******/ 	__webpack_require__.oe = function(err) { console.error(err); throw err; };
@@ -438,7 +438,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	__webpack_require__.p = typeof window !== 'undefined' && window.__STATICS_BASE_URL__ || __webpack_require__.p;
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1349);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1215);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -469,7 +469,268 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__1__;
 
 /***/ }),
 
-/***/ 108:
+/***/ 12:
+/*!*********************************************************************************************************************************!*\
+  !*** external {"amd":"santa-components","commonjs":"santa-components","commonjs2":"santa-components","root":"santaComponents"} ***!
+  \*********************************************************************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__12__;
+
+/***/ }),
+
+/***/ 1215:
+/*!**************************************!*\
+  !*** ./components-service/viewer.js ***!
+  \**************************************/
+/*! no static exports found */
+/*! all exports used */
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _baseService = __webpack_require__(/*! ./base-service */ 88);
+
+var _baseService2 = _interopRequireDefault(_baseService);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var compsToPackages = {
+  'wixui.RichTextBox': function wixuiRichTextBox() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.RichTextBox */ 55).then(__webpack_require__.t.bind(null, /*! ../legacy/components/RichTextBox */ 405, 7))]);
+  },
+  'wixui.ToggleSwitch': function wixuiToggleSwitch() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.ToggleSwitch */ 65).then(__webpack_require__.t.bind(null, /*! ../legacy/components/ToggleSwitch */ 404, 7))]);
+  },
+  'wixui.Slider': function wixuiSlider() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.Slider */ 59).then(__webpack_require__.t.bind(null, /*! ../components/Slider */ 434, 7))]);
+  },
+  'wixui.SearchBox': function wixuiSearchBox() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.SearchBox */ 56).then(__webpack_require__.t.bind(null, /*! ../components/SearchBox */ 437, 7))]);
+  },
+  'wixui.Captcha': function wixuiCaptcha() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.Captcha */ 45).then(__webpack_require__.t.bind(null, /*! ../components/Captcha */ 431, 7))]);
+  },
+  'wixui.Pagination': function wixuiPagination() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.Pagination */ 51).then(__webpack_require__.t.bind(null, /*! ../components/Pagination */ 428, 7))]);
+  },
+  'wixui.AddressInput': function wixuiAddressInput() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.AddressInput */ 43).then(__webpack_require__.t.bind(null, /*! ../components/AddressInput */ 438, 7))]);
+  },
+  'wixui.StylableLine': function wixuiStylableLine() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.StylableLine */ 62).then(__webpack_require__.t.bind(null, /*! ../components/StylableLine */ 441, 7))]);
+  },
+  'wixui.Tags': function wixuiTags() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.Tags */ 63).then(__webpack_require__.t.bind(null, /*! ../components/Tags */ 429, 7))]);
+  },
+  'wixui.RatingsInput': function wixuiRatingsInput() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.RatingsInput */ 54).then(__webpack_require__.t.bind(null, /*! ../components/RatingsInput */ 430, 7))]);
+  },
+  'wixui.TimePicker': function wixuiTimePicker() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.TimePicker */ 64).then(__webpack_require__.t.bind(null, /*! ../components/TimePicker */ 439, 7))]);
+  },
+  'wixui.RatingsDisplay': function wixuiRatingsDisplay() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.RatingsDisplay */ 53).then(__webpack_require__.t.bind(null, /*! ../components/RatingsDisplay */ 432, 7))]);
+  },
+  'wixui.VideoPlayer': function wixuiVideoPlayer() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.VideoPlayer */ 66).then(__webpack_require__.t.bind(null, /*! ../components/VideoPlayer */ 427, 7))]);
+  },
+  'wixui.LineShareButton': function wixuiLineShareButton() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.LineShareButton */ 49).then(__webpack_require__.t.bind(null, /*! ../components/LineShareButton */ 440, 7))]);
+  },
+  'wixui.MusicPlayer': function wixuiMusicPlayer() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.MusicPlayer */ 50).then(__webpack_require__.t.bind(null, /*! ../components/MusicPlayer */ 394, 7))]);
+  },
+  'wixui.StylableButton': function wixuiStylableButton() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.StylableButton */ 60).then(__webpack_require__.t.bind(null, /*! ../components/StylableButton */ 442, 7))]);
+  },
+  'wixui.ProgressBar': function wixuiProgressBar() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.ProgressBar */ 52).then(__webpack_require__.t.bind(null, /*! ../components/ProgressBar */ 435, 7))]);
+  },
+  'wixui.Dropdown': function wixuiDropdown() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.Dropdown */ 47).then(__webpack_require__.t.bind(null, /*! ../components/Dropdown */ 436, 7))]);
+  },
+  'wixui.BarChart': function wixuiBarChart() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.BarChart */ 44).then(__webpack_require__.t.bind(null, /*! ../components/BarChart */ 433, 7))]);
+  },
+  'wixui.CustomElementComponent': function wixuiCustomElementComponent() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.CustomElement */ 46).then(__webpack_require__.t.bind(null, /*! ../components/CustomElement */ 445, 7))]);
+  },
+  'wixui.SignatureInput': function wixuiSignatureInput() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.SignatureInput */ 58).then(__webpack_require__.t.bind(null, /*! ../components/SignatureInput */ 444, 7))]);
+  },
+  'wixui.FileUploaderNew': function wixuiFileUploaderNew() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.FileUploaderNew */ 48).then(__webpack_require__.t.bind(null, /*! ../components/FileUploaderNew */ 446, 7))]);
+  },
+
+  'wixui.SelectionTagsList': function wixuiSelectionTagsList() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.SelectionTagsList */ 57).then(__webpack_require__.t.bind(null, /*! ../components/SelectionTagsList */ 447, 7))]);
+  },
+
+  'wixui.StylableHorizontalMenu': function wixuiStylableHorizontalMenu() {
+    return Promise.all([__webpack_require__.e(/*! import() | wixui.StylableHorizontalMenu */ 61).then(__webpack_require__.t.bind(null, /*! ../components/StylableHorizontalMenu */ 448, 7))]);
+  }
+};
+
+module.exports = new _baseService2.default(compsToPackages);
+
+/***/ }),
+
+/***/ 2:
+/*!*************************************************************************************!*\
+  !*** external {"amd":"lodash","commonjs":"lodash","commonjs2":"lodash","root":"_"} ***!
+  \*************************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__2__;
+
+/***/ }),
+
+/***/ 20:
+/*!****************************************************************************************************!*\
+  !*** external {"amd":"reactDOM","commonjs":"react-dom","commonjs2":"react-dom","root":"ReactDOM"} ***!
+  \****************************************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__20__;
+
+/***/ }),
+
+/***/ 25:
+/*!**************************************************!*\
+  !*** ./components/Dropdown/componentOverride.js ***!
+  \**************************************************/
+/*! no static exports found */
+/*! all exports used */
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+  overrideViewerType: 'wysiwyg.viewer.components.inputs.ComboBoxInput',
+  overrideDisplayName: 'ComboBoxInput',
+  overrideComponentSkin: 'ComboBoxInputSkin',
+  //
+  viewerExperimentKey: 'useNewWUSDropdown',
+  editorExperimentKey: 'specs.wus.useNewDropdown',
+  //
+  newComponentViewerType: 'wixui.Dropdown',
+  newDisplayName: 'Dropdown',
+  newComponentSkin: 'ComboBoxInputSkinNew'
+};
+
+/***/ }),
+
+/***/ 29:
+/*!*********************************************************!*\
+  !*** ./components/FileUploaderNew/componentOverride.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/*! all exports used */
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var fileUploaderNewOverrideDefinition = {
+  overrideViewerType: 'wysiwyg.viewer.components.inputs.FileUploader',
+  overrideDisplayName: 'FileUploader',
+  overrideComponentSkin: 'wysiwyg.viewer.skins.FileUploaderDefaultSkin',
+
+  viewerExperimentKey: 'useNewWUSUploadButton',
+  editorExperimentKey: 'specs.wus.useNewUploadButton',
+
+  newComponentViewerType: 'wixui.FileUploaderNew',
+  newDisplayName: 'FileUploaderNew',
+  newComponentSkin: 'wixui.skins.FileUploaderNew'
+};
+
+module.exports = fileUploaderNewOverrideDefinition;
+
+/***/ }),
+
+/***/ 61:
+/*!**********************!*\
+  !*** ./overrides.js ***!
+  \**********************/
+/*! no static exports found */
+/*! all exports used */
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var createOverrideMap = function createOverrideMap(requireFn) {
+  return requireFn.keys().map(requireFn).reduce(function (overridesMap, compOverrideMetadata) {
+    overridesMap[compOverrideMetadata.overrideViewerType] = compOverrideMetadata;
+    return overridesMap;
+  }, {});
+};
+var componentOverrides = createOverrideMap(__webpack_require__(62));
+
+function getOverrides() {
+  return componentOverrides;
+}
+
+module.exports = {
+  getOverrides: getOverrides
+};
+
+/***/ }),
+
+/***/ 62:
+/*!************************************************!*\
+  !*** ./components sync componentOverride\.js$ ***!
+  \************************************************/
+/*! no static exports found */
+/*! all exports used */
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+/***/ (function(module, exports, __webpack_require__) {
+
+var map = {
+	"./Dropdown/componentOverride.js": 25,
+	"./FileUploaderNew/componentOverride.js": 29
+};
+
+
+function webpackContext(req) {
+	var id = webpackContextResolve(req);
+	return __webpack_require__(id);
+}
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) { // check for number or string
+		var e = new Error("Cannot find module '" + req + "'");
+		e.code = 'MODULE_NOT_FOUND';
+		throw e;
+	}
+	return id;
+}
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 62;
+
+/***/ }),
+
+/***/ 88:
 /*!********************************************!*\
   !*** ./components-service/base-service.js ***!
   \********************************************/
@@ -481,7 +742,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__1__;
 "use strict";
 
 
-var _require = __webpack_require__(/*! ../overrides */ 63),
+var _require = __webpack_require__(/*! ../overrides */ 61),
     getOverrides = _require.getOverrides;
 
 function BaseService(_compsToPackages) {
@@ -540,233 +801,6 @@ function BaseService(_compsToPackages) {
 }
 
 module.exports = BaseService;
-
-/***/ }),
-
-/***/ 12:
-/*!*********************************************************************************************************************************!*\
-  !*** external {"amd":"santa-components","commonjs":"santa-components","commonjs2":"santa-components","root":"santaComponents"} ***!
-  \*********************************************************************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__12__;
-
-/***/ }),
-
-/***/ 1349:
-/*!**************************************!*\
-  !*** ./components-service/viewer.js ***!
-  \**************************************/
-/*! no static exports found */
-/*! all exports used */
-/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _baseService = __webpack_require__(/*! ./base-service */ 108);
-
-var _baseService2 = _interopRequireDefault(_baseService);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var compsToPackages = {
-  'wixui.RichTextBox': function wixuiRichTextBox() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.RichTextBox */ 54).then(__webpack_require__.t.bind(null, /*! ../legacy/components/RichTextBox */ 525, 7))]);
-  },
-  'wixui.ToggleSwitch': function wixuiToggleSwitch() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.ToggleSwitch */ 63).then(__webpack_require__.t.bind(null, /*! ../legacy/components/ToggleSwitch */ 524, 7))]);
-  },
-  'wixui.Slider': function wixuiSlider() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.Slider */ 58).then(__webpack_require__.t.bind(null, /*! ../components/Slider */ 554, 7))]);
-  },
-  'wixui.SearchBox': function wixuiSearchBox() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.SearchBox */ 55).then(__webpack_require__.t.bind(null, /*! ../components/SearchBox */ 557, 7))]);
-  },
-  'wixui.Captcha': function wixuiCaptcha() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.Captcha */ 44).then(__webpack_require__.t.bind(null, /*! ../components/Captcha */ 551, 7))]);
-  },
-  'wixui.Pagination': function wixuiPagination() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.Pagination */ 50).then(__webpack_require__.t.bind(null, /*! ../components/Pagination */ 548, 7))]);
-  },
-  'wixui.AddressInput': function wixuiAddressInput() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.AddressInput */ 42).then(__webpack_require__.t.bind(null, /*! ../components/AddressInput */ 559, 7))]);
-  },
-  'wixui.StylableLine': function wixuiStylableLine() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.StylableLine */ 60).then(__webpack_require__.t.bind(null, /*! ../components/StylableLine */ 562, 7))]);
-  },
-  'wixui.Tags': function wixuiTags() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.Tags */ 61).then(__webpack_require__.t.bind(null, /*! ../components/Tags */ 549, 7))]);
-  },
-  'wixui.RatingsInput': function wixuiRatingsInput() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.RatingsInput */ 53).then(__webpack_require__.t.bind(null, /*! ../components/RatingsInput */ 550, 7))]);
-  },
-  'wixui.TimePicker': function wixuiTimePicker() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.TimePicker */ 62).then(__webpack_require__.t.bind(null, /*! ../components/TimePicker */ 560, 7))]);
-  },
-  'wixui.RatingsDisplay': function wixuiRatingsDisplay() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.RatingsDisplay */ 52).then(__webpack_require__.t.bind(null, /*! ../components/RatingsDisplay */ 552, 7))]);
-  },
-  'wixui.VideoPlayer': function wixuiVideoPlayer() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.VideoPlayer */ 64).then(__webpack_require__.t.bind(null, /*! ../components/VideoPlayer */ 547, 7))]);
-  },
-  'wixui.LineShareButton': function wixuiLineShareButton() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.LineShareButton */ 48).then(__webpack_require__.t.bind(null, /*! ../components/LineShareButton */ 561, 7))]);
-  },
-  'wixui.MusicPlayer': function wixuiMusicPlayer() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.MusicPlayer */ 49).then(__webpack_require__.t.bind(null, /*! ../components/MusicPlayer */ 513, 7))]);
-  },
-  'wixui.StylableButton': function wixuiStylableButton() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.StylableButton */ 59).then(__webpack_require__.t.bind(null, /*! ../components/StylableButton */ 563, 7))]);
-  },
-  'wixui.ProgressBar': function wixuiProgressBar() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.ProgressBar */ 51).then(__webpack_require__.t.bind(null, /*! ../components/ProgressBar */ 555, 7))]);
-  },
-  'wixui.Dropdown': function wixuiDropdown() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.Dropdown */ 46).then(__webpack_require__.t.bind(null, /*! ../components/Dropdown */ 556, 7))]);
-  },
-  'wixui.BarChart': function wixuiBarChart() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.BarChart */ 43).then(__webpack_require__.t.bind(null, /*! ../components/BarChart */ 553, 7))]);
-  },
-  'wixui.CustomElementComponent': function wixuiCustomElementComponent() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.CustomElement */ 45).then(__webpack_require__.t.bind(null, /*! ../components/CustomElement */ 566, 7))]);
-  },
-  'wixui.SignatureInput': function wixuiSignatureInput() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.SignatureInput */ 57).then(__webpack_require__.t.bind(null, /*! ../components/SignatureInput */ 565, 7))]);
-  },
-  'wixui.FileUploaderNew': function wixuiFileUploaderNew() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.FileUploaderNew */ 47).then(__webpack_require__.t.bind(null, /*! ../components/FileUploaderNew */ 567, 7))]);
-  },
-
-  'wixui.SelectionTagsList': function wixuiSelectionTagsList() {
-    return Promise.all([__webpack_require__.e(/*! import() | wixui.SelectionTagsList */ 56).then(__webpack_require__.t.bind(null, /*! ../components/SelectionTagsList */ 568, 7))]);
-  }
-};
-
-module.exports = new _baseService2.default(compsToPackages);
-
-/***/ }),
-
-/***/ 14:
-/*!****************************************************************************************************!*\
-  !*** external {"amd":"reactDOM","commonjs":"react-dom","commonjs2":"react-dom","root":"ReactDOM"} ***!
-  \****************************************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__14__;
-
-/***/ }),
-
-/***/ 2:
-/*!*************************************************************************************!*\
-  !*** external {"amd":"lodash","commonjs":"lodash","commonjs2":"lodash","root":"_"} ***!
-  \*************************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__2__;
-
-/***/ }),
-
-/***/ 25:
-/*!**************************************************!*\
-  !*** ./components/Dropdown/componentOverride.js ***!
-  \**************************************************/
-/*! no static exports found */
-/*! all exports used */
-/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = {
-  overrideViewerType: 'wysiwyg.viewer.components.inputs.ComboBoxInput',
-  overrideDisplayName: 'ComboBoxInput',
-  overrideComponentSkin: 'ComboBoxInputSkin',
-  //
-  viewerExperimentKey: 'useNewWUSDropdown',
-  editorExperimentKey: 'specs.wus.useNewDropdown',
-  //
-  newComponentViewerType: 'wixui.Dropdown',
-  newDisplayName: 'Dropdown',
-  newComponentSkin: 'ComboBoxInputSkinNew'
-};
-
-/***/ }),
-
-/***/ 63:
-/*!**********************!*\
-  !*** ./overrides.js ***!
-  \**********************/
-/*! no static exports found */
-/*! all exports used */
-/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var createOverrideMap = function createOverrideMap(requireFn) {
-  return requireFn.keys().map(requireFn).reduce(function (overridesMap, compOverrideMetadata) {
-    overridesMap[compOverrideMetadata.overrideViewerType] = compOverrideMetadata;
-    return overridesMap;
-  }, {});
-};
-var componentOverrides = createOverrideMap(__webpack_require__(64));
-
-function getOverrides() {
-  return componentOverrides;
-}
-
-module.exports = {
-  getOverrides: getOverrides
-};
-
-/***/ }),
-
-/***/ 64:
-/*!************************************************!*\
-  !*** ./components sync componentOverride\.js$ ***!
-  \************************************************/
-/*! no static exports found */
-/*! all exports used */
-/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
-/***/ (function(module, exports, __webpack_require__) {
-
-var map = {
-	"./Dropdown/componentOverride.js": 25
-};
-
-
-function webpackContext(req) {
-	var id = webpackContextResolve(req);
-	return __webpack_require__(id);
-}
-function webpackContextResolve(req) {
-	var id = map[req];
-	if(!(id + 1)) { // check for number or string
-		var e = new Error("Cannot find module '" + req + "'");
-		e.code = 'MODULE_NOT_FOUND';
-		throw e;
-	}
-	return id;
-}
-webpackContext.keys = function webpackContextKeys() {
-	return Object.keys(map);
-};
-webpackContext.resolve = webpackContextResolve;
-module.exports = webpackContext;
-webpackContext.id = 64;
 
 /***/ })
 

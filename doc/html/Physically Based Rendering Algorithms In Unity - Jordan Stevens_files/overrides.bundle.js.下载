@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
 	else if(typeof exports === 'object')
-		exports["dataRefs"] = factory();
+		exports["overrides"] = factory();
 	else
-		root["dataRefs"] = factory();
+		root["overrides"] = factory();
 })((typeof self !== 'undefined' ? self : this), function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -92,15 +92,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/ 	__webpack_require__.p = typeof window !== 'undefined' && window.__STATICS_BASE_URL__ || __webpack_require__.p;
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1038);
+/******/ 	return __webpack_require__(__webpack_require__.s = 61);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 1038:
-/*!*********************!*\
-  !*** ./dataRefs.js ***!
-  \*********************/
+/***/ 25:
+/*!**************************************************!*\
+  !*** ./components/Dropdown/componentOverride.js ***!
+  \**************************************************/
 /*! no static exports found */
 /*! all exports used */
 /*! ModuleConcatenation bailout: Module is not an ECMAScript module */
@@ -109,33 +109,117 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _dataRefs = __webpack_require__(/*! ./dataRefs.json */ 1039);
-
-var _dataRefs2 = _interopRequireDefault(_dataRefs);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = _dataRefs2.default;
+module.exports = {
+  overrideViewerType: 'wysiwyg.viewer.components.inputs.ComboBoxInput',
+  overrideDisplayName: 'ComboBoxInput',
+  overrideComponentSkin: 'ComboBoxInputSkin',
+  //
+  viewerExperimentKey: 'useNewWUSDropdown',
+  editorExperimentKey: 'specs.wus.useNewDropdown',
+  //
+  newComponentViewerType: 'wixui.Dropdown',
+  newDisplayName: 'Dropdown',
+  newComponentSkin: 'ComboBoxInputSkinNew'
+};
 
 /***/ }),
 
-/***/ 1039:
-/*!***********************!*\
-  !*** ./dataRefs.json ***!
-  \***********************/
-/*! exports provided: Data, Design, Properties, default */
+/***/ 29:
+/*!*********************************************************!*\
+  !*** ./components/FileUploaderNew/componentOverride.js ***!
+  \*********************************************************/
+/*! no static exports found */
 /*! all exports used */
 /*! ModuleConcatenation bailout: Module is not an ECMAScript module */
-/***/ (function(module) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = {"Data":{"MusicPlayerData":{"audioRef":false,"coverRef":false},"StylableButton":{"link":false},"VideoPlayer":{"videoRef":false,"logoRef":false}},"Design":{},"Properties":{}};
+"use strict";
+
+
+var fileUploaderNewOverrideDefinition = {
+  overrideViewerType: 'wysiwyg.viewer.components.inputs.FileUploader',
+  overrideDisplayName: 'FileUploader',
+  overrideComponentSkin: 'wysiwyg.viewer.skins.FileUploaderDefaultSkin',
+
+  viewerExperimentKey: 'useNewWUSUploadButton',
+  editorExperimentKey: 'specs.wus.useNewUploadButton',
+
+  newComponentViewerType: 'wixui.FileUploaderNew',
+  newDisplayName: 'FileUploaderNew',
+  newComponentSkin: 'wixui.skins.FileUploaderNew'
+};
+
+module.exports = fileUploaderNewOverrideDefinition;
+
+/***/ }),
+
+/***/ 61:
+/*!**********************!*\
+  !*** ./overrides.js ***!
+  \**********************/
+/*! no static exports found */
+/*! all exports used */
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var createOverrideMap = function createOverrideMap(requireFn) {
+  return requireFn.keys().map(requireFn).reduce(function (overridesMap, compOverrideMetadata) {
+    overridesMap[compOverrideMetadata.overrideViewerType] = compOverrideMetadata;
+    return overridesMap;
+  }, {});
+};
+var componentOverrides = createOverrideMap(__webpack_require__(62));
+
+function getOverrides() {
+  return componentOverrides;
+}
+
+module.exports = {
+  getOverrides: getOverrides
+};
+
+/***/ }),
+
+/***/ 62:
+/*!************************************************!*\
+  !*** ./components sync componentOverride\.js$ ***!
+  \************************************************/
+/*! no static exports found */
+/*! all exports used */
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+/***/ (function(module, exports, __webpack_require__) {
+
+var map = {
+	"./Dropdown/componentOverride.js": 25,
+	"./FileUploaderNew/componentOverride.js": 29
+};
+
+
+function webpackContext(req) {
+	var id = webpackContextResolve(req);
+	return __webpack_require__(id);
+}
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) { // check for number or string
+		var e = new Error("Cannot find module '" + req + "'");
+		e.code = 'MODULE_NOT_FOUND';
+		throw e;
+	}
+	return id;
+}
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 62;
 
 /***/ })
 
 /******/ });
 });
-//# sourceMappingURL=dataRefs.bundle.js.map
+//# sourceMappingURL=overrides.bundle.js.map
