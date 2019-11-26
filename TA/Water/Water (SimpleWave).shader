@@ -42,9 +42,7 @@
 		#pragma multi_compile __  __CREATE_DEPTH_MAP2 
 		#include "UnityCG.cginc"
 
-		#if ENABLE_FOG_EX
-		#include "../Shader/height-fog.cginc"
-		#endif
+		#include "../Shader/FogCommon.cginc"
 
 		#include "UnityLightingCommon.cginc" // for _LightColor0
 		#pragma multi_compile _SIMPLE_WAVE_OFF _SIMPLE_WAVE_ON _SIMPLE_WAVE_NO
@@ -98,11 +96,7 @@
 			float fade : TEXCOORD6;
 			#endif
 
-			#if ENABLE_FOG_EX
-			UNITY_FOG_COORDS_EX(7)
-			#else
-			UNITY_FOG_COORDS(7)
-			#endif
+			UBPA_FOG_COORDS(7)
 			float4 wpos: TEXCOORD8;
 #ifdef __CREATE_DEPTH_MAP
 			float4 projPos : TEXCOORD9;
@@ -174,11 +168,7 @@
 			o.wareOffset = (wpos.x+wpos.y)*_WareTex_ST.x*0.1 +_Time.y*_WareTex_ST.w;
 
 
-			#if ENABLE_FOG_EX
-				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos,o.normalWorld);
-			#else
-				UNITY_TRANSFER_FOG(o, o.pos);
-			#endif
+			UBPA_TRANSFER_FOG(o, o.vertex);
 			
 
 
@@ -300,12 +290,7 @@
 
 					fixed4 col = lerp(waterColor,_SpecularColor*_SpecularPower,sp  );
 			
-					#if ENABLE_FOG_EX
-					APPLY_HEIGHT_FOG(col,i.wpos,i.normalWorld,i.fogCoord);
-					UNITY_APPLY_FOG_MOBILE(i.fogCoord, col);
-					#else
-					UNITY_APPLY_FOG(i.fogCoord, col);
-					#endif
+					UBPA_APPLY_FOG(i, c);
 					
 	 
 					return col;

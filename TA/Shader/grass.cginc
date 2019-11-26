@@ -23,7 +23,7 @@
 				float3 normalWorld : TEXCOORD5;
 				float4 color: TEXCOORD2;
 				float4 wpos:TEXCOORD3;
-				UNITY_FOG_COORDS_EX(4)
+				UBPA_FOG_COORDS(4)
 				float4 vertex : SV_POSITION;
 			};
 
@@ -87,6 +87,6 @@
 				o.color = v.color;
 
 				
-				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos, o.normalWorld);
+				UBPA_TRANSFER_FOG(o, v.vertex);
 				return o;
 			}

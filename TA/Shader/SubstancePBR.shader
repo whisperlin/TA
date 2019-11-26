@@ -38,8 +38,7 @@ Shader "TA/SubstancePBR" {
 				#pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
 				//#pragma multi_compile_fog
 
-				#pragma   multi_compile  _  ENABLE_NEW_FOG
-				#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
+				#pragma   multi_compile  _  FOG_LIGHT
  
 				ENDCG
 				}

@@ -21,15 +21,12 @@ Shader "TA/Diffuse"
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
- 
-			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			#pragma   multi_compile  _  FOG_LIGHT
  
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 
 			#include "UnityCG.cginc"
-			#include "height-fog.cginc"
+			#include "FogCommon.cginc"
 			#include "Lighting.cginc"
 			#include "AutoLight.cginc" //µÚÈý²½// 
 			#include "bake.cginc"
@@ -52,7 +49,7 @@ Shader "TA/Diffuse"
 #endif
 				
 				float4 wpos:TEXCOORD2;
-				UNITY_FOG_COORDS_EX(3)
+				UBPA_FOG_COORDS(3)
 				float3 normalWorld : TEXCOORD4;
 				
 				float4 pos : SV_POSITION;
@@ -79,7 +76,7 @@ Shader "TA/Diffuse"
 #endif
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
 				
-				UNITY_TRANSFER_FOG_EX(o, o.pos, o.wpos, o.normalWorld);
+				UBPA_TRANSFER_FOG(o, v.vertex);
 				return o;
 			}
 			
@@ -114,8 +111,8 @@ Shader "TA/Diffuse"
 		#endif
 
 	#endif
-				APPLY_HEIGHT_FOG(c,i.wpos,i.normalWorld, i.fogCoord);
-				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
+ 
+				UBPA_APPLY_FOG(i, c);
 				return c;
 			}
 			ENDCG

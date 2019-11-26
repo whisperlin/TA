@@ -18,16 +18,17 @@
 		metallic_power("天空强度", Range(0,1)) = 1
 		metallic_color("天空颜色", Color) = (1, 1, 1, 0)
 
-		waterPower("深水区域深度",Range(0.1,10)) = 10
-		waterAlpha("Alpha区域深度",Range(0.1,10)) = 10
+		waterPower("深水区域深度",Range(0.1,20)) = 1
+		waterAlpha("Alpha区域深度",Range(0.1,100)) = 1
 		_Alpha("透明度",Range(0,1)) = 0.8
 
 		_lodLevel("lod等级",Range(0,8)) = 0
 		 //_Cube("CubeMap", CUBE) = ""{}
 
 		[Toggle(OPEN_SUN)] _OPEN_SUN("开启太阳", Float) = 0
-		_SunPower("Sun Power",Range(1,14)) = 1
-		_SunBright("_SunBright",Range(-0.25,0.25)) = 0
+		_SunPower("Sun Power",Range(0,4)) = 1
+		_SunBright("_SunBright",Range(-2,2)) = 0
+		_SunColor("太阳颜色", Color) = (1, 1, 1, 1)
 		[Space]
 			//[HideInInspector]
 		[HideInInspector]cubemapCenter("cubemapCenter",Vector) = (1, 1, 1, 1)
@@ -41,26 +42,22 @@
 
 		CGINCLUDE
 
-
+#pragma multi_compile __  __DEPTH_TEXTURE_MODE
 #pragma multi_compile __  __CREATE_DEPTH_MAP 
 #pragma multi_compile __  __CREATE_DEPTH_MAP2 
 #pragma multi_compile __  BOX_PROJECT_SKY_BOX
 
 #pragma   multi_compile  _  ENABLE_NEW_FOG
 //#pragma   multi_compile  _  _POW_FOG_ON
-#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+#pragma   multi_compile  _  FOG_LIGHT
 //#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 #pragma   multi_compile  _  GLOBAL_ENV_SH9
 
 #pragma shader_feature OPEN_SUN
 #include "UnityCG.cginc"
 #include "../Shader/LCHCommon.cginc"
-#define ENABLE_FOG_EX  1
-
-#if ENABLE_FOG_EX
-#include "../Shader/height-fog.cginc"
-#endif
+ 
+#include "../Shader/FogCommon.cginc"
 #include "UnityLightingCommon.cginc" // for _LightColor0
 
 
@@ -82,6 +79,7 @@
 
 		half _SunPower;
 		half _SunBright;
+		half4 _SunColor;
 
 
 		struct appdata {
@@ -100,13 +98,9 @@
 
 			NORMAL_TANGENT_BITANGENT_COORDS(5, 6, 7)
 
-#if ENABLE_FOG_EX
-				UNITY_FOG_COORDS_EX(8)
-#else
-				UNITY_FOG_COORDS(8)
-#endif
+				UBPA_FOG_COORDS(8)
 				float4 wpos: TEXCOORD9;
-#ifdef __CREATE_DEPTH_MAP
+#if __CREATE_DEPTH_MAP || __DEPTH_TEXTURE_MODE
 			float4 projPos : TEXCOORD10;
 			float3 ray : TEXCOORD11;
 #endif
@@ -147,7 +141,7 @@
 
 
 			o.wpos = wpos;
-#ifdef __CREATE_DEPTH_MAP
+#if __CREATE_DEPTH_MAP || __DEPTH_TEXTURE_MODE
 
 			o.ray = wpos.xyz - _WorldSpaceCameraPos;
 			o.projPos = ComputeScreenPos(o.pos);
@@ -168,12 +162,7 @@
 
 #endif
 
-#if ENABLE_FOG_EX
-			 
-			UNITY_TRANSFER_FOG_EX(o, o.pos, o.wpos, o.normal);
-#else
-			UNITY_TRANSFER_FOG(o, o.pos);
-#endif
+			UBPA_TRANSFER_FOG(o, v.vertex);
 
 
 
@@ -193,8 +182,7 @@
 				CGPROGRAM
 				#pragma vertex vert
 				#pragma fragment frag
-				#pragma multi_compile_fog
-
+ 
 
 
 				#include "boxproject.cginc"
@@ -214,7 +202,7 @@
 				float metallic_power;
 				float3 metallic_color;
 
-#ifdef __CREATE_DEPTH_MAP
+#if  __CREATE_DEPTH_MAP || __DEPTH_TEXTURE_MODE
 
 				uniform float4x4 WorldToWaterCamera;
 				sampler2D WaterDepthTex;
@@ -230,24 +218,37 @@
 				half4 frag(v2f i) : COLOR
 				{
 
-					half4 c0 = tex2D(_ColorControl, i.uv);
-					half inWater = c0.r*c0.a;
+					
 					half3 worldView = UnityWorldSpaceViewDir(i.wpos);
 					//return float4(inWater, 0, 0,1);
 
-#ifdef __CREATE_DEPTH_MAP
+#if __CREATE_DEPTH_MAP
 
-
+					
 					float sceneDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(i.projPos)));
 					float3 worldPosition = sceneDepth * i.ray / i.projPos.z + _WorldSpaceCameraPos;
 
 
 
 					float distance = length(i.wpos.xyz - worldPosition.xyz) / waterToolctrlPower;
-
+					half inWater = distance;
 					return float4(distance, distance, distance,1);
+#elif __DEPTH_TEXTURE_MODE
+					float sceneDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(i.projPos)));
+					float3 worldPosition = sceneDepth * i.ray / i.projPos.z + _WorldSpaceCameraPos;
+
+
+
+					float distance = length(i.wpos.xyz - worldPosition.xyz) *0.01;
+					//return float4(distance, distance, distance, 1);
+					half inWater = distance  ;
+#else
+					half4 c0 = tex2D(_ColorControl, i.uv);
+					half inWater = c0.r*c0.a;
 
 #endif
+
+					
 
 					half4 col;
 					col.a = saturate(inWater * waterAlpha)*_Alpha;
@@ -256,10 +257,8 @@
 
 					inWater = saturate(inWater*waterPower);
 
-					//return float4(inWater, 0, 0, 1);
-
-
-
+					//return float4(inWater, inWater, inWater, 1);
+ 
 
 					half3 bump1 = UnpackNormal(tex2Dlod(_BumpMap, float4(i.bumpuv[0],0,_lodLevel))).rgb;
 					half3 bump2 = UnpackNormal(tex2Dlod(_BumpMap, float4(i.bumpuv[1],0,_lodLevel))).rgb;
@@ -274,12 +273,7 @@
 					//half3 planeNormal = half3(0,1,0);
 					half ndotl = dot(worldView, wNormal);
 
-				
-
-					//
-
-
-
+ 
 					half3 light_dir = _WorldSpaceLightPos0.xyz;
 
 					half3 h = normalize(light_dir + worldView);
@@ -311,23 +305,24 @@
 
 
 #if OPEN_SUN
-					half p = (col.w + _SunBright) *_SunPower;
-					localskyColor.rgb *= max(0, exp2(p));
+					half p = (localskyColor.w  ) *_SunPower + _SunBright;
+					 
+					
+					//_SunColor
+					localskyColor.rgb *= lerp(1, _SunColor, localskyColor.w)*max(0, exp2(p));
 #endif
-
+					localskyColor.a = 1;
 
 					metallic_power = metallic_power * inWater;
- ;
+ ;					
+
 
 					col.rgb = (_LightColor0 *(1.0 - metallic_power) + metallic_power * localskyColor.rgb)* lerp(_TopColor,_ButtonColor , inWater) + _LightColor0 * _WSpecColor.rgb * spec;
 
 
-					#if ENABLE_FOG_EX
-					APPLY_HEIGHT_FOG(col,i.wpos,i.normalWorld,i.fogCoord);
-					UNITY_APPLY_FOG_MOBILE(i.fogCoord, col);
-					#else
-					UNITY_APPLY_FOG(i.fogCoord, col);
-					#endif
+					 
+
+					UBPA_APPLY_FOG(i, col);
 
 					return col;
 				}

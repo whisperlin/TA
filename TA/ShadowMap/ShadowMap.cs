@@ -7,7 +7,6 @@ using UnityEngine;
 public class ShadowMap : MonoBehaviour {
     public enum TEXTURESIZE
     {
-        S2048 = 2048,
         S1024 = 1024,
         S512 = 512,
     }
@@ -16,7 +15,7 @@ public class ShadowMap : MonoBehaviour {
     public LayerMask casterLayer = -1;
     public Shader shader;
  
-    public TEXTURESIZE TextureSize = TEXTURESIZE.S2048;
+    public TEXTURESIZE TextureSize = TEXTURESIZE.S1024;
     [Range(0, 0.01f)]
     public float Bias;
     [Range(0, 1)]

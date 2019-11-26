@@ -37,10 +37,7 @@
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
-			//#pragma   multi_compile  _  _POW_FOG_ON
-			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			#pragma   multi_compile  _  FOG_LIGHT
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
 			#define FUR_MULTIPLIER 0.05
@@ -60,10 +57,8 @@
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
-			//#pragma   multi_compile  _  _POW_FOG_ON
-			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			
+			#pragma   multi_compile  _  FOG_LIGHT
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
 			#define GLOBAL_SH9 1
@@ -83,10 +78,8 @@
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
-			//#pragma   multi_compile  _  _POW_FOG_ON
-			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			
+			#pragma   multi_compile  _  FOG_LIGHT
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
 			#define FUR_MULTIPLIER 0.25
@@ -105,10 +98,8 @@
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-		#pragma   multi_compile  _  ENABLE_NEW_FOG
-			//#pragma   multi_compile  _  _POW_FOG_ON
-			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+		
+			#pragma   multi_compile  _  FOG_LIGHT
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
 			#define FUR_MULTIPLIER 0.35
@@ -127,10 +118,8 @@
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
-			//#pragma   multi_compile  _  _POW_FOG_ON
-			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			
+			#pragma   multi_compile  _  FOG_LIGHT
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
 			#define FUR_MULTIPLIER 0.45
@@ -150,10 +139,9 @@
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
-			//#pragma   multi_compile  _  _POW_FOG_ON
-			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			
+			#pragma   multi_compile  _  FOG_LIGHT
+
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#define FUR_MULTIPLIER 0.55
 			#define GLOBAL_SH9 1
@@ -172,10 +160,8 @@
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
-			//#pragma   multi_compile  _  _POW_FOG_ON
-			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			
+			#pragma   multi_compile  _  FOG_LIGHT
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#define FUR_MULTIPLIER 0.65
 			#define GLOBAL_SH9 1
@@ -194,10 +180,8 @@
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
-			//#pragma   multi_compile  _  _POW_FOG_ON
-			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			
+			#pragma   multi_compile  _  FOG_LIGHT
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#define FUR_MULTIPLIER 0.75
 			#define GLOBAL_SH9 1
@@ -216,10 +200,8 @@
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
-			//#pragma   multi_compile  _  _POW_FOG_ON
-			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			
+			#pragma   multi_compile  _  FOG_LIGHT
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#define FUR_MULTIPLIER 0.85
 			#define GLOBAL_SH9 1
@@ -240,10 +222,8 @@
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 			#pragma  multi_compile  _VIRTUAL_LIGHT_ON   _VIRTUAL_LIGHT_SHADOW2
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
-			//#pragma   multi_compile  _  _POW_FOG_ON
-			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+			
+			#pragma   multi_compile  _  FOG_LIGHT
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#define FUR_MULTIPLIER 0.95
 			#define GLOBAL_SH9 1

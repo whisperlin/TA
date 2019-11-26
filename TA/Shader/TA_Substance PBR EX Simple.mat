@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: TA_Substance PBR EX Simple
   m_Shader: {fileID: 4800000, guid: 491092e285024d448bd1489231117ac3, type: 3}
-  m_ShaderKeywords: _ISMETALLIC_ON
+  m_ShaderKeywords: ANISOTROPIC_NORMAL _ISMETALLIC_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -32,10 +32,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - ANISOTROPIC_NORMAL: 0
+    - ANISOTROPIC_NORMAL: 1
     - HARD_SNOW: 0
     - MELT_SNOW: 0
-    - _GlossPower: 1
+    - _GlossPower: 0.902
     - _IsMetallic: 0
     - _MetallicPower: 1
     - _SnowEdge: 0.2
@@ -43,5 +43,7 @@ Material:
     - _SnowNoiseScale: 1.28
     - _SnowNormalPower: 1
     - _snow_options: 0
+    - anisotropy: 0.95
+    - emissive_power: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

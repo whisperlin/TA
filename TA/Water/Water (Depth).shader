@@ -44,11 +44,11 @@
 
 			CGPROGRAM
 
-			#define ENABLE_FOG_EX  1
+	 
             #include "UnityCG.cginc"
-			#if ENABLE_FOG_EX
-			#include "../Shader/height-fog.cginc"
-			#endif
+ 
+			#include "../Shader/FogCommon.cginc"
+ 
 			#pragma vertex vert
 			#pragma fragment frag
 
@@ -118,11 +118,9 @@
 
 				float wareOffset : TEXCOORD3;
 				float4 wpos: TEXCOORD4;
-				#if ENABLE_FOG_EX
-				UNITY_FOG_COORDS_EX(5)
-				#else
-				UNITY_FOG_COORDS(5)
-				#endif
+ 
+				UBPA_FOG_COORDS(5)
+			 
 				
 				float3 normalWorld : TEXCOORD6;
 			};
@@ -152,11 +150,7 @@
 				#endif
 
 
-				#if ENABLE_FOG_EX
-					UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos, normalWorld);
-				#else
-					UNITY_TRANSFER_FOG(o, o.pos);
-				#endif
+				UBPA_TRANSFER_FOG(o, v.vertex);
 				o.texCoord = input.texCoord;
 
 				return o;
@@ -220,13 +214,9 @@
 			    float4 waterColor = lerp (lerp(_Color , _TopColor,foamLine) ,_EdgeColor ,t0 );
 
 				fixed4 col = lerp(waterColor,_SpecularColor*_SpecularPower,sp  );
-				#if ENABLE_FOG_EX
 
-				APPLY_HEIGHT_FOG(col,input.wpos,input.normalWorld,i.fogCoord);
-				UNITY_APPLY_FOG_MOBILE(input.fogCoord, col);
-				#else
-				UNITY_APPLY_FOG(input.fogCoord, col);
-				#endif
+				UBPA_APPLY_FOG(i, c);
+			 
 				
                 return col;
 			}

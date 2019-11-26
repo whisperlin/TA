@@ -5,7 +5,7 @@
 #include "SHGlobal.cginc"
 #include "Shadow.cginc"
 #include "virtuallight.cginc"
-#include "height-fog.cginc"
+#include "FogCommon.cginc"
 #include "snow.cginc"
 #if defined(_SCENE_SHADOW2)  
 #include "shadowmap.cginc"
@@ -25,7 +25,7 @@
 		half4 pos : SV_POSITION;
 		half2 uv : TEXCOORD0;
 		UNITY_FOG_COORDS_EX(1)
-		NORMAL_TANGENT_BITANGENT_COORDS(2,3,4)
+			UBPA_FOG_COORDS(2,3,4)
 		
 		float4 posWorld : TEXCOORD5;
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
@@ -197,15 +197,9 @@
 		
 		#endif
 			
-		UNITY_TRANSFER_FOG_EX(o, o.pos, o.posWorld, o.normal);
+	UBPA_TRANSFER_FOG(o, v.vertex);
 
-		#if _HEIGHT_FOG_ON
-		#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
- 
-		
 		 
-		#endif
-		#endif
 
  
 		return o;
@@ -580,16 +574,6 @@ fixed3 InDirspec = 0;
 #endif
 	 
  
-#if GLOBAL_ENV_SH9
-	float3 l__viewDir = lerp(-viewDir, float3(0, -1, 0), globalEnvOffset);
-	//half __gray = dot(c.rgb,half3(0.3,0.6,0.1));
-	APPLY_HEIGHT_FOG_EX(c, i.posWorld, envsh9(l__viewDir), i.fogCoord);
-#else
-	APPLY_HEIGHT_FOG(c, i.posWorld, normal, i.fogCoord);
-#endif
-
- 
- 
-	UNITY_APPLY_FOG_MOBILE(i.fogCoord,c);
+	UBPA_APPLY_FOG(i, c);
 	return c;
 	}

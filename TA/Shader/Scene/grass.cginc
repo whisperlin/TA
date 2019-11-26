@@ -23,7 +23,7 @@
 				float3 normalWorld : TEXCOORD5;
 				float4 color: TEXCOORD2;
 				float4 wpos:TEXCOORD3;
-				UNITY_FOG_COORDS_EX(4)
+				UBPA_FOG_COORDS(4)
 				float4 vertex : SV_POSITION;
 			};
 
@@ -86,8 +86,7 @@
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
 				o.color = v.color;
 
-				APPLY_HEIGHT_FOG(c, i.wpos, i.normalWorld, i.fogCoord);
-				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
+				UBPA_APPLY_FOG(i, c);
 				//UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos,o.normalWorld);
 				return o;
 			}

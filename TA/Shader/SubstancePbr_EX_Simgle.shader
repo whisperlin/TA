@@ -11,6 +11,7 @@ Shader "TA/Substance PBR EX Simple" {
 		_MetallicPower("MetallicPower", Range(0, 1)) = 1
 		_GlossPower("GlossPower", Range(0, 1)) = 1
 		_Metallic("Metallic", 2D) = "white" {}
+		emissive_power("自发光强度", Range(0, 1)) = 1
 		[KeywordEnum(On,Off)] _IsMetallic("是否开启金属度", Float) = 0
 
 		[Toggle]_snow_options("----------雪选项-----------",int) = 0
@@ -52,6 +53,9 @@ Shader "TA/Substance PBR EX Simple" {
 				CGPROGRAM
 				#pragma vertex vert
 				#pragma fragment frag
+
+				//#pragma fragmentoption ARB_precision_hint_fastest
+				//#pragma fragmentoption ARB_precision_hint_nicest
 				//#pragma multi_compile_fwdbase
 
 				#define SHOULD_SAMPLE_SH ( defined (LIGHTMAP_OFF) && defined(DYNAMICLIGHTMAP_OFF) )
@@ -65,9 +69,7 @@ Shader "TA/Substance PBR EX Simple" {
 
 				#pragma multi_compile _ISMETALLIC_ON _ISMETALLIC_OFF 
 
-				#pragma   multi_compile  _  ENABLE_NEW_FOG
-				#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-				#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+				#pragma   multi_compile  _  FOG_LIGHT
  
 				#define _ISWEATHER_ON 1
 				#pragma   multi_compile  __  GLOBAL_ENV_SH9
@@ -78,6 +80,7 @@ Shader "TA/Substance PBR EX Simple" {
 
 				#pragma multi_compile __ GLOBAL_SH9
 				#pragma  multi_compile  __ _SCENE_SHADOW2
+
 
 				//#define _ISS3_ON 1
 				//#pragma multi_compile __ SSS_EFFECT  
@@ -91,6 +94,6 @@ Shader "TA/Substance PBR EX Simple" {
 				}
 																											 
 		}
-		FallBack "Diffuse"
+		//FallBack "Diffuse"
 																																																	CustomEditor "ShaderForgeMaterialInspector"
 }

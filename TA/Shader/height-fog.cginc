@@ -78,17 +78,17 @@ float fog_begin_in_height = FogInfo.w;
 float fog_height = FogInfo.z;
 
 
-float3 delta_pos = (PosWorld.xyz - _WorldSpaceCameraPos.xyz);
+float3 delta_pos = (PosWorld.xyz - _WorldSpaceCameraPos.xyz);//到屏幕向量.
 
-float fog_dis_height_val = length(delta_pos) / height_fog_end_in_view;
+float fog_dis_height_val = length(delta_pos) / height_fog_end_in_view;//到远截面距离.
 
 
-
-float begin = fog_begin_in_height + fog_height * fog_dis_height_val;
+//  fog_max_height = fog_begin_in_height + fog_height; 
+float fog_max_height = fog_begin_in_height + fog_height * fog_dis_height_val;//初始距离随距离越远越提高.
  
-float world_height_val = smoothstep(begin, fog_begin_in_height, PosWorld.y);
+float world_height_val = smoothstep(fog_max_height, fog_begin_in_height, PosWorld.y);
 
-
+//y=(x-1)*a+1  一个杠杆 a=0无远近变化 a=1，远处高度升高，a在外面反过 是1-a传入shader的.  用这个杠杆压一下.
 float hdis = (fog_dis_height_val - 1)*height_fog_height_a + 1;
 
 

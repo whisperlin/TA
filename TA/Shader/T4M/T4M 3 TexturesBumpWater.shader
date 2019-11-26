@@ -75,14 +75,14 @@ CGPROGRAM
 
 #pragma   multi_compile  _  ENABLE_NEW_FOG
 //#pragma   multi_compile  _  _POW_FOG_ON
-#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-		#pragma   multi_compile  _  GLOBAL_ENV_SH9
-		#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+#pragma   multi_compile  _  FOG_LIGHT
+ 
+ 
 //#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 
  
 #include "UnityCG.cginc"
-#include "../height-fog.cginc"
+#include "../FogCommon.cginc"
 	struct Input {
 		float3 worldPos;
 		float2 uv_Control : TEXCOORD0;
@@ -196,7 +196,7 @@ struct v2f_surf {
   half3 sh : TEXCOORD5; // SH
   #endif
   SHADOW_COORDS(6)
-  UNITY_FOG_COORDS_EX(7)
+	  UBPA_FOG_COORDS(7)
   #if SHADER_TARGET >= 30
   float4 lmap : TEXCOORD8;
   #endif
@@ -216,7 +216,7 @@ struct v2f_surf {
   float4 lmap : TEXCOORD5;
   SHADOW_COORDS(6)
 
-  UNITY_FOG_COORDS_EX(7)
+	  UBPA_FOG_COORDS(7)
   UNITY_VERTEX_INPUT_INSTANCE_ID
   UNITY_VERTEX_OUTPUT_STEREO
 };
@@ -274,7 +274,7 @@ v2f_surf vert_surf (appdata_full v) {
 	  TRANSFER_SHADOW(o); // pass shadow coordinates to pixel shader
 	  //UNITY_CALC_FOG_FACTOR((o.pos).z); o.fogCoord.x = unityFogFactor;
 	  // o.fogCoord.x = (o.pos).z;
-	  UNITY_TRANSFER_FOG_EX(o, o.vertex,float4(worldPos,1), worldNormal); // pass fog coordinates to pixel shader
+	  UBPA_TRANSFER_FOG(o, v.vertex);// pass fog coordinates to pixel shader
 	  return o;
 }
  
@@ -439,8 +439,7 @@ inline fixed4 LightingBlinnPhongWater(SurfaceOutput s, half3 viewDir, UnityGI gi
        
     #endif*/
 	  c += LightingBlinnPhongWater(o, worldViewDir, gi, waterNormal,inWater, _SpecColor0);
-	  APPLY_HEIGHT_FOG(c,float4(worldPos,1),waterNormal, IN.fogCoord);
-	  UNITY_APPLY_FOG_MOBILE(IN.fogCoord, c); // apply fog
+	  UBPA_APPLY_FOG(i, c);
 	  UNITY_OPAQUE_ALPHA(c.a);
 
 	 

@@ -1,8 +1,8 @@
-﻿#include "height-fog.cginc"
+﻿#include "FogCommon.cginc"
 #include "SceneWeather.inc" 
 #include "snow.cginc"
 #include "SHGlobal.cginc"
-#if SSS_EFFECT
+#if SSS_EFFECT || SSS_IN_CTRL2
 #include "sss.cginc"
 #endif
 #if defined(_SCENE_SHADOW2)  
@@ -10,17 +10,28 @@
 #endif
 
 uniform float4 _Color;
+#if COLOR2_CTRL
+uniform float4 _Color2;
+uniform sampler2D _ColorCtrl;
+#endif
+ 
 uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
 uniform sampler2D _BumpMap; uniform float4 _BumpMap_ST;
 uniform float _MetallicPower;
 uniform float _GlossPower;
 uniform sampler2D _Metallic; uniform float4 _Metallic_ST;
+
+#if TEX_CTRL2
+uniform sampler2D _Metallic2; uniform float4 _Metallic2_ST;
+#endif
 uniform sampler2D GlobalSBL;
+uniform float emissive_power;
 
 #if ALPHA_CLIP
 half _AlphaClip;
 #endif
-float4 AmbientColor;
+float4 LightMapInf;
+ 
 
 struct VertexInput {
 	float4 vertex : POSITION;
@@ -42,7 +53,7 @@ struct VertexOutput {
 
 	LIGHTING_COORDS(7, 8)
  
-	UNITY_FOG_COORDS_EX(9)
+		UBPA_FOG_COORDS(9)
 #if defined(_SCENE_SHADOW2) 
 	float4 shadowCoord : TEXCOORD10;
 #endif
@@ -64,8 +75,16 @@ VertexOutput vert(VertexInput v) {
 	o.posWorld = mul(unity_ObjectToWorld, v.vertex);
 	float3 lightColor = _LightColor0.rgb;
 	o.pos = UnityObjectToClipPos(v.vertex);
+
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 	o.ambient = 0;
+
+	/*#if GLOBAL_SH9
+		o.ambient = g_sh(half4(o.normalDir, 1));
+
+	#else
+		o.ambient = ShadeSH9(half4(o.normalDir, 1));
+	#endif*/
 
 #else
 
@@ -77,11 +96,13 @@ VertexOutput vert(VertexInput v) {
 	#endif
 		//o.ambient = ShadeSH9(half4(o.normalDir, 1));
 #endif
-		o.ambient *= AmbientColor.rgb*AmbientColor.a;
+		//o.ambient *= AmbientColor.rgb*AmbientColor.a;
+
+
 	
 	//UNITY_TRANSFER_FOG(o, o.pos);
 	TRANSFER_VERTEX_TO_FRAGMENT(o)
-		UNITY_TRANSFER_FOG_EX(o, o.pos, o.posWorld, o.normalDir);
+		UBPA_TRANSFER_FOG(o, v.vertex);
 
 #if defined(_SCENE_SHADOW2) 
 	o.shadowCoord = mul(_depthVPBias, mul(unity_ObjectToWorld, v.vertex));
@@ -154,6 +175,53 @@ float TrowbridgeReitzAnisotropicNormalDistribution(float _Glossiness, float anis
 }
 float anisotropy;
 #endif
+
+/*float4 frag_add(VertexOutput i) : COLOR{
+	i.normalDir = normalize(i.normalDir);
+	float3x3 tangentTransform = float3x3(i.tangentDir, i.bitangentDir, i.normalDir);
+	float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
+	float3 _BumpMap_var = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(i.uv0, _BumpMap)));
+	float3 normalLocal = _BumpMap_var.rgb;
+	float3 normalDirection = normalize(mul(normalLocal, tangentTransform)); // Perturbed normals
+	float3 lightDirection = normalize(lerp(_WorldSpaceLightPos0.xyz, _WorldSpaceLightPos0.xyz - i.posWorld.xyz,_WorldSpaceLightPos0.w));
+	float3 lightColor = _LightColor0.rgb;
+	float3 halfDirection = normalize(viewDirection + lightDirection);
+	////// Lighting:
+	float attenuation = LIGHT_ATTENUATION(i);
+	float3 attenColor = attenuation * _LightColor0.xyz;
+	float Pi = 3.141592654;
+	float InvPi = 0.31830988618;
+	///////// Gloss:
+	float4 _Metallic_var = tex2D(_Metallic,TRANSFORM_TEX(i.uv0, _Metallic));
+	float gloss = (_Metallic_var.a*_GlossPower);
+	float perceptualRoughness = 1.0 - (_Metallic_var.a*_GlossPower);
+	float roughness = perceptualRoughness * perceptualRoughness;
+	float specPow = exp2(gloss * 10.0 + 1.0);
+	////// Specular:
+	float NdotL = saturate(dot(normalDirection, lightDirection));
+	float LdotH = saturate(dot(lightDirection, halfDirection));
+	float3 specularColor = (_Metallic_var.r*_MetallicPower);
+	float specularMonochrome;
+	float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
+	float3 node_6343 = (_MainTex_var.rgb*_Color.rgb);
+	float3 diffuseColor = node_6343; // Need this for specular when using metallic
+	diffuseColor = DiffuseAndSpecularFromMetallic(diffuseColor, specularColor, specularColor, specularMonochrome);
+ 
+ 
+ 
+ 
+	/////// Diffuse:
+	NdotL = max(0.0,dot(normalDirection, lightDirection));
+ 
+	float3 directDiffuse = NdotL * attenColor;
+	float3 diffuse = directDiffuse * diffuseColor;
+	/// Final Color:
+	float3 finalColor = diffuse  ;
+	fixed4 finalRGBA = fixed4(finalColor * 1,0);
+ 
+ 
+	return finalRGBA;
+}*/
 float4 frag(VertexOutput i) : COLOR{
 	i.normalDir = normalize(i.normalDir);
 	float3x3 tangentTransform = float3x3(i.tangentDir, i.bitangentDir, i.normalDir);
@@ -162,7 +230,15 @@ float4 frag(VertexOutput i) : COLOR{
 	float3 normalLocal = _BumpMap_var.rgb;
 	float3 normalDirection = normalize(mul(normalLocal, tangentTransform)); // Perturbed normals
 	float3 viewReflectDirection = reflect(-viewDirection, normalDirection);
+
+
+#if ADD_PASS
+	float3 lightDirection = normalize(lerp(_WorldSpaceLightPos0.xyz, _WorldSpaceLightPos0.xyz - i.posWorld.xyz, _WorldSpaceLightPos0.w));
+#else
 	float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
+#endif
+	
+	//
 	float3 lightColor = _LightColor0.rgb;
 
 
@@ -179,17 +255,28 @@ float4 frag(VertexOutput i) : COLOR{
 
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 		fixed3 lightmap = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
-#if defined (SHADOWS_SHADOWMASK)
-		float3 attenuation = UNITY_SAMPLE_TEX2D(unity_ShadowMask, i.uv2).rrr;
-#else
-	//float3 attenuation = min(min(lightmap.r, lightmap.g),lightmap.b);
-	float3 attenuation = saturate( dot(lightmap,float3(0.3,0.6,0.1)) );
-	 
-		//
-#endif
-#else
 
+#if UNITY_COLORSPACE_GAMMA
+		lightmap = LinearToGammaSpace(lightmap);
+		lightmap.rgb *= LightMapInf.rgb *(1+ LightMapInf.a);
+#endif
+		
+	 
+	#if defined (SHADOWS_SHADOWMASK)
+			float3 attenuation = UNITY_SAMPLE_TEX2D(unity_ShadowMask, i.uv2).rrr;
+	#else
+		//float3 attenuation = min(min(lightmap.r, lightmap.g),lightmap.b);
+		float3 attenuation = saturate( dot(lightmap,float3(0.3,0.6,0.1)) );
+		attenuation = attenuation*attenuation;
+		attenuation = attenuation * attenuation;
+		//return float4(attenuation,1);
+			//
+	#endif
+#else
+	  
 	 float3 attenuation = LIGHT_ATTENUATION(i);
+
+	
 #endif
 
 #if defined(_SCENE_SHADOW2)  
@@ -201,16 +288,18 @@ float4 frag(VertexOutput i) : COLOR{
 
 	float3 attenColor = attenuation * _LightColor0.xyz;
 
- 
- 
-	float Pi = 3.141592654;
-	float InvPi = 0.31830988618;
+	//float Pi = 3.141592654;
+	//float InvPi = 0.31830988618;
 	///////// Gloss:
 #if NO_CTRL_TEXTURE
 	float4 _Metallic_var = float4(1,0,0,1);
 #else
 	float4 _Metallic_var = tex2D(_Metallic, TRANSFORM_TEX(i.uv0, _Metallic));
 #endif
+#if TEX_CTRL2
+	float4 _Metallic2_var = tex2D(_Metallic2, TRANSFORM_TEX(i.uv0, _Metallic2));
+#endif
+
 	
 	float gloss = (_Metallic_var.a*_GlossPower);
 
@@ -240,14 +329,35 @@ float4 frag(VertexOutput i) : COLOR{
 	
 	float specularMonochrome;
 	float4 _MainTex_var = tex2D(_MainTex, TRANSFORM_TEX(i.uv0, _MainTex));
-
+	#if COLOR2_CTRL
+	float4 _ColorCtrl_var = tex2D(_ColorCtrl, TRANSFORM_TEX(i.uv0, _MainTex));
+	_Color = lerp(_Color,_Color2,_ColorCtrl_var);
+	 
+	#endif
 	float3 baseDiffuseColor = (_MainTex_var.rgb*_Color.rgb); // Need this for specular when using metallic
 
-
+#if ALPHA_CLIP2
+	clip(_MainTex_var.a  - 0.5);
+ 
+#endif
 #if ALPHA_CLIP
-	clip(_MainTex_var.a*_Color.a - _AlphaClip);
+	clip( _MainTex_var.a -_AlphaClip );
 #endif
 	float3 diffuseColor = UnityDiffuseAndSpecularFromMetallic(baseDiffuseColor, specularColor, specularColor, specularMonochrome);
+	 
+	float NdL = dot(normalDirection, lightDirection);
+	float NdotL = saturate(NdL);
+	
+
+#if ADD_PASS
+	float3 directDiffuse1 = NdotL * attenColor;
+	//test
+ 
+	float3 diffuse1 = directDiffuse1 * diffuseColor;
+
+	fixed4 finalRGBA1 = fixed4(diffuse1 * 1, 0);
+	return finalRGBA1;
+#endif
 #if _ISWEATHER_ON
 #if RAIN_ENABLE 
 
@@ -255,7 +365,7 @@ float4 frag(VertexOutput i) : COLOR{
 #endif
 #endif
 
-	float NdL = dot(normalDirection, lightDirection);
+	
 	 
 #if BACK_LIGHT_DIFFUSE
 	float s = (2 * step(-0.001f, NdL) - 1);
@@ -264,7 +374,6 @@ float4 frag(VertexOutput i) : COLOR{
 #endif
 
 	////// Specular:
-	float NdotL = saturate(NdL);
 	float LdotH = saturate(dot(lightDirection, halfDirection));
 	
 
@@ -343,38 +452,37 @@ float4 frag(VertexOutput i) : COLOR{
 	
 	indirectSpecular *= FresnelLerp(specularColor, grazingTerm, NdotV);
 	
-#if CHARACTER_ON
+#if UNITY_SKYBOX_REDUCTION
 	half surfaceReduction;
 	#ifdef UNITY_COLORSPACE_GAMMA
 		surfaceReduction = 1.0 - 0.28*roughness*perceptualRoughness;
 	#else
 		surfaceReduction = 1.0 / (roughness*roughness + 1.0);
 	#endif
-
 	indirectSpecular *= surfaceReduction;
 #else
 	indirectSpecular *= _Meta;
 #endif
 	
 	//return float4(indirectSpecular, 1);
-	_Metallic_var.b = 1;
+	//_Metallic_var.b = 1;
 	float3 specular = (directSpecular + indirectSpecular) *_Metallic_var.b;
 	
 	/////// Diffuse:
-	
+ 
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 	 
 	#if defined (SHADOWS_SHADOWMASK)
 		float3 directDiffuse = NdotL * attenColor + lightmap;
 	#else
 		float3 directDiffuse =  lightmap;
-		//return float4(lightmap, 1);
-	
 	#endif
  
 #else
-
-	#if SSS_EFFECT
+	#if SSS_IN_CTRL2
+		half3 brdf = sss_from_lut(NdotL, normalDirection, i.posWorld, _LightColor0.rgb);
+		float3 directDiffuse = lerp(NdotL, brdf, _Metallic2_var.r*_S3SPower) * attenColor;
+	#elif SSS_EFFECT
 		half3 brdf = sss_from_lut(NdotL, normalDirection, i.posWorld, _LightColor0.rgb);
 		float3 directDiffuse = lerp(NdotL, brdf, _Metallic_var.b*_S3SPower) * attenColor;
 		//float3 directDiffuse = NdotL * attenColor;
@@ -383,17 +491,23 @@ float4 frag(VertexOutput i) : COLOR{
 	#endif
 #endif
 	 
+
+ 
 	float3 indirectDiffuse  = i.ambient;
  
 	//return float4(indirectDiffuse, 1);
-#if SSS_EFFECT
+#if SSS_IN_CTRL2
+	float3 diffuse = (directDiffuse*_Metallic_var.b + indirectDiffuse) * diffuseColor;
+#elif SSS_EFFECT
 	float3 diffuse = (directDiffuse + indirectDiffuse) * diffuseColor;
 #else
 	float3 diffuse = (directDiffuse*_Metallic_var.b + indirectDiffuse) * diffuseColor;
 #endif
+
+
 	
 	////// Emissive:
-	float3 emissive = baseDiffuseColor * _Metallic_var.g;
+	float3 emissive = baseDiffuseColor * _Metallic_var.g * emissive_power;
  
 	/// Final Color:
 	float3 finalColor = diffuse + specular + emissive;
@@ -401,17 +515,10 @@ float4 frag(VertexOutput i) : COLOR{
  
 	fixed4 c = fixed4(finalColor,1);
 
-#if GLOBAL_ENV_SH9
-	float3 l__viewDir = lerp(-viewDirection, float3(0, -1, 0), globalEnvOffset);
-	APPLY_HEIGHT_FOG_EX(c, i.posWorld, envsh9(l__viewDir), i.fogCoord);
-#else
-	
-	APPLY_HEIGHT_FOG(c, i.posWorld, normalDirection, i.fogCoord);
-#endif
 
-	UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
+	UBPA_APPLY_FOG(i, c);
  
-
+	
 	c.a = _MainTex_var.a;
 	//return c.aaaa;
 	return c;

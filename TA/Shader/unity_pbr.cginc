@@ -1,4 +1,4 @@
-﻿#include "height-fog.cginc"
+﻿#include "FogCommon.cginc"
 #include "SceneWeather.inc" 
 #include "snow.cginc"
 uniform float4 _Color;
@@ -32,7 +32,7 @@ struct VertexOutput {
 	float3 bitangentDir : TEXCOORD6;
 	LIGHTING_COORDS(7, 8)
 		//UNITY_FOG_COORDS(9)
-		UNITY_FOG_COORDS_EX(9)
+		UBPA_FOG_COORDS(9)
 #if defined(LIGHTMAP_ON) || defined(UNITY_SHOULD_SAMPLE_SH)
 		float4 ambientOrLightmapUV : TEXCOORD10;
 #endif
@@ -60,7 +60,7 @@ VertexOutput vert(VertexInput v) {
 	
 	//UNITY_TRANSFER_FOG(o, o.pos);
 	TRANSFER_VERTEX_TO_FRAGMENT(o)
-		UNITY_TRANSFER_FOG_EX(o, o.pos, o.posWorld, o.normalDir);
+		UBPA_TRANSFER_FOG(o, v.vertex);
 		return o;
 }
 
@@ -274,16 +274,8 @@ float4 frag(VertexOutput i) : COLOR{
 
 
 
-#if GLOBAL_ENV_SH9
-	float3 l__viewDir = lerp(-viewDirection, float3(0, -1, 0), globalEnvOffset);
- 
-	APPLY_HEIGHT_FOG_EX(c, i.posWorld, envsh9(l__viewDir), i.fogCoord);
-#else
-	
-	APPLY_HEIGHT_FOG(c, i.posWorld, normalDirection, i.fogCoord);
-#endif
 
-	UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
+	UBPA_APPLY_FOG(i, c);
  
  
 	//UNITY_APPLY_FOG(i.fogCoord, c);

@@ -6,7 +6,7 @@ Shader "TA/Substance PBR EX Tree" {
 		_MainTex("Albedo", 2D) = "white" {}
 		_MetallicPower("MetallicPower", Range(0, 1)) = 1
 		_GlossPower("GlossPower", Range(0, 1)) = 0.3
- 
+		emissive_power("自发光强度", Range(0, 1)) = 1
 		//[KeywordEnum(On,Off)] _IsMetallic("是否开启金属度", Float) = 0
 
 		[Toggle]_snow_options("----------雪选项-----------",int) = 0
@@ -53,9 +53,7 @@ Shader "TA/Substance PBR EX Tree" {
 
 				#define _ISMETALLIC_OFF 1
 
-				#pragma   multi_compile  _  ENABLE_NEW_FOG
-				#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-				#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
+				#pragma   multi_compile  _  FOG_LIGHT
  
 				#define _ISWEATHER_ON 1
 				#pragma   multi_compile  __  GLOBAL_ENV_SH9
