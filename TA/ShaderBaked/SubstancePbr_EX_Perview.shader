@@ -78,7 +78,7 @@ Shader "TA/Substance PBR  Perview" {
 				#pragma shader_feature MELT_SNOW
 				#pragma multi_compile __ RAIN_ENABLE
 
-				#pragma multi_compile __ GLOBAL_SH9
+				//#pragma multi_compile __ GLOBAL_SH9
 				#pragma  multi_compile  __ _SCENE_SHADOW2
 
 
@@ -87,6 +87,9 @@ Shader "TA/Substance PBR  Perview" {
 
 				#pragma shader_feature ANISOTROPIC_NORMAL
 
+			
+				#include "UnityCG.cginc"
+			
 				#include "AutoLight.cginc"
 				#include "Lighting.cginc"
 				#include "../Shader/unity_pbr-simple.cginc"   
@@ -135,7 +138,7 @@ Shader "TA/Substance PBR  Perview" {
 				//#pragma multi_compile __ SSS_EFFECT  
 
 				#pragma shader_feature ANISOTROPIC_NORMAL
-
+				#include "UnityCG.cginc"
 				#include "AutoLight.cginc"
 				#include "Lighting.cginc"
 				#include "../Shader/unity_pbr-simple.cginc"   

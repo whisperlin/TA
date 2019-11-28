@@ -59,6 +59,7 @@ Shader "TA/Cutout"
 
 			sampler2D _MainTex;
 			float _CutAlpha;
+			float4 LightMapInf;
 #ifdef BRIGHTNESS_ON
 			fixed3 _Brightness;
 #endif
@@ -88,6 +89,11 @@ Shader "TA/Cutout"
 				clip(c.a - _CutAlpha);
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv1));
+
+#if UNITY_COLORSPACE_GAMMA
+				lm = LinearToGammaSpace(lm);
+#endif
+				lm.rgb *= LightMapInf.rgb *(1 + LightMapInf.a);
 				c.rgb *= lm;
 #else
 				

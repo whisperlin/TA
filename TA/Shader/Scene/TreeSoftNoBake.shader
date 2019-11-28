@@ -1,6 +1,6 @@
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 
-Shader "TA/Scene/TreeSoft"
+Shader "TA/Scene/TreeSoft Not bake"
 {
 	Properties
 	{
@@ -11,8 +11,8 @@ Shader "TA/Scene/TreeSoft"
 		_Speed("速度",Range(0,5)) = 2
 		_Ctrl("空间各向差异",Range(0,3.14)) = 0
 
-		_Emission("自发光",Range(0,3)) = 0.5 
-		_EmissionTex("自发光控制图",2D)  = "white" {}
+		//_Emission("自发光",Range(0,3)) = 0.5 
+		//_EmissionTex("自发光控制图",2D)  = "white" {}
 	}
 
 		SubShader
@@ -34,6 +34,8 @@ Shader "TA/Scene/TreeSoft"
 		//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 		#pragma multi_compile _FADEPHY_OFF _FADEPHY_ON
 
+		#pragma multi_compile __ GLOBAL_SH9
+
 		#include "UnityCG.cginc"
 		#include "Lighting.cginc"
 		#include "../FogCommon.cginc"
@@ -47,23 +49,14 @@ Shader "TA/Scene/TreeSoft"
 			{
 				fixed4 c = tex2D(_MainTex, i.uv);
 				c.rgb *= _Color.rgb;
-#if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
-				fixed4 e = tex2D(_EmissionTex, i.uv);
-				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
-
-#if UNITY_COLORSPACE_GAMMA
-				lm = LinearToGammaSpace(lm);
-#endif
-				lm.rgb *= LightMapInf.rgb *(1 + LightMapInf.a);
-				c.rgb *= lm  + _Emission*e.r;
-#else
-				fixed4 e = tex2D(_EmissionTex, i.uv);
+ 
+				//fixed4 e = tex2D(_EmissionTex, i.uv);
 				
 				half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
 			 
 				half nl = saturate(dot(i.normalWorld, lightDir)) + saturate(dot(i.normalWorld, -lightDir)) ;
-				c.rgb = ( UNITY_LIGHTMODEL_AMBIENT + _LightColor0 * nl + _Emission*e.r) * c.rgb;
-#endif
+				c.rgb = (i.ambient + _LightColor0 * nl /*+ _Emission*e.r*/) * c.rgb;
+ 
 				//return i.color;
 				clip(c.a - _AlphaCut);
 				UBPA_APPLY_FOG(i, c);

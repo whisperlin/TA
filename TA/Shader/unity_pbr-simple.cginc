@@ -14,7 +14,7 @@ uniform float4 _Color;
 uniform float4 _Color2;
 uniform sampler2D _ColorCtrl;
 #endif
- 
+uniform float4 _Color3;
 uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
 uniform sampler2D _BumpMap; uniform float4 _BumpMap_ST;
 uniform float _MetallicPower;
@@ -29,7 +29,7 @@ uniform float emissive_power;
 
 #if ALPHA_CLIP
 half _AlphaClip;
-#endif
+#endif 
 float4 LightMapInf;
  
 
@@ -53,7 +53,7 @@ struct VertexOutput {
 
 	LIGHTING_COORDS(7, 8)
  
-		UBPA_FOG_COORDS(9)
+	UBPA_FOG_COORDS(9)
 #if defined(_SCENE_SHADOW2) 
 	float4 shadowCoord : TEXCOORD10;
 #endif
@@ -79,24 +79,20 @@ VertexOutput vert(VertexInput v) {
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 	o.ambient = 0;
 
-	/*#if GLOBAL_SH9
-		o.ambient = g_sh(half4(o.normalDir, 1));
-
-	#else
-		o.ambient = ShadeSH9(half4(o.normalDir, 1));
-	#endif*/
+	 
 
 #else
 
 	#if GLOBAL_SH9
 		o.ambient = g_sh(half4(o.normalDir, 1));
-		 
+	#elif GLOBAL_SH9_ROLE
+		o.ambient = g_sh_role(half4(o.normalDir, 1));
 	#else
 		o.ambient = ShadeSH9(half4(o.normalDir, 1));
 	#endif
-		//o.ambient = ShadeSH9(half4(o.normalDir, 1));
+		
 #endif
-		//o.ambient *= AmbientColor.rgb*AmbientColor.a;
+		
 
 
 	
@@ -222,6 +218,9 @@ float anisotropy;
  
 	return finalRGBA;
 }*/
+#if LIGHT_CTRL
+float RoleLightPower;
+#endif
 float4 frag(VertexOutput i) : COLOR{
 	i.normalDir = normalize(i.normalDir);
 	float3x3 tangentTransform = float3x3(i.tangentDir, i.bitangentDir, i.normalDir);
@@ -258,8 +257,8 @@ float4 frag(VertexOutput i) : COLOR{
 
 #if UNITY_COLORSPACE_GAMMA
 		lightmap = LinearToGammaSpace(lightmap);
-		lightmap.rgb *= LightMapInf.rgb *(1+ LightMapInf.a);
 #endif
+		lightmap.rgb *= LightMapInf.rgb *(1 + LightMapInf.a);
 		
 	 
 	#if defined (SHADOWS_SHADOWMASK)
@@ -275,6 +274,10 @@ float4 frag(VertexOutput i) : COLOR{
 #else
 	  
 	 float3 attenuation = LIGHT_ATTENUATION(i);
+#if LIGHT_CTRL
+	 attenuation *= (1 + RoleLightPower);
+
+#endif
 
 	
 #endif
@@ -490,8 +493,9 @@ float4 frag(VertexOutput i) : COLOR{
 		float3 directDiffuse = NdotL * attenColor;
 	#endif
 #endif
-	 
-
+	//#if 	GLOBAL_SH9_ROLE
+	//return float4(i.ambient,1);
+	//#endif
  
 	float3 indirectDiffuse  = i.ambient;
  
@@ -507,7 +511,7 @@ float4 frag(VertexOutput i) : COLOR{
 
 	
 	////// Emissive:
-	float3 emissive = baseDiffuseColor * _Metallic_var.g * emissive_power;
+	float3 emissive = baseDiffuseColor* _Color3 * _Metallic_var.g * emissive_power;
  
 	/// Final Color:
 	float3 finalColor = diffuse + specular + emissive;

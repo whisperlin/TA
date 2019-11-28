@@ -41,7 +41,7 @@ Shader "TA/Substance PBR EX Charactor Alpha Blend" {
 		anisotropy("anisotropy",Range(-20,1)) = 1
 		//[Enum(UnityEngine.Rendering.CullMode)] _Cull("Off为双面贴图", Float) = 2
 
-		 
+		  _Color3("Color3", Color) = (1,1,1,1)
 	
 	}
 		SubShader{
@@ -84,6 +84,7 @@ Shader "TA/Substance PBR EX Charactor Alpha Blend" {
 				//#pragma multi_compile __ RAIN_ENABLE
 
 				#pragma multi_compile __ GLOBAL_SH9
+				#define LIGHT_CTRL 1
 				#pragma  multi_compile  __ _SCENE_SHADOW2
 
 				#define TEX_CTRL2 1

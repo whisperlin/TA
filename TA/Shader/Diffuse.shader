@@ -56,7 +56,7 @@ Shader "TA/Diffuse"
 			};
 
 			sampler2D _MainTex;
-
+			float4 LightMapInf;
 #ifdef BRIGHTNESS_ON
 			fixed3 _Brightness;
 #endif
@@ -86,6 +86,11 @@ Shader "TA/Diffuse"
 
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv1));
+
+#if UNITY_COLORSPACE_GAMMA
+				lm = LinearToGammaSpace(lm);
+#endif
+				lm.rgb *= LightMapInf.rgb *(1 + LightMapInf.a);
 				c.rgb *= lm;
 #else
 				

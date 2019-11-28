@@ -3,14 +3,14 @@
 
 
 half sss_scatter0;
-half _DifSC;
+half _SSSDif;
 fixed4 _BackColor;
-/*inline half3 calc_transmission_sss(half NdotLsat, half NdotL, half sss_warp0, half sss_scatter0, half cvSSS)
+/*inline half3 calc_transmission_sss_base(half NdotLsat, half NdotL, half sss_warp0, half sss_scatter0, half cvSSS)
 	{
 		half NdotL2 = saturate((NdotL + sss_warp0) / (1.0 + sss_warp0));
 		//half NdotL2 = lerp(sss_warp0, 1, NdotLsat);
 		half NdotL3 = smoothstep(0.0f, sss_scatter0 + 0.001, NdotL2) * lerp(sss_scatter0 * 2.0f, sss_scatter0, NdotL2);
-		half3 color0 =  lerp(_DifSC,1, NdotLsat)  ;
+		half3 color0 =  lerp(_SSSDif,1, NdotLsat)  ;
 		half3 color1 = (_BackColor.xyz * NdotL3) + NdotL2;
 		return lerp(color0, color1, cvSSS + 0.001);
 	}*/
@@ -19,7 +19,7 @@ inline half3 calc_transmission_sss(half NdotLsat, half NdotL, half BackNdotL, ha
 {
 	half NdotL2 = saturate((BackNdotL + sss_warp0) / (1.0 + sss_warp0));
 	half NdotL3 = smoothstep(0.0f, sss_scatter0 + 0.001, NdotL2) * lerp(sss_scatter0 * 2.0f, sss_scatter0, NdotL2);
-	half3 color0 = lerp(_DifSC, 1, NdotLsat);
+	half3 color0 = lerp(_SSSDif, 1, NdotLsat);
 	half3 color1 = (_BackColor.xyz * NdotL3) + color0;
 	return lerp(color0, color1, cvSSS + 0.001);
 }

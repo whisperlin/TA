@@ -84,7 +84,7 @@ Shader "TA/CutoutSoftEdge"
 				UBPA_TRANSFER_FOG(o, v.vertex);
 				return o;
 			}
-			
+			float4 LightMapInf;
 			fixed4 frag (v2f i) : SV_Target
 			{
 				fixed4 c = tex2D(_MainTex, i.uv);
@@ -92,6 +92,11 @@ Shader "TA/CutoutSoftEdge"
 				clip(c.a - _CutAlpha);
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
+
+#if UNITY_COLORSPACE_GAMMA
+				lm = LinearToGammaSpace(lm);
+#endif
+				lm.rgb *= LightMapInf.rgb *(1 + LightMapInf.a);
 				c.rgb =  c.rgb * lm;
 #else
 

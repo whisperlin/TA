@@ -37,6 +37,7 @@ Shader "TA/Substance PBR EX Simple" {
 		//_BRDFTex("SSS brdf贴图", 2D) = "gray" {}
 		//_S3SPower("SSS强度",Range(0,1)) = 1
 		//[Enum(UnityEngine.Rendering.CullMode)] _Cull("Off为双面贴图", Float) = 2
+		_Color3("Color3", Color) = (1,1,1,1)
 	
 	}
 		SubShader{
@@ -78,7 +79,7 @@ Shader "TA/Substance PBR EX Simple" {
 				#pragma shader_feature MELT_SNOW
 				#pragma multi_compile __ RAIN_ENABLE
 
-				#pragma multi_compile __ GLOBAL_SH9
+				//#pragma multi_compile __ GLOBAL_SH9
 				#pragma  multi_compile  __ _SCENE_SHADOW2
 
 

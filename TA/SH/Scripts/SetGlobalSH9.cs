@@ -12,59 +12,37 @@ public class SetGlobalSH9 : MonoBehaviour {
     [Label("开启深度贴图")]
     public bool openDepthTexture =false;
 #if UNITY_EDITOR
+    [Label("ibl(场景)")]
     public Cubemap ibl;
     Cubemap curIbl;
+#endif
+
+#if UNITY_EDITOR
+    [Label("ibl(角色)")]
+    public Cubemap ibl2;
+    Cubemap curIbl2;
 #endif
 
     [Label("反射球(sbl)")]
     public Texture2D sbl;
     Texture2D curSbl = null;
-    public Vector4[] iblCoefficients = new Vector4[0];
+
+
+
+    //public Vector4[] iblCoefficients = new Vector4[0];
+
+    public SH9Struct iblData;
+    public SH9Struct iblData2;
     [Label("烘培贴图颜色")]
     public Color LightMapColor = Color.white;
-    [Label("烘培贴图亮度提高",    0.0f, 1f)]
+    [Label("烘培贴图亮度提高",    -1f, 1f)]
     public float LightMapIntensity = 0.2f;
 
-  
-#if UNITY_EDITOR
-    public void UpdateSH9FormCubeMap()
-    {
-        if (curIbl != ibl)
-        {
-            if (null == ibl)
-            {
-                iblCoefficients = new Vector4[0];
-            }
-            else
-            {
-                ModifyTextureReadable(ibl);
-                iblCoefficients = new Vector4[9];
-                if (SphericalHarmonics.CPU_Project_Uniform_9Coeff(ibl, iblCoefficients))
-                {
-                }
-            }
-            curIbl = ibl  ;
-        }
+
+    [Label("角色光照调整",-1f,1f)]
+    public float RoleLightPower = 0f;
+
  
-    }
-
-
-    void ModifyTextureReadable(Cubemap input_cubemap)
-    {
-        string path = AssetDatabase.GetAssetPath(input_cubemap);
-        if (null == path || path.Length == 0)
-        {
-            return;
-        }
-        TextureImporter textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
-        if (null == textureImporter)
-            return;
-        textureImporter.isReadable = true;
-        textureImporter.SaveAndReimport();
-    }
-
-
-#endif
 
     public bool updateSH9Data = true;
 
@@ -78,7 +56,8 @@ public class SetGlobalSH9 : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 #if UNITY_EDITOR
-        UpdateSH9FormCubeMap();
+        SH9Helper.UpdateSH9FormCubeMap(ibl,ref curIbl,iblData);
+        SH9Helper.UpdateSH9FormCubeMap(ibl2, ref curIbl2, iblData2);
         setSH9Global();
 #endif
        
@@ -105,34 +84,23 @@ public class SetGlobalSH9 : MonoBehaviour {
         }
 #endif
 
-      
+
 
 #if !UNITY_EDITOR
         if (updateSH9Data)
         {
             updateSH9Data = false;
 #endif
-        if (iblCoefficients.Length>0)
-        { 
-            for (int i = 0; i < 9; ++i)
-            {
-                string param = "g_sph" + i.ToString();
-                Shader.SetGlobalVector(param, iblCoefficients[i]);
-            }
-        }
-        
+        iblData.Commit("g_sph", "GLOBAL_SH9");
+        iblData2.Commit("g_sph_role", "GLOBAL_SH9_ROLE");
+
+
 #if !UNITY_EDITOR
         }
 #endif
 
-        if (iblCoefficients.Length > 0)
-        {
-            Shader.EnableKeyword("GLOBAL_SH9");
-        }
-        else
-        {
-            Shader.DisableKeyword("GLOBAL_SH9");
-        }
+
+        Shader.SetGlobalFloat("RoleLightPower", RoleLightPower);
         Shader.SetGlobalVector("LightMapInf",new Vector4(LightMapColor.r, LightMapColor.g, LightMapColor.b, LightMapIntensity));
     }
 }

@@ -262,12 +262,12 @@ public class CubemapSHProjector : EditorWindow
 								
 							}*/
 
-						data.test = new Vector4 (1, 0, 0, 1);
+						//data.test = new Vector4 (1, 0, 0, 1);
 						data = AssetDatabase.LoadAssetAtPath<SH9Data> (path);
 						data.coefficients = coefficients;
 						AssetDatabase.SaveAssets ();
 					} else {
-						data.test = Vector4.one;
+						//data.test = Vector4.one;
 						AssetDatabase.CreateAsset (data, path);
 						AssetDatabase.ImportAsset (path); 
 					}

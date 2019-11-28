@@ -42,6 +42,8 @@ Shader "TA/Substance PBR EX Charactor" {
 
 		 [Toggle(ANISOTROPIC_NORMAL)] ANISOTROPIC_NORMAL("各向异性高光", Float) = 0
 		 anisotropy("anisotropy",Range(-20,1)) = 1
+
+		 _Color3("Color3", Color) = (1,1,1,1)
 	
 	}
 		SubShader{
@@ -81,7 +83,8 @@ Shader "TA/Substance PBR EX Charactor" {
 				//#pragma shader_feature MELT_SNOW
 				//#pragma multi_compile __ RAIN_ENABLE
 
-				#pragma multi_compile __ GLOBAL_SH9
+				#pragma multi_compile __ GLOBAL_SH9_ROLE
+				#define LIGHT_CTRL 1
 				#pragma  multi_compile  __ _SCENE_SHADOW2
 				
 				#define TEX_CTRL2 1

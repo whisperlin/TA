@@ -1,4 +1,6 @@
-
+#if GLOBAL_SH9
+#include "../SHGlobal.cginc"
+#endif
 			struct appdata
 			{
 				float4 vertex : POSITION;
@@ -24,6 +26,7 @@
 				float4 color: TEXCOORD2;
 				float4 wpos:TEXCOORD3;
 				UBPA_FOG_COORDS(4)
+				float3 ambient:TEXCOORD6;
 				float4 vertex : SV_POSITION;
 			};
 
@@ -85,8 +88,14 @@
 #endif
 				o.normalWorld = UnityObjectToWorldNormal(v.normal);
 				o.color = v.color;
+#if GLOBAL_SH9
+				o.ambient = g_sh(half4(o.normalWorld, 1));
+#else
+				o.ambient = ShadeSH9(half4(o.normalWorld, 1));
+#endif
+				
 
-				UBPA_APPLY_FOG(i, c);
+				UBPA_TRANSFER_FOG(o, v.vertex);
 				//UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos,o.normalWorld);
 				return o;
 			}
