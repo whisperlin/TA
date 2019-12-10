@@ -28,6 +28,8 @@
 ![image](https://github.com/whisperlin/TA/blob/master/pic/boxproject2.png)<br>
 ## 卡通渲染<br>
 ![image](https://github.com/whisperlin/TA/blob/master/pic/Cartoon.png)<br>
+## 头发，各向异性<br>
+![image](https://github.com/whisperlin/TA/blob/master/pic/hair.png)<br>
 ## 综合场景，高度雾，远景变色，BoxPorject水等<br>
 ![image](https://github.com/whisperlin/TA/blob/master/pic/Scene.png)<br>
 
