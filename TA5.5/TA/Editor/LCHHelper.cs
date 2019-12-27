@@ -1,0 +1,79 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+
+public class LCHHelper 
+{
+    [MenuItem("TA/其它/转换预览材质")]
+    public static void SceneToPerview()
+    {
+        {
+            Renderer[] rs = GameObject.FindObjectsOfType<Renderer>();
+            Shader shaderSimple = Shader.Find("TA/BumpedAOSpecularAlpha");
+            Shader shaderPerview = Shader.Find("TA/BumpedAOSpecularAlpha Preview");
+            foreach (Renderer r in rs)
+            {
+                foreach (Material m in r.sharedMaterials)
+                {
+                    if (m.shader == shaderSimple)
+                    {
+                        m.shader = shaderPerview;
+                    }
+                }
+            }
+        }
+        {
+            Renderer[] rs = GameObject.FindObjectsOfType<Renderer>();
+            Shader shaderSimple = Shader.Find("TA/BumpedAOSpecular");
+            Shader shaderPerview = Shader.Find("TA/BumpedAOSpecular Preview");
+            foreach (Renderer r in rs)
+            {
+                foreach (Material m in r.sharedMaterials)
+                {
+                    if (m.shader == shaderSimple)
+                    {
+                        m.shader = shaderPerview;
+                    }
+                }
+            }
+        }
+    }
+
+    [MenuItem("TA/其它/转换预览材质为场景材质")]
+    public static void PerviewToScene()
+    {
+        {
+            Renderer[] rs = GameObject.FindObjectsOfType<Renderer>();
+            Shader shaderSimple = Shader.Find("TA/BumpedAOSpecularAlpha");
+            Shader shaderPerview = Shader.Find("TA/BumpedAOSpecularAlpha Preview");
+            foreach (Renderer r in rs)
+            {
+                foreach (Material m in r.sharedMaterials)
+                {
+                    if (m.shader == shaderPerview)
+                    {
+                        m.shader = shaderSimple;
+                    }
+                }
+            }
+        }
+        {
+            Renderer[] rs = GameObject.FindObjectsOfType<Renderer>();
+            Shader shaderSimple = Shader.Find("TA/BumpedAOSpecular");
+            Shader shaderPerview = Shader.Find("TA/BumpedAOSpecular Preview");
+            foreach (Renderer r in rs)
+            {
+                foreach (Material m in r.sharedMaterials)
+                {
+                    if (m.shader == shaderPerview)
+                    {
+                        m.shader = shaderSimple;
+                    }
+                }
+            }
+        }
+
+       
+    }
+}
