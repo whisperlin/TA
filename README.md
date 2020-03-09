@@ -33,7 +33,10 @@
 ![image](https://github.com/whisperlin/TA/blob/master/pic/hair2.png)<br>
 ## 综合场景，高度雾，远景变色，BoxPorject水等<br>
 ![image](https://github.com/whisperlin/TA/blob/master/pic/Scene.png)<br>
+## 大气散射<br>
+![image](https://github.com/whisperlin/TA/blob/master/pic/AtmosphericScattering.png)<br>
 ## 工具<br>
 ![image](https://github.com/whisperlin/TA/blob/master/pic/tool.png)<br>
+
 
  
