@@ -1,0 +1,196 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: water
+  m_Shader: {fileID: 4800000, guid: faca34c0ca18ee640994b473dfbf5b66, type: 3}
+  m_ShaderKeywords: BOX_PROJECT_SKY_BOX _CLOTH_OFF _EMISSION _ISMEMISSION_OFF _ISMETADIFFUSECOLOR_OFF
+    _ISMETALLIC_ON _ISS3_ON _ISSUN_ON _VIRTUAL_LIGHT_ON
+  m_LightmapFlags: 1
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AO:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AlphaCtrl:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BRDFTex:
+        m_Texture: {fileID: 2800000, guid: f69dc9669562642fbb6b93ac3fdc5fc7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BlueCtrl:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: 781e7b8a247b8cd498f50f5a03b22865, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ColorControl:
+        m_Texture: {fileID: 2800000, guid: dec48f8e78acb444e9f2c1d123182893, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CtrlTex:
+        m_Texture: {fileID: 2800000, guid: 472a94c40e5c5604bbd3f46e873c56b5, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Cube:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GreenCtrl:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 33713aabcace17746915094ab8ca176f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RedCtrl:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Shadow:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ShadowFade:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sky:
+        m_Texture: {fileID: 2800000, guid: 33713aabcace17746915094ab8ca176f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _developCamera:
+        m_Texture: {fileID: 8400000, guid: e6383c6b7e83b064391f02f28c4e0e66, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - environment_reflect:
+        m_Texture: {fileID: 2800000, guid: 33713aabcace17746915094ab8ca176f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - metallic_ctrl_tex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - S_BAKE: 0
+    - S_DEVELOP: 0
+    - _Alpha: 0.59
+    - _AmbientPower: 1
+    - _BumpScale: 1
+    - _Cull: 2
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DifSC: 0
+    - _DstBlend: 0
+    - _EdgePow: 0.423
+    - _Gloss: 0.435
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _IsMEmission: 0
+    - _IsMetaDiffuseColor: 0
+    - _IsMetallic: 1
+    - _IsS3: 0
+    - _IsSun: 1
+    - _LightPower: 1
+    - _MetalShadow: 0.5
+    - _Metallic: 0
+    - _Mode: 0
+    - _OPEN_SUN: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _S3SPower: 1
+    - _ShadowStrength: 1
+    - _ShininessL: 0.471
+    - _SmoothnessTextureChannel: 0
+    - _SpPower: 1
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _SunBright: -0.03
+    - _SunPower: 1
+    - _UVSec: 0
+    - _WaveNormalPower: 0.153
+    - _WaveScale: 0.086
+    - _ZWrite: 1
+    - _cloth: 0
+    - _lodLevel: 8
+    - _virtual_light: 0
+    - metallic_power: 1
+    - sss_scatter0: 0.2
+    - waterAlpha: 10
+    - waterPower: 1.06
+    m_Colors:
+    - _BackColor: {r: 0, g: 0, b: 0, a: 1}
+    - _ButtonColor: {r: 0.85294116, g: 0.853, b: 1, a: 0}
+    - _ClothColor: {r: 1, g: 0, b: 0, a: 0.5}
+    - _ClothColor2: {r: 0, g: 0, b: 1, a: 0.5}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Emission: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Spec: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
+    - _TopColor: {r: 0.269, g: 0.353, b: 0.80655354, a: 1}
+    - _WSpecColor: {r: 1, g: 1, b: 1, a: 1}
+    - _WaveSpeed: {r: 2, g: 2, b: 2, a: -7}
+    - _horizonColor: {r: 0.172, g: 0.463, b: 0.435, a: 0}
+    - boxMax: {r: 363.9, g: 113.08, b: 430.8, a: 1}
+    - boxMin: {r: 223.9, g: -59.08, b: 290.8, a: 1}
+    - cubemapCenter: {r: 293.9, g: 27, b: 360.8, a: 1}
+    - metallic_color: {r: 1, g: 1, b: 1, a: 0}

@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TA_Substance PBR EX Simple
+  m_Shader: {fileID: 4800000, guid: 491092e285024d448bd1489231117ac3, type: 3}
+  m_ShaderKeywords: ANISOTROPIC_NORMAL _ISMETALLIC_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Metallic:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - ANISOTROPIC_NORMAL: 1
+    - HARD_SNOW: 0
+    - MELT_SNOW: 0
+    - _GlossPower: 0.902
+    - _IsMetallic: 0
+    - _MetallicPower: 1
+    - _SnowEdge: 0.2
+    - _SnowLocalPower: 0
+    - _SnowNoiseScale: 1.28
+    - _SnowNormalPower: 1
+    - _snow_options: 0
+    - anisotropy: 0.95
+    - emissive_power: 0
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
