@@ -28,7 +28,7 @@ Shader "TA/Substance PBR EX Simple" {
 
 		//_SnowMeltPower("  雪_消融影响调节", Range(1, 2)) =  1
 		_SnowLocalPower("  雪_法线影响调节", Range(-5, 0.3)) = 0
-
+		_Color3("自发光颜色", Color) = (1,1,1,1)
 		[MaterialToggle] HARD_SNOW("硬边雪", Float) = 0
 		[MaterialToggle] MELT_SNOW("消融雪", Float) = 0
  

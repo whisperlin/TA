@@ -1,0 +1,169 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: FAE_TreeBush 1
+  m_Shader: {fileID: 4800000, guid: ba615eaa11a37704cb616e3c9d26a565, type: 3}
+  m_ShaderKeywords: GEOM_TYPE_LEAF _ALPHATEST_ON
+  m_LightmapFlags: 0
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Alpha:
+        m_Texture: {fileID: 1279659258, guid: 520815e513b5368499c87f5ecd748eb8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 2d3caf0266f94934e888570aa045cf37, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Noisemap:
+        m_Texture: {fileID: 1167038465, guid: b6620978afaf9234f9e6fe1cfa32c8ff, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normals:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ShadowOffset:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TranslucencyMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WindVectors:
+        m_Texture: {fileID: -1077550208, guid: b6620978afaf9234f9e6fe1cfa32c8ff, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _uv2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _AO: 1
+    - _Alphacutoff: 0.547
+    - _AmbientOcclusion: 1
+    - _BumpScale: 1
+    - _CameraClipping: 1
+    - _ColorVarHeu: 0
+    - _ColorVariation: 0
+    - _Cull: 0
+    - _Cutoff: 0.5
+    - _Debug: 0
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _FlatLighting: 0
+    - _FresnelScale: 1
+    - _GlossMapScale: 1
+    - _Glossiness: 0
+    - _GlossyReflections: 1
+    - _GradientBrightness: 1
+    - _MaskClipValue: 0.5
+    - _MaxWindStrength: 0.122
+    - _Metallic: 0
+    - _Mode: 1
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _RimBrightness: 1.5
+    - _Shadows: 0.855
+    - _Shininess: 0.1
+    - _SmoothShading: 1
+    - _Smoothness: 0.292
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SquashAmount: 1
+    - _SrcBlend: 1
+    - _Subsurface: 0.373
+    - _SubsurfaceAmount: 0.96
+    - _SubsurfaceSize: 6.56
+    - _TransAmbient: 0.2
+    - _TransDirect: 1
+    - _TransNormalDistortion: 0.1
+    - _TransScattering: 2
+    - _TransShadow: 0.9
+    - _Translucency: 1
+    - _TransmisionAmount: 1
+    - _TransmissionSize: 1
+    - _UVSec: 0
+    - _UseLegacyVertexColors: 0
+    - _UseSpeedTreeWind: 0
+    - _WindAmplitudeMultiplier: 10
+    - _WindQuality: 1
+    - _WindSpeed: 0.5
+    - _WindWeight: 0.134
+    - _ZWrite: 1
+    - __dirty: 0
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _HueVariation: {r: 1, g: 0.5, b: 0, a: 0.07058824}
+    - _MainColor: {r: 0.5441177, g: 0.9052481, b: 1, a: 0}
+    - _ObjectPosition: {r: 0, g: 22.15737, b: 0, a: 0}
+    - _SpecColor: {r: 0, g: 0, b: 0, a: 0}
+    - _Transmisioncolor: {r: 1, g: 0.9724137, b: 0, a: 0}
+    - _TransmissionColor: {r: 0.6965517, g: 1, b: 0, a: 0.059}
+    - _TreeInstanceColor: {r: 1, g: 1, b: 1, a: 1}
+    - _TreeInstanceScale: {r: 1, g: 1, b: 1, a: 1}
+    - _VariationColor: {r: 1, g: 0.6827586, b: 0, a: 0.05882353}
+    - _Variationcolor: {r: 0.9852941, g: 0.6319472, b: 0, a: 0.047}
+    - _WindDirection: {r: 0.93536794, g: 0, b: 0.35367614, a: 0}

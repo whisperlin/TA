@@ -69,6 +69,30 @@
 				 
 			}
 			#endif
+#if _NEW_SHAKE
+			uniform float _MaxWindStrength;
+			uniform float _WindStrength;
+			uniform sampler2D _WindVectors;
+			uniform float _WindAmplitudeMultiplier;
+			uniform float _WindAmplitude;
+			uniform float _WindSpeed;
+			uniform float4 _WindDirection;
+			uniform float _WindSwinging;
+			void vertexDataFunc(inout appdata v, float3 ase_worldPos)
+			{
+				float WindStrength522 = _WindStrength;
+				float2 windDirV3 = (float2(_WindDirection.x, _WindDirection.z));
+				windDirV3 = mul(unity_WorldToObject, windDirV3);
+				float3 WindVector91 = UnpackNormal(tex2Dlod(_WindVectors, float4(((((ase_worldPos).xz * 0.01) * _WindAmplitudeMultiplier * _WindAmplitude) + (((_WindSpeed * 0.05) * _Time.w) * windDirV3)), 0, 0.0)));
+				float3 break277 = WindVector91;
+				float3 appendResult495 = (float3(break277.x, 0.0, break277.y));
+				float3 temp_cast_0 = (-1.0).xxx;
+				float3 lerpResult249 = lerp((float3(0, 0, 0) + (appendResult495 - temp_cast_0) * (float3(1, 1, 0) - float3(0, 0, 0)) / (float3(1, 1, 0) - temp_cast_0)), appendResult495, _WindSwinging);
+				float3 Wind84 = lerp(((_MaxWindStrength * WindStrength522) * lerpResult249), float3(0, 0, 0), (1.0 - v.color.r));
+				v.vertex.xyz += float3(Wind84.x, 0, Wind84.z);
+				v.normal = float3(0, 1, 0);
+			}
+#endif
 			v2f vert (appdata v)
 			{
 
@@ -79,9 +103,13 @@
 				
 				float4 wpos = mul(unity_ObjectToWorld, v.vertex); 
 				o.wpos = wpos;
+#if _NEW_SHAKE
 
+				vertexDataFunc(v, wpos);
+#endif
 				o.vertex    = mul(unity_ObjectToWorld, v.vertex);
-				#if _FADEPHY_ON
+				
+#if _FADEPHY_ON
 					half4 normalDir0;
 					 half s0;
 					 
@@ -111,15 +139,22 @@
 					}
 
 					 isHit(_HitData0,o.vertex,normalDir0,s0);
-					 float s = sin(_Time.y*_Speed + (o.vertex.x+ o.vertex.z) *_Ctrl) * (1-s0);
-					 o.vertex.xyz = o.vertex.xyz + float3(_Wind.x,0, _Wind.y)  * v.color.g * s  ;
+
+#if  !_NEW_SHAKE
+
+					 float s = sin(_Time.y*_Speed + (o.vertex.x + o.vertex.z) *_Ctrl) * (1 - s0);
+					 o.vertex.xyz = o.vertex.xyz + float3(_Wind.x, 0, _Wind.y)  * v.color.g * s;
+#endif
+					 
 					 o.vertex.xz = o.vertex.xz + s0 *    v.color.g * _HitPower   * normalDir0.rb;
 				#else
+#if  !_NEW_SHAKE
 					float s = sin(_Time.y*_Speed + (o.vertex.x+ o.vertex.z) *_Ctrl);
 					o.vertex.xyz = o.vertex.xyz + float3(_Wind.x,0, _Wind.y)  * v.color.g * s ;
+#endif
 				#endif
 
-				 
+
 
 				o.vertex = mul(UNITY_MATRIX_VP, o.vertex);
 				o.uv = v.uv;

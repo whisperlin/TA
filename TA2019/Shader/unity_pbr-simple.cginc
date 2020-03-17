@@ -118,7 +118,7 @@ VertexOutput vert(VertexInput v) {
 
 	//UNITY_TRANSFER_FOG(o, o.pos);
 	TRANSFER_VERTEX_TO_FRAGMENT(o)
-		UBPA_TRANSFER_FOG(o, v.vertex);
+	UBPA_TRANSFER_FOG(o, v.vertex);
 
 #if defined(_SCENE_SHADOW2) 
 	o.shadowCoord = mul(_depthVPBias, mul(unity_ObjectToWorld, v.vertex));
@@ -565,12 +565,7 @@ float normTerm = TrowbridgeReitzAnisotropicNormalDistribution(gloss, anisotropy,
 
 	float3 specular = (directSpecular + indirectSpecular) *_Metallic_var.b;
 
-	
-
-	 
-
-	 
-
+ 
 		////// Emissive:
 		float3 emissive = baseDiffuseColor * _Color3 * _Metallic_var.a * emissive_power;
 
@@ -582,8 +577,6 @@ float normTerm = TrowbridgeReitzAnisotropicNormalDistribution(gloss, anisotropy,
 
 
 		UBPA_APPLY_FOG(i, c);
-
-
 		c.a = _MainTex_var.a;
 		//return c.aaaa;
 		return c;

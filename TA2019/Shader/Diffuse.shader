@@ -134,14 +134,8 @@ half4 LightMapInf;
 
  
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
- 
-	
 			GETLIGHTMAP(i.uv1);
-	 
 			lightmap.rgb *= LightMapInf.rgb *(1 + LightMapInf.a);//
-				
-
- 
 	#if    SHADOWS_SHADOWMASK 
 			
 		half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);

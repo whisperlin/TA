@@ -119,6 +119,7 @@ public class SceneShadow : MonoBehaviour
             depthVPBias = biasMatrix * depthVP;
             farClipPlane = depthCamera.farClipPlane;
             //depthCamera.SetReplacementShader(shader, "");
+            depthCamera.ResetReplacementShader();
             Shader.EnableKeyword("GRASS_SHADOW2");
         }
 #endif
@@ -176,14 +177,37 @@ public class SceneShadow : MonoBehaviour
     {
         if (null != depthCamera&& null != depthCamera.targetTexture)
         {
-            string path = EditorUtility.SaveFilePanel("保存图片", "assets", "", "png");
+            string path = EditorUtility.SaveFilePanel("保存图片", "assets", "", "tga");
             if (path.Length > 0)
             {
+                depthCamera.ResetReplacementShader();
+                depthCamera.Render();
                 var old = RenderTexture.active;
                 RenderTexture.active = depthCamera.targetTexture;
-                Texture2D png = new Texture2D(depthCamera.targetTexture.width, depthCamera.targetTexture.height, TextureFormat.RGB24, false);
+                Texture2D png = new Texture2D(depthCamera.targetTexture.width, depthCamera.targetTexture.height, TextureFormat.RGBA32, false);
                 png.ReadPixels(new Rect(0, 0, depthCamera.targetTexture.width, depthCamera.targetTexture.height), 0, 0);
-                byte[] dataBytes = png.EncodeToPNG();
+
+                depthCamera.SetReplacementShader(shader,"");
+                depthCamera.Render();
+
+                
+                Texture2D png2 = new Texture2D(depthCamera.targetTexture.width, depthCamera.targetTexture.height, TextureFormat.RGBA32, false);
+                png2.ReadPixels(new Rect(0, 0, depthCamera.targetTexture.width, depthCamera.targetTexture.height), 0, 0);
+                Color [] c1s =  png.GetPixels();
+                Color[] c2s = png2.GetPixels();
+                for (int i = 0; i < c1s.Length; i++)
+                {
+                    Color c1 = c1s[i];
+                    c1s[i] = new Color(c1.r,c1.g,c1.b, c2s[i].r);
+                }
+                png.SetPixels(c1s);
+
+//#if UNITY_EDITOR
+
+//#endif
+                byte[] dataBytes = EncodeToTGAHelper.EncodeToTGA(png, 4);
+                //byte[] dataBytes = png.EncodeToPNG();
+
                 System.IO.File.WriteAllBytes(path, dataBytes);
 
                 int index = path.IndexOf("/Assets/") + 1;

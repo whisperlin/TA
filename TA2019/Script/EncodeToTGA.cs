@@ -2,7 +2,7 @@
 using System.IO;
 
 
-public static class EncodeToTGAExtension
+public static class EncodeToTGAHelper
 {
     // == "TRUEVISION-XFile.\0" (ASCII)
     static readonly byte[] c_arV2Signature = { 0x54, 0x52, 0x55, 0x45, 0x56, 0x49, 0x53, 0x49, 0x4F, 0x4E, 0x2D, 0x58, 0x46, 0x49, 0x4C, 0x45, 0x2E, 0x00 };
@@ -72,13 +72,13 @@ public static class EncodeToTGAExtension
                         Color32 c32PreviousPixel = arPixels[iPacketStart];
 
                         // Get current Packet Type
-                        RLEPacketType packetType = EncodeToTGAExtension.PacketType(arPixels, iPacketStart);
+                        RLEPacketType packetType = EncodeToTGAHelper.PacketType(arPixels, iPacketStart);
 
                         // Find Packet End
                         int iReadEnd = Mathf.Min(iPacketStart + iMaxPacketLength, arPixels.Length);
                         for (iPacketEnd = iPacketStart + 1; iPacketEnd < iReadEnd; ++iPacketEnd)
                         {
-                            bool bPreviousEqualsCurrent = EncodeToTGAExtension.Equals(arPixels[iPacketEnd - 1], arPixels[iPacketEnd]);
+                            bool bPreviousEqualsCurrent = EncodeToTGAHelper.Equals(arPixels[iPacketEnd - 1], arPixels[iPacketEnd]);
 
                             // Packet End if change in Packet Type or if max Packet-Size reached
                             if (packetType == RLEPacketType.RAW && bPreviousEqualsCurrent ||
@@ -151,7 +151,7 @@ public static class EncodeToTGAExtension
 
     private static RLEPacketType PacketType(Color32[] _arData, int _iPacketPosition)
     {
-        if ((_iPacketPosition != _arData.Length - 1) && EncodeToTGAExtension.Equals(_arData[_iPacketPosition], _arData[_iPacketPosition + 1]))
+        if ((_iPacketPosition != _arData.Length - 1) && EncodeToTGAHelper.Equals(_arData[_iPacketPosition], _arData[_iPacketPosition + 1]))
         {
             return RLEPacketType.RLE;
         }

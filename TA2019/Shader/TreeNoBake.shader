@@ -10,9 +10,9 @@ Shader "TA/Scene/Tree Not bake"
 		_Wind("风向",Vector) = (1,0.5,0,0)
 		_Speed("速度",Range(0,5)) = 2
 		_Ctrl("空间各向差异",Range(0,3.14)) = 0
+		_NdotLPower("NLP",Range(0,1)) = 1
 		[Toggle(_DOUBLE_NL)] _DOUBLE_NL("双面同亮度", Float) = 0
-		//_Emission("自发光",Range(0,3)) = 0.5 
-		//_EmissionTex("自发光控制图",2D)  = "white" {}
+		
 
 
 
@@ -45,23 +45,29 @@ Shader "TA/Scene/Tree Not bake"
 				#include "FogCommon.cginc"
 				#include "grass.cginc"
 
-
+				float _NdotLPower;
 				float4 LightMapInf;
 			fixed4 frag (v2f i) : SV_Target
 			{
-				fixed4 c = tex2D(_MainTex, i.uv);
+				 
+				fixed4 c = tex2Dlod(_MainTex, float4(i.uv,0,0));
 				c.rgb *= _Color.rgb;
- 
+				
 				//fixed4 e = tex2D(_EmissionTex, i.uv);
 				half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
 				//half nl = saturate(dot(i.normalWorld, lightDir)) + saturate(dot(i.normalWorld, -lightDir)) ;
 #if _DOUBLE_NL
 				half nl = abs(dot(i.normalWorld, lightDir));
 #else
-				half nl = saturate(dot(i.normalWorld, lightDir)); 
+				//_NdotLPower
+				half nl = saturate( dot(i.normalWorld, lightDir) - (1-_NdotLPower) ) / _NdotLPower; 
+				//half nl = saturate( dot(i.normalWorld, lightDir) ); 
 #endif
+				clip(c.a - _AlphaCut);
+				
+	 
 				c.rgb = (i.SH + _LightColor0 * nl /*+ _Emission*e.b*/) * c.rgb;
-		 
+				
 				//return i.color;
 				clip(c.a - _AlphaCut);
 				UBPA_APPLY_FOG(i, c);

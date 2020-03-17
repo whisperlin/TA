@@ -112,6 +112,7 @@ public partial class LCHBrushWindow : EditorWindow
 
                 Renderer renderer = go.GetComponent<Renderer>();
                 renderer.sharedMaterial = mat;
+                go.hideFlags = HideFlags.HideAndDontSave;
             }
 
             go.hideFlags = HideFlags.HideAndDontSave;

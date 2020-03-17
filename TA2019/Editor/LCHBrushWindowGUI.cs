@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.SceneManagement;
+using UnityEditor.SceneManagement;
+
 public partial class LCHBrushWindow  
 {
     public bool editorEnable = true;
@@ -36,6 +39,14 @@ public partial class LCHBrushWindow
         layerMask.value = mask;
         return layerMask;
     }
+
+    public static void saveScene()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();
+        if (!currentScene.isDirty) Debug.Log("Scene was NOT marked dirty");
+        EditorSceneManager.MarkSceneDirty(currentScene);
+        if (!EditorSceneManager.SaveScene(currentScene)) Debug.LogError("WARNING: Scene Not Saved!!!");
+    }
     private void OnGUI()
     {
         ist = EditorGUILayout.ObjectField("画刷物体", ist, typeof(GameObject),false) as GameObject;
@@ -67,6 +78,7 @@ public partial class LCHBrushWindow
             GUI.backgroundColor = Color.green;
             if (GUILayout.Button("开启中"))
             {
+                saveScene();
                 editorEnable = false;
             }
         }
