@@ -1,0 +1,15 @@
+blend src  1-src
+col.rgb*col.a + src.rgb*(1-col.a);
+back:
+col.rgb*col.a;
+write:
+col.rgb*col.a + 1-col.a;
+write-back = 1-src.a;
+
+blend src one
+col.rgb+src.rgb*(1-col.a);
+back:
+col.rgb;
+write:
+col.rgb+1-col.a;
+write-back = 1-col.a;
