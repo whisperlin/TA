@@ -1,0 +1,7 @@
+That page you linked to is the documentation for 5.4. The macros for instancing have changed since then. UNITY_INSTANCE_ID is now UNITY_VERTEX_INPUT_INSTANCE_ID.
+https://docs.unity3d.com/Manual/GPUInstancing.html
+
+If you want to access the actual id, it's stored in the local variable unity_InstanceID after UNITY_SETUP_INSTANCE_ID(?) is called.
+
+Also what all of the macros are and what they do are defined in the UnityInstancing.cginc file. You can look at that by downloading the built in shader source here:
+https://unity3d.com/get-unity/download/archive
