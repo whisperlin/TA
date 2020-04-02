@@ -92,7 +92,7 @@ v2f vert(appdata v)
 }
 float _Gloss0, _Gloss1, _Gloss2, _Gloss3, _Gloss4, _Gloss5;
 
-half4 LightMapInf;
+
 uniform float4 _WaveSpeed;
 uniform float _WaveScale;
 uniform float _WaveNormalPower;

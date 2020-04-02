@@ -172,3 +172,25 @@ half4 GetExponentialHeightFog(float3 WorldPositionRelativeToCamera) // camera to
 }
 
 #endif// !FOG_COMMON_CGINC
+
+
+/*
+struct Input
+{
+	float2 uv_texcoord;
+	float4 _fogCoord;//*
+};
+
+finalcolor:fogex vertex:vert_fun
+
+void fogex(Input data, SurfaceOutputStandard o, inout fixed4 color)
+{
+	//UBPA_APPLY_FOG(data,color);
+}
+void vert_fun(inout appdata_full v, out Input data)
+{
+	UNITY_INITIALIZE_OUTPUT(Input, data);
+	//data._fogCoord = GetExponentialHeightFog(-WorldSpaceViewDir(v.vertex));
+}
+
+*/

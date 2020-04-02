@@ -32,7 +32,7 @@ uniform float4 fSblColor;
 #if ALPHA_CLIP
 half _AlphaClip;
 #endif 
-float4 LightMapInf;
+
 
 half _SIMPLE_SBL_;
 struct VertexInput {
@@ -196,21 +196,37 @@ float anisotropy;
 #if LIGHT_CTRL
 float RoleLightPower;
 #endif
+
+fixed3 UnpackNormalmapRG(fixed4 packednormal)
+{
+	fixed3 normal;
+	normal.xy = packednormal.xy * 2 - 1;
+	normal.z = sqrt(1 - saturate(dot(normal.xy, normal.xy)));
+	return normal;
+}
 float4 frag(VertexOutput i) : COLOR{
 
 	#if COMBINE_SHADOWMARK
 			UNITY_SETUP_INSTANCE_ID(i);
 	#endif
+	float2 manTexUV = TRANSFORM_TEX(i.uv0, _MainTex);
+	float4 _MainTex_var = tex2D(_MainTex, manTexUV);
+
 	i.normalDir = normalize(i.normalDir);
 	float3x3 tangentTransform = float3x3(i.tangentDir, i.bitangentDir, i.normalDir);
 	float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
 #if LOD_SHADER
 	float3 normalDirection = i.normalDir;
 #else
-	float3 _BumpMap_var = UnpackNormal(tex2D(_BumpMap, TRANSFORM_TEX(i.uv0, _BumpMap)));
-	float3 normalLocal = _BumpMap_var.rgb;
-	float3 normalDirection = normalize(mul(normalLocal, tangentTransform)); // Perturbed normals
-	
+	float3 _BumpMap_var = UnpackNormalmapRG(tex2D(_BumpMap, TRANSFORM_TEX(i.uv0, _BumpMap)));
+ 
+	float3 normalLocal = normalize(_BumpMap_var.rgb);
+
+	float3 normalDirection = normalize(mul(_BumpMap_var, tangentTransform)); // Perturbed normals
+ 
+	normalDirection = normalize(mul(normalLocal, tangentTransform)); // Perturbed normals
+	//normalDirection = normalize(mul(float3(0,0,1), tangentTransform)); // Perturbed normals
+	//return float4 (abs(normalLocal), 1);
 #endif
 	
 	float3 viewReflectDirection = reflect(-viewDirection, normalDirection);
@@ -236,8 +252,17 @@ float4 frag(VertexOutput i) : COLOR{
 		CmpSnowNormalAndPower(i.uv0, i.normalDir.xyz, nt, normalDirection);
 	#endif
 #endif
+		float NdL = dot(normalDirection, lightDirection);
+		
+		float NdotL = saturate(NdL);
+		//float nlll = dot(i.normalDir, normalDirection);
+		 
+		//NdL = nlll;
+		//return nlll.rrrr;
 
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
+		//fixed3 lightmap1 = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
+		//return half4(lightmap1*_MainTex_var.rgb,1);
 
 
 	#if COMBINE_SHADOWMARK
@@ -260,8 +285,11 @@ float4 frag(VertexOutput i) : COLOR{
 #endif
 #else
 
-	 float3 attenuation = LIGHT_ATTENUATION(i);
-
+	#if UNITY_SHADOW
+		 float3 attenuation = LIGHT_ATTENUATION(i);
+	#else
+			float3 attenuation = 1;
+	#endif
 
 
 #endif
@@ -326,8 +354,7 @@ float4 frag(VertexOutput i) : COLOR{
 
 
 	float specularMonochrome;
-	float2 manTexUV = TRANSFORM_TEX(i.uv0, _MainTex);
-	float4 _MainTex_var = tex2D(_MainTex, manTexUV);
+	
 
 	float3 baseDiffuseColor = (_MainTex_var.rgb*_Color.rgb); // Need this for specular when using metallic
 
@@ -340,16 +367,16 @@ float4 frag(VertexOutput i) : COLOR{
 #endif
 	float3 diffuseColor = UnityDiffuseAndSpecularFromMetallic(baseDiffuseColor, specularColor, specularColor, specularMonochrome);
 
-	float NdL = dot(normalDirection, lightDirection);
-	 
-	float NdotL = saturate(NdL);
-
+	
 
 
 #if _ISWEATHER_ON
 #if RAIN_ENABLE 
 
 	calc_weather_info(i.posWorld.xyz, normalDirection, _BumpMap_var, diffuseColor, normalDirection, diffuseColor.rgb);
+#endif
+#if SNOW_ENABLE 
+	diffuseColor.rgb = lerp(diffuseColor.rgb, _SnowColor.rgb, nt *_SnowColor.a);
 #endif
 #endif
 
@@ -368,11 +395,7 @@ float4 frag(VertexOutput i) : COLOR{
 #endif
 
 
-#if _ISWEATHER_ON
-	#if SNOW_ENABLE 
-		diffuseColor.rgb = lerp(diffuseColor.rgb, _SnowColor.rgb, nt *_SnowColor.a);
-	#endif
-#endif
+ 
 
 		/////// Diffuse:
 
@@ -380,6 +403,9 @@ float4 frag(VertexOutput i) : COLOR{
 
 #if defined (SHADOWS_SHADOWMASK)
 		float3 directDiffuse = NdotL * attenColor + lightmap;
+		//attenuation * _LightColor0.xyz
+		//return attenuation.rrrr;
+		//return half4(NdotL * _LightColor0.xyz*attenuation.rrr  , 1);
 #else
 		float3 directDiffuse = lightmap;
 #endif
@@ -512,27 +538,7 @@ float normTerm = TrowbridgeReitzAnisotropicNormalDistribution(gloss, anisotropy,
 		indirectSpecular *= surfaceReduction;
  
 	}
-	/*#if _SIMPLE_SBL_
-
-		float3 indirectSpecular = fSblColor;
-		#if _ISWEATHER_ON
-			#if SNOW_ENABLE 
-					indirectSpecular.rgb = lerp(indirectSpecular.rgb, _SnowColor.rgb, nt *_SnowColor.a);
-			#endif
-		#endif
-		indirectSpecular *= FresnelLerp(specularColor, grazingTerm, NdotV);
-		half surfaceReduction;
-		#ifdef UNITY_COLORSPACE_GAMMA
-			surfaceReduction = 1.0 - 0.28*roughness*perceptualRoughness;
-		#else
-			surfaceReduction = 1.0 / (roughness*roughness + 1.0);
-		#endif
-		indirectSpecular *= surfaceReduction;
-		//return float4(indirectSpecular,1);
-
-	#else
-		float3 indirectSpecular = 0;
-	#endif*/
+	 
 
 
 #else
@@ -563,7 +569,7 @@ float normTerm = TrowbridgeReitzAnisotropicNormalDistribution(gloss, anisotropy,
 #endif
 
 
-	float3 specular = (directSpecular + indirectSpecular) *_Metallic_var.b;
+		float3 specular = (directSpecular + indirectSpecular) *_Metallic_var.b;
 
  
 		////// Emissive:

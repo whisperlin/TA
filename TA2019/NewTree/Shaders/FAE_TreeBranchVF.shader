@@ -1,4 +1,4 @@
-﻿ Shader "Unlit/FAE_TreeBranchVF"
+﻿ Shader "TA/Scene/树叶(不烘培)"
 {
     Properties
     {
@@ -41,51 +41,12 @@
 			#pragma   multi_compile  _ HARD_SNOW
 			#pragma   multi_compile  _ MELT_SNOW
 			#pragma multi_compile __ RAIN_ENABLE
-
+			#pragma   multi_compile  _  GLOBAL_SH9
 			#include "FAE_TreeBranchVF.cginc"
-
-            
             ENDCG
         }
 
-		/*Pass
-		{
-			Name "FORWARD_DELTA"
-			Tags {
-				"LightMode" = "ForwardAdd"
-			}
-			Blend One One
-			Cull Off
-			CGPROGRAM
-			#define ADD_PASS 1
-
-			//#pragma multi_compile_fwdbase//第二步//
-			#pragma vertex vert
-			#pragma fragment frag
-			// make fog work
-			#pragma multi_compile_fog
-
-			#include "FAE_TreeBranchVF.cginc"
-			ENDCG
-		}
-
-		Pass
-		{
-			Name "Meta"
-			Tags {
-				"LightMode" = "Meta"
-			}
-			Cull Off
-			CGPROGRAM
-			#pragma multi_compile_shadowcaster
-			#define UNITY_PASS_META 1
-
-			#pragma vertex vert
-			#pragma fragment frag
-			#pragma multi_compile_fog
-			#include "FAE_TreeTrunkVF.cginc"
-			ENDCG
-		}*/
+		 
     }
-	Fallback "Diffuse"
+	Fallback "Legacy Shaders/Transparent/Cutout/Diffuse"
 }

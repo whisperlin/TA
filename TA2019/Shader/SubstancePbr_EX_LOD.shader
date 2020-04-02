@@ -11,7 +11,7 @@ Shader "TA/Substance PBR EX LOD" {
 		_MetallicPower("MetallicPower", Range(0, 1)) = 1
 		_GlossPower("GlossPower", Range(0, 1)) = 1
 		_Metallic("Metallic", 2D) = "white" {}
-		emissive_power("自发光强度", Range(0, 1)) = 1
+		emissive_power("自发光强度", Range(0, 1)) = 0
 		[KeywordEnum(On,Off)] _IsMetallic("是否开启金属度", Float) = 0
 		[MaterialToggle] _SIMPLE_SBL_("非金属开启金属菲涅尔", Float) = 0
 		fSblColor("非金属菲涅尔颜色", Color) = (0.2,0.2,0.2,1)

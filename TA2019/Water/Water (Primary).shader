@@ -96,10 +96,10 @@
 			half4 temp : TEXCOORD3;
 			float2 uv : TEXCOORD4;
 
-			NORMAL_TANGENT_BITANGENT_COORDS(5, 6, 7)
+			WORLD_NORMAL_DECALE(5, 6, 7)
 
-				UBPA_FOG_COORDS(8)
-				float4 wpos: TEXCOORD9;
+			UBPA_FOG_COORDS(8)
+			float4 wpos: TEXCOORD9;
 #if __CREATE_DEPTH_MAP || __DEPTH_TEXTURE_MODE
 			float4 projPos : TEXCOORD10;
 			float3 ray : TEXCOORD11;
@@ -133,12 +133,13 @@
 			 
 
 			o.uv = v.uv;
-
-			NTBYAttribute ntb = GetWorldNormalTangentBitangent(v.normal, v.tangent);
+			float3 wNormal = UnityObjectToWorldNormal(v.normal);
+			FILL_WORLD_NORMAL_DECALE(o, wNormal)
+			/*NTBYAttribute ntb = GetWorldNormalTangentBitangent(v.normal, v.tangent);
 			o.normal = ntb.normal;
 			o.tangent = ntb.tangent;
 			o.bitangent = ntb.bitangent;
-
+			*/
 
 			o.wpos = wpos;
 #if __CREATE_DEPTH_MAP || __DEPTH_TEXTURE_MODE
@@ -265,31 +266,17 @@
 					half3 bump0 = (bump1 + bump2) * 0.5;
 
 					bump0 = lerp(half3(0, 0, 1), bump0, _BumpMapPower);
-					//half3 _normal_val = UnpackNormalRG(e);
-					float3x3 tangentTransform = GetNormalTranform(i.normal, i.tangent, i.bitangent);
-					half3 wNormal = normalize(mul(bump0, tangentTransform));
- 
+
+					half3 wNormal;
+					CMP_WORLD_NORMAL(i, wNormal, bump0);
 					//平面的法线默认向上.
 					//half3 planeNormal = half3(0,1,0);
 					half ndotl = dot(worldView, wNormal);
-
- 
 					half3 light_dir = _WorldSpaceLightPos0.xyz;
-
 					half3 h = normalize(light_dir + worldView);
-
-
-
 					float nh = max(0, dot(wNormal, h));
-
-
-
 					float spec = pow(nh, _ShininessL*128.0) * _Gloss;
-
-
-
 					half3 viewReflectDirection = reflect(-worldView, wNormal);
-
 
 #if BOX_PROJECT_SKY_BOX
 					viewReflectDirection = BoxProjectedCubemapDirection(viewReflectDirection, i.wpos, cubemapCenter, boxMin, boxMax);

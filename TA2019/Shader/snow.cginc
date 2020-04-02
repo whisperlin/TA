@@ -82,4 +82,37 @@ void CmpSnowNormalAndPower(in half2 uv,in float3 VertexNormal,out fixed t, inout
 
 #endif
 }
+
+
+
+void CmpSnowNormalAndPowerSurFace(in half2 uv, in float3 VertexNormal, out fixed t, inout float3 normalDirection, float3 tUp)//切线空间上方向
+{
+#if SNOW_ENABLE 
+	half snoize = 0;
+	half snl = 0;
+	if (MELT_SNOW > 0)
+	{
+		half snoize = tex2D(_SnowNoise, uv*_SnowNoiseScale).r;
+		snl = snoize * _SnowMeltPower;
+		t = smoothstep(_SnowPower, _SnowPower + _SnowEdge, snl);
+		if (HARD_SNOW > 0)
+		{
+			t = step(snoize, t);
+		}
+	}
+	else
+	{
+		snl = dot(normalDirection, tUp);
+		snl = (1.0 - _SnowLocalPower)*snl + _SnowLocalPower;
+		t = smoothstep(_SnowPower, _SnowPower + _SnowEdge, snl);
+		if (HARD_SNOW > 0)
+		{
+			half snoize = tex2D(_SnowNoise, uv*_SnowNoiseScale).r;
+			t = step(snoize, t);
+		}
+	}
+	normalDirection = lerp(half3(0, 0, 1), normalDirection, _SnowNormalPower);
+
+#endif
+}
  

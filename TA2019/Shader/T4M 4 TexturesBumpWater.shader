@@ -194,6 +194,8 @@ CGPROGRAM
 		o.Specular += _Shininess.a * splat_control.a;
 		o.Albedo = col;
 		o.Alpha = 0.0;
+
+
 	}
 	
 

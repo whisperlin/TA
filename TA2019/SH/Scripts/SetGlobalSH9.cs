@@ -41,7 +41,7 @@ public class SetGlobalSH9 : MonoBehaviour {
     [Label("烘培贴图颜色")]
     public Color LightMapColor = Color.white;
     [Label("烘培贴图亮度提高",    -1f, 1f)]
-    public float LightMapIntensity = 0.2f;
+    public float LightMapIntensity = 0f;
 
 
     [Label("角色光照调整",-1f,1f)]

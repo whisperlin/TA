@@ -13,7 +13,7 @@ Shader "TA/Substance PBR EX Charactor Alpha Clip" {
 		_GlossPower("GlossPower", Range(0, 1)) = 1
 		_Metallic("Metallic", 2D) = "white" {}
 		_Metallic2("Metallic2", 2D) = "white" {}
-		emissive_power("自发光强度", Range(0, 1)) = 1
+		emissive_power("自发光强度", Range(0, 1)) = 0
 		
 
 

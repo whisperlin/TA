@@ -25,17 +25,10 @@ float4 ambientOrLightmapUV : TEXCOORD##idx2;
 
 #endif
 
-#ifdef LIGHTMAP_ON
-	#define LIGHTMAP_UVS(idx0,idx1,idx2)\
-	float2 uv0 : TEXCOORD##idx0;\
-	float2 uv1 : TEXCOORD##idx1;\
-	LIGHTMAP_UVS_D(idx2)
-#else
-	#define LIGHTMAP_UVS(idx0,idx1,idx2)\
-	float2 uv0 : TEXCOORD##idx0;\
-	LIGHTMAP_UVS_D(idx2)
-
-#endif
+#define LIGHTMAP_UVS(idx0,idx1,idx2)\
+float2 uv0 : TEXCOORD##idx0;\
+float2 uv1 : TEXCOORD##idx1;\
+LIGHTMAP_UVS_D(idx2)
 
 
 

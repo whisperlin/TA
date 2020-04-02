@@ -45,7 +45,7 @@ float4 _Splat0_ST, _Splat1_ST, _Splat2_ST;
 #ifdef BRIGHTNESS_ON
 fixed3 _Brightness;
 #endif
-half4 LightMapInf;
+
 v2f vert(appdata v)
 {
 	v2f o;
@@ -116,13 +116,13 @@ fixed4 frag(v2f i) : SV_Target
 
 	GETLIGHTMAP(i.uv2);
 	lightmap.rgb *= LightMapInf.rgb *(1 + LightMapInf.a);//
-#if    SHADOWS_SHADOWMASK 
-	c.rgb = (/*i.SH +*/ _LightColor0 * nl * attenuation + lightmap.rgb) * c.rgb;
+	#if    SHADOWS_SHADOWMASK 
+		c.rgb = (/*i.SH +*/ _LightColor0 * nl * attenuation + lightmap.rgb) * c.rgb;
 
-#else
-	c.rgb *= lightmap;
+	#else
+		c.rgb *= lightmap;
 
-#endif
+	#endif
 	 
 #else
 	float attenuation = LIGHT_ATTENUATION(i);

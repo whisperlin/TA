@@ -73,7 +73,7 @@ Shader "TA/Diffuse"
 				float4 pos : SV_POSITION;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
-half4 LightMapInf;
+
 			sampler2D _MainTex;
  
 #ifdef BRIGHTNESS_ON
@@ -140,12 +140,10 @@ half4 LightMapInf;
 			
 		half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
 		half nl = saturate(dot(i.normalWorld, lightDir));
-
 		_LightColor0.rgb *= attenuation;
+		//_LightColor0.rgb *= attenuation;
 		
 		c.rgb =   _LightColor0 * nl * c.rgb + lightmap * c.rgb;
-
- 
 	#else
 		c.rgb *= lightmap;
 			 
@@ -188,8 +186,8 @@ half4 LightMapInf;
 			#include "UnityCG.cginc"
 			#include "AutoLight.cginc"
 			#pragma multi_compile_fwdadd_fullshadows
-			#pragma multi_compile_fog
-			#pragma only_renderers d3d9 d3d11 glcore gles 
+ 
+ 
 			#pragma target 3.0
 			uniform float4 _LightColor0;
  

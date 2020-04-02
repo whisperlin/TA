@@ -11,22 +11,16 @@ Shader "TA/Substance PBR EX Simple" {
 		_MetallicPower("MetallicPower", Range(0, 1)) = 1
 		_GlossPower("GlossPower", Range(0, 1)) = 1
 		_Metallic("Metallic", 2D) = "white" {}
-		emissive_power("自发光强度", Range(0, 1)) = 1
+		emissive_power("自发光强度", Range(0, 1)) = 0
 		[KeywordEnum(On,Off)] _IsMetallic("是否开启金属度", Float) = 0
 		[MaterialToggle] _SIMPLE_SBL_("非金属开启金属菲涅尔", Float) = 0
 		fSblColor("非金属菲涅尔颜色", Color) = (0.2,0.2,0.2,1)
 		//
 
 		[Toggle]_snow_options("----------雪选项-----------",int) = 0
-
 		_SnowNormalPower("  雪法线强度", Range(0.3, 1)) = 1
-		//_SnowColor("雪颜色", Color) = (0.784, 0.843, 1, 1)
 		_SnowEdge("  雪边缘过渡", Range(0.01, 0.3)) = 0.2
-		//_SnowNoise("雪噪点", 2D) = "white" {}
 		_SnowNoiseScale("  雪噪点缩放", Range(0.1, 20)) = 1.28
-		//_SnowGloss("雪高光", Range(0, 1)) = 1
-
-		//_SnowMeltPower("  雪_消融影响调节", Range(1, 2)) =  1
 		_SnowLocalPower("  雪_法线影响调节", Range(-5, 0.3)) = 0
 		_Color3("自发光颜色", Color) = (1,1,1,1)
 		[MaterialToggle] HARD_SNOW("硬边雪", Float) = 0

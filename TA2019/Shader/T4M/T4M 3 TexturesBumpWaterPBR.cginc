@@ -102,7 +102,7 @@ float4 _TopColor;
 float4	_ButtonColor;
 float _Gloss;
 
-half4 LightMapInf;
+
 float metallic_power;
 
 

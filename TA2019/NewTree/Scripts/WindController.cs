@@ -45,8 +45,6 @@ namespace FAE
         public static float _windStrength;
         public static float _windAmplitude;
 
-        public float rot = 0;
-
         /// <summary>
         /// Set the wind strength
         /// </summary>
@@ -140,10 +138,6 @@ namespace FAE
             //Set static var
             WindController._windStrength = windStrength;
             WindController._windAmplitude = windAmplitude;
-
-            var _winDir = Quaternion.Euler(0f,rot,0f) * Vector3.forward;
-            Shader.SetGlobalVector("_WindDir", _winDir);
-            //Quaternion.Euler(0, rot, 0);
 
         }
 

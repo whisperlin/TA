@@ -18,7 +18,7 @@ struct appdata
 	//shadow mark
 	UNITY_VERTEX_INPUT_INSTANCE_ID
 };
-half4 LightMapInf;
+
 struct v2f
 {
 	float2 uv : TEXCOORD0;
@@ -131,7 +131,7 @@ fixed4 frag(v2f i) : SV_Target
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 
 	GETLIGHTMAP(i.uv2);
-	lightmap.rgb *= LightMapInf.rgb *(1 + LightMapInf.a);//half4 LightMapInf;
+	lightmap.rgb *= LightMapInf.rgb *(1 + LightMapInf.a);//
 	#if    SHADOWS_SHADOWMASK 
 		c.rgb = (/*i.SH +*/ _LightColor0 * nl * attenuation + lightmap.rgb) * c.rgb;
 

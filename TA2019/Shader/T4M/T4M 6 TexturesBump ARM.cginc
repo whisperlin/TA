@@ -100,7 +100,7 @@ float _Gloss;
 
 
 float metallic_power;
-half4 LightMapInf;
+
 
 inline float2 ToRadialCoords(float3 coords)
 {
@@ -182,7 +182,7 @@ fixed4 frag(v2f i) : SV_Target
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 
 	GETLIGHTMAP(i.uv2);
-	lightmap.rgb *= LightMapInf.rgb *(1 + LightMapInf.a);//half4 LightMapInf;
+	lightmap.rgb *= LightMapInf.rgb *(1 + LightMapInf.a);//
 #if    SHADOWS_SHADOWMASK 
 	c.rgb = (/*i.SH + */ _LightColor0 * nl * attenuation + lightmap.rgb) * c.rgb;
 

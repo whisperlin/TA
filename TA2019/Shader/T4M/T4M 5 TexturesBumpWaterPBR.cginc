@@ -92,7 +92,7 @@ v2f vert(appdata v)
 }
 
 
-half4 LightMapInf;
+
 uniform float4 _WaveSpeed;
 uniform float _WaveScale;
 uniform float _WaveNormalPower;

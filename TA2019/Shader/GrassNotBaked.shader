@@ -17,7 +17,7 @@ Shader "TA/Scene/GrassNotBaked"
 			
 		[Toggle(_DOUBLE_NL)] _DOUBLE_NL("双面同亮度", Float) = 1
 		//[Toggle(PHONE_SP)] PHONE_SP("phone高光", Float) = 0
-		[Toggle(_ALPHA_CLIP)] _ALPHA_CLIP("_ALPHA_CLIP高光", Float) = 1
+		[Toggle(_ALPHA_CLIP)] _ALPHA_CLIP("_ALPHA_CLIP", Float) = 1
 		
 		[KeywordEnum(Off,On)] _fadePhy("是否开启碰撞交互", Float) = 0
 		_HitPower("碰撞强度",Range(1,100)) = 5

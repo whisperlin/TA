@@ -66,6 +66,7 @@ public class SceneShadow : MonoBehaviour
     }
     private void initRes()
     {
+#if UNITY_EDITOR
         if (null == shader)
             shader = Shader.Find("Editor/RenderShadowMap");
         if (null == depthCamera)
@@ -79,6 +80,7 @@ public class SceneShadow : MonoBehaviour
         }
         //depthCamera.SetReplacementShader(shader,"");
         depthCamera.ResetReplacementShader();
+#endif
     }
  
     void SetValues()
@@ -98,7 +100,6 @@ public class SceneShadow : MonoBehaviour
         }
 
 #else
-        Shader.SetGlobalTexture("grass_kkShadowMap", grassMark);
         Shader.SetGlobalTexture("grass_kkSceneColor", sceneColorMark);
 #endif
 
@@ -129,9 +130,10 @@ public class SceneShadow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.forward = Vector3.down;
+
 
 #if UNITY_EDITOR
+        transform.forward = Vector3.down;
         if (develop)
         {
 
@@ -154,7 +156,7 @@ public class SceneShadow : MonoBehaviour
     /// <param name="path">图片路径</param>
     /// <param name="platform"> Standalone, Web, iPhone, Android, WebGL, Windows Store Apps, PS4, XboxOne, Nintendo 3DS and tvOS</param>
     /// <param name="format">格式</param>
-
+#if UNITY_EDITOR
     public void ModifyTextureFormat(string path, string platform, TextureImporterFormat format, int compressionQuality = 100)
     {
         TextureImporter texImporter = TextureImporter.GetAtPath(path) as TextureImporter;
@@ -173,8 +175,10 @@ public class SceneShadow : MonoBehaviour
 
         }
     }
+#endif
     internal void EndDevelop()
     {
+#if UNITY_EDITOR
         if (null != depthCamera&& null != depthCamera.targetTexture)
         {
             string path = EditorUtility.SaveFilePanel("保存图片", "assets", "", "tga");
@@ -254,16 +258,19 @@ public class SceneShadow : MonoBehaviour
 
        
         develop = false;
+#endif
     }
 
     internal void BeginDevelop()
     {
+#if UNITY_EDITOR
         initRes();
         depthCamera.orthographicSize = orthographicSize;
         depthCamera.farClipPlane = farClipPlane;
         depthCamera.enabled = true;
         depthCamera.cullingMask = cullingMask;
         develop = true;
+#endif
     }
 }
 

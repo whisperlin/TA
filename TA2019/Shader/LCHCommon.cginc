@@ -64,12 +64,53 @@ float3x3  GetNormalTranform(in float3 wNormalDir, in float3 wTangentDir,in float
 }
 
 
-#define NORMAL_TANGENT_BITANGENT_COORDS(idx1,idx2,idx3) \
-half3 normal : TEXCOORD##idx1;\
-half3 tangent : TEXCOORD##idx2;\
-half3 bitangent : TEXCOORD##idx3;
  
- 
+
+
+#if DISABLE_BUMP_MAP
+#define WORLD_NORMAL_DECALE(idx1,idx2,idx3)\
+half3 worldNormal : TEXCOORD5;
+#else
+#define WORLD_NORMAL_DECALE(idx1,idx2,idx3)\
+half3 tspace0 : TEXCOORD##idx1;\
+half3 tspace1 : TEXCOORD##idx2; \
+half3 tspace2 : TEXCOORD##idx3; 
+#endif
+
+#define FILL_TSPACE_DATA(o,wNormal)\
+half3 wTangent = UnityObjectToWorldDir(v.tangent.xyz);\
+half tangentSign = v.tangent.w * unity_WorldTransformParams.w;\
+half3 wBitangent = cross(wNormal, wTangent) * tangentSign;\
+o.tspace0 = half3(wTangent.x, wBitangent.x, wNormal.x);\
+o.tspace1 = half3(wTangent.y, wBitangent.y, wNormal.y);\
+o.tspace2 = half3(wTangent.z, wBitangent.z, wNormal.z);
+
+#if DISABLE_BUMP_MAP
+#define FILL_WORLD_NORMAL_DECALE(o,wNormal) o.worldNormal = wNormal;
+#else
+#define FILL_WORLD_NORMAL_DECALE(o,wNormal) FILL_TSPACE_DATA(o,wNormal)
+#endif
+
+//half3 worldNormal;
+#if DISABLE_BUMP_MAP
+#define GET_WORLD_NORMAL(i,worldNormal,_BumpMap)\
+worldNormal = normalize(i.worldNormal);
+#else
+#define GET_WORLD_NORMAL(i,worldNormal,_BumpMap)\
+float2 uv_BumpMap = i.uv * _BumpMap_ST.xy + _BumpMap_ST.zw;\
+half3 tnormal = UnpackNormal(tex2D(_BumpMap, uv_BumpMap));\
+CMP_WORLD_NORMAL(i,worldNormal,tnormal);
+#endif
+
+
+#define CMP_WORLD_NORMAL(i,worldNormal,tnormal)\
+worldNormal.x = dot(i.tspace0, tnormal);\
+worldNormal.y = dot(i.tspace1, tnormal);\
+worldNormal.z = dot(i.tspace2, tnormal);\
+worldNormal = normalize(worldNormal);
+
+
+
 //half3 _normal_val = UnpackNormalRG(e);
 //float3x3 tangentTransform = GetNormalTranform(i.normal, i.tangent, i.bitangent);
 //half3 normal = normalize(mul(_normal_val, tangentTransform));

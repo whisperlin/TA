@@ -11,6 +11,13 @@
 #include "UnityMetaPass.cginc"
 #endif
 
+#if GLOBAL_SH9
+#include "../../Shader/SHGlobal.cginc"
+#endif
+#pragma multi_compile_instancing
+
+#include "../../Shader/shadowmarkex.cginc"
+
 struct appdata
 {
 	float4 vertex : POSITION;
@@ -18,7 +25,8 @@ struct appdata
 	float4 tangent: TANGENT;
 	float4 color: COLOR;
 	float2 uv : TEXCOORD0;
-	float2 uv2 : TEXCOORD1;
+	float2 uv1 : TEXCOORD1;
+	UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
 struct v2f
@@ -33,15 +41,14 @@ struct v2f
 	half3 tspace0 : TEXCOORD5; // tangent.x, bitangent.x, normal.x
 	half3 tspace1 : TEXCOORD6; // tangent.y, bitangent.y, normal.y
 	half3 tspace2 : TEXCOORD7; // tangent.z, bitangent.z, normal.z
-
-	half3 SH : TEXCOORD8;
+	SHADOW_UVS(8, 9)
+	half3 SH : TEXCOORD11;
 	UBPA_FOG_COORDS(10)
-#if UNITY_SHADOW
-		LIGHTING_COORDS(11, 12) //第四步// 
-#endif
-		float4 pos : SV_POSITION;
+ 
+	float4 pos : SV_POSITION;
 
 	half3 normal : TEXCOORD13;
+	UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
 uniform sampler2D _WindVectors;
@@ -138,13 +145,18 @@ void vertexDataFunc(inout float4 vertex, inout float3 normal, float4 color, floa
 v2f vert(appdata v)
 {
 	v2f o;
+	UNITY_INITIALIZE_OUTPUT(v2f, o);
+#if COMBINE_SHADOWMARK
+	UNITY_SETUP_INSTANCE_ID(v);
+	UNITY_TRANSFER_INSTANCE_ID(v, o);
+#endif
 	float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
-	vertexDataFunc(v.vertex, v.normal, v.color, v.uv, v.uv2, worldPos, o.vertexToFrag);
+	vertexDataFunc(v.vertex, v.normal, v.color, v.uv, v.uv1, worldPos, o.vertexToFrag);
 	worldPos = mul(unity_ObjectToWorld, v.vertex);
 	o.worldPos = worldPos;
 	o.pos = mul(UNITY_MATRIX_VP, float4(worldPos, 1.0));
 	o.color = v.color;
-	o.uv2 = v.uv2;
+	o.uv2 = v.uv1;
 	o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 
 
@@ -157,10 +169,22 @@ v2f vert(appdata v)
 	o.tspace0 = half3(wTangent.x, wBitangent.x, wNormal.x);
 	o.tspace1 = half3(wTangent.y, wBitangent.y, wNormal.y);
 	o.tspace2 = half3(wTangent.z, wBitangent.z, wNormal.z);
-	o.SH = ShadeSH9(float4(wNormal, 1));
-#if UNITY_SHADOW
-	TRANSFER_VERTEX_TO_FRAGMENT(o); //第5步// 
+
+
+#if GLOBAL_SH9
+		o.SH = g_sh(half4(wNormal, 1));
+#else
+	o.SH = ShadeSH9(half4(wNormal, 1));
 #endif
+	//o.SH = ShadeSH9(float4(wNormal, 1));
+
+#if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
+	o.uv1 = v.uv1 * unity_LightmapST.xy + unity_LightmapST.zw;
+#else
+	TRANSFER_VERTEX_TO_FRAGMENT(o);
+#endif
+
+ 
 	UBPA_TRANSFER_FOG(o, v.vertex);
 
 	o.normal = wNormal;
@@ -169,7 +193,9 @@ v2f vert(appdata v)
 
 fixed4 frag(v2f i) : SV_Target
 {
-
+#if COMBINE_SHADOWMARK
+	UNITY_SETUP_INSTANCE_ID(i);
+#endif
 	half3 tnormal = UnpackNormal(tex2D(_BumpMap, i.uv));
 	// transform normal from tangent to world space
 	half3 worldNormal;
@@ -177,23 +203,13 @@ fixed4 frag(v2f i) : SV_Target
 	worldNormal.y = dot(i.tspace1, tnormal);
 	worldNormal.z = dot(i.tspace2, tnormal);
 
-	//float2 uv_BumpMap62 = i.uv_texcoord;
-	//o.Normal = UnpackNormal(tex2D(_BumpMap, uv_BumpMap62));
 	float2 uv_MainTex = i.uv;
 	float4 tex2DMain = tex2D(_MainTex, uv_MainTex);
 	float4 mainColor = lerp((_GradientBrightness * tex2DMain) , tex2DMain , lerp(saturate((i.color.a * 10.0)),(0.1 * i.uv2.y),_UseSpeedTreeWind));
-	float4 transform204 = mul(unity_ObjectToWorld,float4(0,0,0,1));
-	float4 lerpResult20 = lerp(mainColor , _HueVariation , (_HueVariation.a * frac(((transform204.x + transform204.y) + transform204.z))));
-	float4 Color56 = saturate(lerpResult20);
-	float3 worldPos = i.worldPos;
-	float speedOffset = ((_WindSpeed * 0.05) * _Time.w);
-	float2 windDir2D = (float2(_WindDirection.x , _WindDirection.z));
-	float3 windNoise = UnpackNormal(tex2D(_WindVectors, ((_WindAmplitudeMultiplier * _WindAmplitude * ((worldPos).xz * 0.01)) + (speedOffset * windDir2D))));
-	float4 diffuse = lerp(Color56 , float4(windNoise , 0.0) , _WindDebug);
 
-	//return float4(dot(i.normal, float3(0, 1, 0)).rrr, 1);
+	float4 diffuse = float4( lerp(tex2DMain.rgb,tex2DMain.rgb*_HueVariation.rgb ,_HueVariation.a ) , tex2DMain.a);
  
-	//return float4(dot(float3(i.tspace0.z, i.tspace1.z, i.tspace2.z), float3(0, 1, 0)).rrr, 1);
+
 #if _ISWEATHER_ON
 
 #if SNOW_ENABLE 
@@ -229,8 +245,6 @@ fixed4 frag(v2f i) : SV_Target
 	half NdotL = saturate(dot(worldNormal, lightDir));
 	float4 c = diffuse;
 
-	float attenuation = LIGHT_ATTENUATION(i);
-
 #if _ISWEATHER_ON
 #if RAIN_ENABLE  
 	_Smoothness = saturate(_Smoothness* get_smoothnessRate());
@@ -258,7 +272,17 @@ fixed4 frag(v2f i) : SV_Target
 	
 	float AmbientOcclusion = lerp(1.0 , 0.0 , (_AmbientOcclusion * (1.0 - i.color.r)));
 
+	GET_LIGHT_MAP_DATA(i, uv1);
+ 
+#if LIGHTMAP_ON
+#if SHADOWS_SHADOWMASK
+	i.SH = lightmap.rgb;
+#endif
+#endif
 	c.rgb = (i.SH + _LightColor0 * NdotL * attenuation + specular + Emission) * c.rgb;
+
+
+
 	c.rgb *= AmbientOcclusion;
 
 	clip(tex2DMain.a - _Cutoff);

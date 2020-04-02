@@ -95,7 +95,7 @@ v2f vert(appdata v)
 
 float _Gloss;
 
-half4 LightMapInf;
+
 float metallic_power;
 
 

@@ -46,7 +46,7 @@ float4 _Tiling3;
 #ifdef BRIGHTNESS_ON
 fixed3 _Brightness;
 #endif
-half4 LightMapInf;
+
 v2f vert(appdata v)
 {
 	v2f o;

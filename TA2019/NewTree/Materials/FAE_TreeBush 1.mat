@@ -112,14 +112,14 @@ Material:
     - _Debug: 0
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _FlatLighting: 0
+    - _FlatLighting: 0.885
     - _FresnelScale: 1
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
-    - _GradientBrightness: 1
+    - _GradientBrightness: 1.27
     - _MaskClipValue: 0.5
-    - _MaxWindStrength: 0.122
+    - _MaxWindStrength: 0.444
     - _Metallic: 0
     - _Mode: 1
     - _OcclusionStrength: 1
@@ -128,7 +128,7 @@ Material:
     - _Shadows: 0.855
     - _Shininess: 0.1
     - _SmoothShading: 1
-    - _Smoothness: 0.292
+    - _Smoothness: 0.809
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SquashAmount: 1
