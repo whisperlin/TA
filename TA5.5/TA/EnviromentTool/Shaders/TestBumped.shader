@@ -15,7 +15,7 @@ Shader "TA/Helper/TestBumped"
 		{
 			CGPROGRAM
 
-			#pragma shader_feature S_BOOL
+			#pragma   multi_compile  _ S_BOOL
 			#pragma vertex vert
 			#pragma fragment frag
 			#include "UnityCG.cginc"

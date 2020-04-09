@@ -30,7 +30,7 @@ Shader "TA/Scene/TreeSoft"
 			#pragma multi_compile_fwdbase
 			#pragma multi_compile_fog
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
+			////#pragma   multi_compile  _  ENABLE_NEW_FOG
 //			#pragma   multi_compile  _  _POW_FOG_ON
 			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
@@ -38,17 +38,17 @@ Shader "TA/Scene/TreeSoft"
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#pragma multi_compile _FADEPHY_OFF _FADEPHY_ON
 
-			#pragma shader_feature _DOUBLE_NL
+			#pragma   multi_compile  _ _DOUBLE_NL
 			
 
 			#include "UnityCG.cginc"
 			#include "Lighting.cginc"
-			#include "height-fog.cginc"
+			#include "FogCommon.cginc"
 			#include "grass.cginc"
 			
 			 
 
-			
+			float4 GlobalTotalColor;
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
@@ -73,9 +73,8 @@ Shader "TA/Scene/TreeSoft"
 #endif
 				//return i.color;
 				clip(c.a - _AlphaCut);
-				APPLY_HEIGHT_FOG(c,i.wpos,i.normalWorld,i.fogCoord);
-				
-				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
+				c.rgb *= GlobalTotalColor.rgb;
+				UBPA_APPLY_FOG(i, c);
 				return c;
 			}
 			ENDCG

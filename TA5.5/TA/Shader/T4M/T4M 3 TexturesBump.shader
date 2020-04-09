@@ -37,14 +37,14 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 3 Textures Bump"
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-		#pragma   multi_compile  _  ENABLE_NEW_FOG
+		////#pragma   multi_compile  _  ENABLE_NEW_FOG
 			//#pragma   multi_compile  _  _POW_FOG_ON
 			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#include "UnityCG.cginc"
-			#include "../height-fog.cginc"
+			#include "../FogCommon.cginc"
 			#include "Lighting.cginc"
 			#include "AutoLight.cginc" //µÚÈý²½// 
 
@@ -73,7 +73,7 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 3 Textures Bump"
 #endif
 				
 				float4 posWorld:TEXCOORD2;
-				UNITY_FOG_COORDS_EX(3)
+				UBPA_FOG_COORDS(3)
 				float3 normalDir : TEXCOORD4;
 				float3 SH : TEXCOOR7;
 
@@ -81,7 +81,7 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 3 Textures Bump"
 				float3 bitangentDir : TEXCOORD9;
 				float4 pos : SV_POSITION;
 			};
-
+			float4 GlobalTotalColor;
 			sampler2D _Control;
 			sampler2D _Splat0,_Splat1,_Splat2;
 			float4 _Splat0_ST,_Splat1_ST,_Splat2_ST;
@@ -94,11 +94,18 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 3 Textures Bump"
 
 
 
-			float ArmBRDF(float roughness, float NdotH, float LdotH)
+			inline half fixHalf(half f)
 			{
-				float n4 = roughness * roughness*roughness*roughness;
-				float c = NdotH * NdotH   *   (n4 - 1) + 1;
-				float b = 4 * 3.14*       c*c  *     LdotH*LdotH     *(roughness + 0.5);
+				return floor(f * 10000)*0.0001;
+			}
+			half ArmBRDF(half roughness, half NdotH, half LdotH)
+			{
+
+				half n4 = roughness * roughness*roughness*roughness;
+				//n4 = fixHalf(n4);
+				half c = NdotH * NdotH   *   (n4 - 1) + 1;
+				half b = 4 * 3.14*c*c*LdotH*LdotH*(roughness + 0.5);
+				b = fixHalf(b);
 				return n4 / b;
 
 			}
@@ -120,7 +127,7 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 3 Textures Bump"
 				o.bitangentDir = normalize(cross(o.normalDir, o.tangentDir) * v.tangent.w);
 
 				o.SH = ShadeSH9(float4(o.normalDir, 1));
-				UNITY_TRANSFER_FOG_EX(o, o.pos, o.posWorld, o.normalDir);
+				UBPA_TRANSFER_FOG(o, v.vertex);
 				return o;
 			}
 			float _Gloss0, _Gloss1, _Gloss2;
@@ -190,11 +197,9 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 3 Textures Bump"
 
 
 
-				
+				c.rgb *= GlobalTotalColor.rgb;
 	 
-				APPLY_HEIGHT_FOG(c,i.posWorld, normalDirection, i.fogCoord);
-
-				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
+				UBPA_APPLY_FOG(i, c);
 				return c;
 			}
 			ENDCG

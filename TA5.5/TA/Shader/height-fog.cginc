@@ -166,7 +166,7 @@ float globalEnvOffset;
  
 #if ENABLE_NEW_FOG
 
-	#define UNITY_FOG_COORDS_EX(idx) float3  fogCoord : TEXCOORD##idx; 
+	#define UBPA_FOG_COORDS(idx) float3  fogCoord : TEXCOORD##idx; 
 	#define UNITY_TRANSFER_FOG_EX(o,vertex,worldPos,worldNormal)\
 		o.fogCoord = GetFog(worldPos,worldNormal);
 
@@ -199,7 +199,7 @@ float globalEnvOffset;
 
 #else
 	
-	#define UNITY_FOG_COORDS_EX(idx) UNITY_FOG_COORDS(idx)
+	#define UBPA_FOG_COORDS(idx) UNITY_FOG_COORDS(idx)
 	#define UNITY_TRANSFER_FOG_EX(o,vertex,worldPos,worldNormal) UNITY_TRANSFER_FOG(o, vertex);
 
 

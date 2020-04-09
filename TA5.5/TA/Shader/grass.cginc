@@ -1,4 +1,5 @@
 #include "UnityCG.cginc"
+#include "FogCommon.cginc"
 			struct appdata
 			{
 				float4 vertex : POSITION;
@@ -23,7 +24,7 @@
 				float3 normalWorld : TEXCOORD5;
 				float4 color: TEXCOORD2;
 				float4 wpos:TEXCOORD3;
-				UNITY_FOG_COORDS_EX(4)
+				UBPA_FOG_COORDS(4)
 				float4 vertex : SV_POSITION;
 				float3 SH : TEXCOOR6;
 			};
@@ -73,32 +74,41 @@
 					half4 normalDir0;
 					 half s0;
 					 
-					float len0 = length(wpos.xyz - _HitData0.xyz);
-					float len1 = length(wpos.xyz - _HitData1.xyz);
-					float len2 = length(wpos.xyz - _HitData2.xyz);
-					float len3 = length(wpos.xyz - _HitData3.xyz);
-					float len4 = length(wpos.xyz - _HitData4.xyz);
-					 
-					
-					//_HitData0 = _HitData1;
-					if(_HitData1.w>0 && len1<len0)
+					if (_HitData0.w > 0)
 					{
-						_HitData0 = _HitData1;
-					}
-					if (_HitData2.w>0 && len2 < len0)
-					{
-						_HitData0 = _HitData2;
-					}
-					if (_HitData3.w>0 && len3 < len0)
-					{
-						_HitData0 = _HitData3;
-					}
-					if (_HitData4.w>0 && len4 < len0)
-					{
-						_HitData0 = _HitData4;
-					}
+						float len0 = length(wpos.xyz - _HitData0.xyz);
+						float len1 = length(wpos.xyz - _HitData1.xyz);
+						float len2 = length(wpos.xyz - _HitData2.xyz);
+						float len3 = length(wpos.xyz - _HitData3.xyz);
+						float len4 = length(wpos.xyz - _HitData4.xyz);
 
-					 isHit(_HitData0,o.vertex,normalDir0,s0);
+
+						//_HitData0 = _HitData1;
+						if (_HitData1.w > 0 && len1 < len0)
+						{
+							_HitData0 = _HitData1;
+						}
+						if (_HitData2.w > 0 && len2 < len0)
+						{
+							_HitData0 = _HitData2;
+						}
+						if (_HitData3.w > 0 && len3 < len0)
+						{
+							_HitData0 = _HitData3;
+						}
+						if (_HitData4.w > 0 && len4 < len0)
+						{
+							_HitData0 = _HitData4;
+						}
+
+						isHit(_HitData0, o.vertex, normalDir0, s0);
+					}
+					else
+					{
+						normalDir0 = 0;
+						s0 = 0;
+					}
+					
 					 float s = sin(_Time.y*_Speed + (o.vertex.x+ o.vertex.z) *_Ctrl) * (1-s0);
 					 o.vertex.xyz = o.vertex.xyz + float3(_Wind.x,0, _Wind.y)  * v.color.g * s  ;
 					 o.vertex.xz = o.vertex.xz + s0 *    v.color.g * _HitPower   * normalDir0.rb;
@@ -120,6 +130,6 @@
 				o.color = v.color;
 				o.SH = ShadeSH9(float4(o.normalWorld,1));
 				
-				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos, o.normalWorld);
+				UBPA_TRANSFER_FOG(o, v.vertex);
 				return o;
 			}

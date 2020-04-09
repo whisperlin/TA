@@ -5,7 +5,7 @@
 #include "SHGlobal.cginc"
 #include "Shadow.cginc"
 #include "virtuallight.cginc"
-#include "height-fog.cginc"
+#include "FogCommon.cginc"
 #include "snow.cginc"
 #if defined(_SCENE_SHADOW2)  
 #include "shadowmap.cginc"
@@ -24,7 +24,8 @@
 	{
 		half4 pos : SV_POSITION;
 		half2 uv : TEXCOORD0;
-		UNITY_FOG_COORDS_EX(1)
+		UBPA_FOG_COORDS(1)
+ 
 		NORMAL_TANGENT_BITANGENT_COORDS(2,3,4)
 		
 		float4 posWorld : TEXCOORD5;
@@ -53,8 +54,13 @@
 //#endif
 	};
 
-	
-	
+
+	//_BakedNormalBright  _BakedNormalPower
+	//lm.rgb *= (1 - _BakedNormalPower * (1 - nl))* _BakedNormalBright;
+	float _BakedNormalPower;
+	float _BakedNormalBright;
+	float4 GlobalTotalColor;
+	float GlobalHeightEffectPower;
 
 	//sampler2D unity_NHxRoughness;
 	fixed _CullSepe;
@@ -135,7 +141,7 @@
 		half3 color1 = (_BackColor.xyz * NdotL3) + color0;
 		return lerp(color0, color1, cvSSS + 0.001);
 	}
-
+	float4 GlobalIntensityColor;
 	v2f vert(appdata v)
 	{
 		v2f o;
@@ -192,32 +198,34 @@
 #if ADD_PASS
 		o.ambient = 0;
 #else
-	#if GLOBAL_SH9
+	/*#if GLOBAL_SH9
 		o.ambient = g_sh(half4(o.normal, 1));
 	#else
 		o.ambient = ShadeSH9(half4(o.normal, 1));
-	#endif
+	#endif*/
+		o.ambient = UNITY_LIGHTMODEL_AMBIENT;
 #endif
-		UNITY_TRANSFER_FOG_EX(o, o.pos, o.posWorld, o.normal);
-
-		#if _HEIGHT_FOG_ON
-		#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
+		UBPA_TRANSFER_FOG(o, v.vertex);
  
-		
-		 
-		#endif
-		#endif
+
+	 
 
  
 		return o;
 	}
 
-	//inline half2 Pow4 (half2 x) { return x *x*x*x; }
-	float ArmBRDF(float roughness, float NdotH, float LdotH)
+	inline half fixHalf(half f)
 	{
-		float n4 = roughness*roughness*roughness*roughness;
-		float c = NdotH*NdotH   *   (n4 - 1) + 1;
-		float b = 4 * 3.14*       c*c  *     LdotH*LdotH     *(roughness + 0.5);
+		return floor(f * 10000)*0.0001;
+	}
+	half ArmBRDF(half roughness, half NdotH, half LdotH)
+	{
+
+		half n4 = roughness * roughness*roughness*roughness;
+		//n4 = fixHalf(n4);
+		half c = NdotH * NdotH   *   (n4 - 1) + 1;
+		half b = 4 * 3.14*c*c*LdotH*LdotH*(roughness + 0.5);
+		b = fixHalf(b);
 		return n4 / b;
 
 	}
@@ -420,10 +428,10 @@
 
 
  
-	fixed3 ambient = i.ambient * c.rgb;
+	fixed3 ambient = i.ambient * c0.rgb;
  
 
-	//half nl0 = saturate(dot(normal, -lightDir));
+	half nl0 = saturate(dot(normal, -lightDir));
 
 #if _VIRTUAL_LIGHT_SHADOW
 	half attenuation = LIGHT_ATTENUATION(i);
@@ -475,17 +483,22 @@
 	//return float4(calc_transmission_sss(nl, _nl, _DifSC, sss_scatter0, 1), 1);
 	#if _CHARACTOR
 
-#if _ISS3_BACK
-	fixed3 diffuse = ambient*_AmbientPower + lightColor * lerp(_DifSC, 1, nl) * c0.rgb + _BackColor.rgb *saturate(b_nl)*sss_scatter0;
-#else
-	fixed3 diffuse = ambient*_AmbientPower + lightColor *c0.rgb* calc_transmission_sss(nl, _nl, b_nl, _DifSC, sss_scatter0, _AO_var);
-#endif
+		#if _ISS3_BACK
+			fixed3 diffuse = ambient*_AmbientPower + lightColor * lerp(_DifSC, 1, nl) * c0.rgb + _BackColor.rgb *saturate(b_nl)*sss_scatter0;
+		#else
+			fixed3 diffuse = ambient*_AmbientPower + lightColor *c0.rgb* calc_transmission_sss(nl, _nl, b_nl, _DifSC, sss_scatter0, _AO_var);
+		#endif
 		
 
 	#else
+		#if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
+			fixed3 diffuse = ambient + lightColor * lerp(_DifSC, 1, nl) * c0.rgb + _BackColor.rgb *nl0*sss_scatter0* c0.rgb;
+		#else
 
+			fixed3 diffuse = ambient * _AmbientPower + lightColor * c0.rgb* calc_transmission_sss(nl, _nl, b_nl, _DifSC, sss_scatter0, 1);
+		#endif
 		
-		fixed3 diffuse = ambient*_AmbientPower + lightColor *c0.rgb* calc_transmission_sss(nl, _nl, b_nl, _DifSC, sss_scatter0, 1);
+		
 	#endif
  	
 	//fixed3 diffuse = ambient + lightColor * lerp(_DifSC,1, nl) * c0.rgb + _BackColor.rgb *nl0  ;
@@ -504,7 +517,10 @@
 
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 	fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
-	diffuse *= lm;
+
+	diffuse.rgb *= lm.rgb;
+	//diffuse = lm* c_base;
+	 
 	sp *= smoothstep(0.2+_CullSepe,0.35+_CullSepe, lm);
 	//sp = ml;
 #endif
@@ -573,10 +589,10 @@ fixed3 InDirspec = 0;
 	//return float4(baseSkyColor,1);
 #else
 	
-	#if GLOBAL_ENV_SH9
-	half3 viewReflectDirection = reflect(-viewDir, normal);
+	//#if GLOBAL_ENV_SH9
+	//half3 viewReflectDirection = reflect(-viewDir, normal);
 	 
-	#endif
+	//#endif
 #endif 
 
 #if SNOW_ENABLE 
@@ -586,6 +602,13 @@ fixed3 InDirspec = 0;
 #if ADD_PASS
 	c.rgb = diffuse  ;
 #else
+/*#if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
+ 
+	diffuse.rgb *= (1 - _BakedNormalPower * (1 - nl))* _BakedNormalBright;
+	 
+	//sp = ml;
+#endif*/
+
 	c.rgb = diffuse + spec + InDirspec;
 #endif
 
@@ -609,17 +632,12 @@ fixed3 InDirspec = 0;
 	c.rgb = c.rgb * _Brightness * 2;
 #endif
 	 
+	c.rgb += c_base*GlobalIntensityColor;
  
-#if GLOBAL_ENV_SH9
-	float3 l__viewDir = lerp(-viewDir, float3(0, -1, 0), globalEnvOffset);
-	//half __gray = dot(c.rgb,half3(0.3,0.6,0.1));
-	APPLY_HEIGHT_FOG_EX(c, i.posWorld, envsh9(l__viewDir), i.fogCoord);
-#else
-	APPLY_HEIGHT_FOG(c, i.posWorld, normal, i.fogCoord);
-#endif
-
+	c.rgb *= (1 + GlobalHeightEffectPower);
+	c.rgb *= GlobalTotalColor;
  
- 
-	UNITY_APPLY_FOG_MOBILE(i.fogCoord,c);
+	UBPA_APPLY_FOG(i, c);
+	//UNITY_APPLY_FOG_MOBILE(i.fogCoord,c);
 	return c;
 	}

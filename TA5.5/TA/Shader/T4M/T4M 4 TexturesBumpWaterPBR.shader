@@ -46,6 +46,7 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 4 Textures Bump PBR Simple"
 		_Control ("Control (RGBA)", 2D) = "white" {}
 		_Control2("Control2 (RGBA)", 2D) = "white" {}
 		_MainTex ("Never Used", 2D) = "white" {}
+	 
 
 	}
 
@@ -64,14 +65,14 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 4 Textures Bump PBR Simple"
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-		#pragma   multi_compile  _  ENABLE_NEW_FOG
+		////#pragma   multi_compile  _  ENABLE_NEW_FOG
 			//#pragma   multi_compile  _  _POW_FOG_ON
 			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#include "UnityCG.cginc"
-			#include "../height-fog.cginc"
+			#include "../FogCommon.cginc"
 			#include "Lighting.cginc"
 			#include "AutoLight.cginc" //第三步// 
 			
@@ -103,7 +104,7 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 4 Textures Bump PBR Simple"
 #endif
 				
 				float4 posWorld:TEXCOORD2;
-				UNITY_FOG_COORDS_EX(3)
+				UBPA_FOG_COORDS(3)
 				float3 normalDir : TEXCOORD4;
 				float3 SH : TEXCOOR7;
 
@@ -120,19 +121,109 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 4 Textures Bump PBR Simple"
  
 			float4 _SpColor0, _SpColor1, _SpColor2, _SpColor3, _SpColor4;
 			uniform sampler2D _NormaLMap; uniform float4 _NormaLMap_ST;
+ 
 #ifdef BRIGHTNESS_ON
 			fixed3 _Brightness;
 #endif
 
 
 
-			float ArmBRDF(float roughness, float NdotH, float LdotH)
+			inline half fixHalf(half f)
 			{
-				float n4 = roughness * roughness*roughness*roughness;
-				float c = NdotH * NdotH   *   (n4 - 1) + 1;
-				float b = 4 * 3.14*       c*c  *     LdotH*LdotH     *(roughness + 0.5);
+				return floor(f * 10000)*0.0001;
+			}
+			half ArmBRDF(half roughness, half NdotH, half LdotH)
+			{
+
+				half n4 = roughness * roughness*roughness*roughness;
+				//n4 = fixHalf(n4);
+				half c = NdotH * NdotH   *   (n4 - 1) + 1;
+				half b = 4 * 3.14*c*c*LdotH*LdotH*(roughness + 0.5);
+				b = fixHalf(b);
 				return n4 / b;
 
+			}
+			half4 Unity_PBR3(float smoothness, float reflectivity, float3 Normal, float3 lightDir, float3 viewDir)
+			{
+				half roughness = 1 - smoothness;
+				half oneMinusReflectivity = 1 - reflectivity;
+				half3 reflDir = reflect(viewDir, Normal);
+				half nl = saturate(dot(Normal, lightDir));
+				half nv = saturate(dot(Normal, viewDir));
+
+				half2 rlPow4AndFresnelTerm = Pow4(half2(dot(reflDir, lightDir), 1 - nv));
+				half rlPow4 = rlPow4AndFresnelTerm.x;
+				half fresnelTerm = rlPow4AndFresnelTerm.y;
+				half grazingTerm = saturate(smoothness + reflectivity);
+
+				half LUT_RANGE = 16.0;
+				half specular = tex2D(unity_NHxRoughness, half2(rlPow4, roughness)).UNITY_ATTEN_CHANNEL * LUT_RANGE;
+				return specular;
+				//half4 spec = lightColor * nl * specular * specColor;
+				//return spec;
+			}
+			half4 Unity_PBS(half3 specColor, half oneMinusReflectivity, half smoothness,
+				half3 normal, half3 viewDir,
+				UnityLight light)
+			{
+				half3 halfDir = Unity_SafeNormalize(light.dir + viewDir);
+
+				half nl = saturate(dot(normal, light.dir));
+				half nh = saturate(dot(normal, halfDir));
+				half nv = saturate(dot(normal, viewDir));
+				half lh = saturate(dot(light.dir, halfDir));
+
+				// Specular term
+				half perceptualRoughness = SmoothnessToPerceptualRoughness(smoothness);
+				half roughness = PerceptualRoughnessToRoughness(perceptualRoughness);
+#if UNITY_BRDF_GGX
+
+				// GGX Distribution multiplied by combined approximation of Visibility and Fresnel
+				// See "Optimizing PBR for Mobile" from Siggraph 2015 moving mobile graphics course
+				// https://community.arm.com/events/1155
+				half a = roughness;
+				half a2 = a * a;
+				half d = nh * nh * (a2 - 1.h) + 1.00001h;
+#ifdef UNITY_COLORSPACE_GAMMA
+				// Tighter approximation for Gamma only rendering mode!
+				// DVF = sqrt(DVF);
+				// DVF = (a * sqrt(.25)) / (max(sqrt(0.1), lh)*sqrt(roughness + .5) * d);
+				half specularTerm = a / (max(0.32h, lh) * (1.5h + roughness) * d);
+
+				//b = fixHalf(b);
+#else
+				half specularTerm = a2 / (max(0.1h, lh*lh) * (roughness + 0.5h) * (d * d) * 4);
+#endif
+				// on mobiles (where half actually means something) denominator have risk of overflow
+				// clamp below was added specifically to "fix" that, but dx compiler (we convert bytecode to metal/gles)
+				// sees that specularTerm have only non-negative terms, so it skips max(0,..) in clamp (leaving only min(100,...))
+#if defined (SHADER_API_MOBILE)
+				specularTerm = specularTerm - 1e-4h;
+#endif
+
+#else
+				// Legacy
+				half specularPower = PerceptualRoughnessToSpecPower(perceptualRoughness);
+				// Modified with approximate Visibility function that takes roughness into account
+				// Original ((n+1)*N.H^n) / (8*Pi * L.H^3) didn't take into account roughness
+				// and produced extremely bright specular at grazing angles
+				half invV = lh * lh * smoothness + perceptualRoughness * perceptualRoughness; // approx ModifiedKelemenVisibilityTerm(lh, perceptualRoughness);
+				half invF = lh;
+				half specularTerm = ((specularPower + 1) * pow(nh, specularPower)) / (8 * invV * invF + 1e-4h);
+#ifdef UNITY_COLORSPACE_GAMMA
+				specularTerm = sqrt(max(1e-4h, specularTerm));
+#endif
+#endif
+#if defined (SHADER_API_MOBILE)
+				specularTerm = clamp(specularTerm, 0.0, 100.0); // Prevent FP16 overflow on mobiles
+#endif
+#if defined(_SPECULARHIGHLIGHTS_OFF)
+				specularTerm = 0.0;
+#endif
+				half grazingTerm = saturate(smoothness + (1 - oneMinusReflectivity));
+				half3 color = (specularTerm * specColor) * light.color * nl;
+
+				return half4(color, 1);
 			}
 			v2f vert (appdata v)
 			{
@@ -151,8 +242,9 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 4 Textures Bump PBR Simple"
 				o.tangentDir = normalize(mul(unity_ObjectToWorld, float4(v.tangent.xyz, 0.0)).xyz);
 				o.bitangentDir = normalize(cross(o.normalDir, o.tangentDir) * v.tangent.w);
 
-				o.SH = ShadeSH9(float4(o.normalDir, 1));
-				UNITY_TRANSFER_FOG_EX(o, o.pos, o.posWorld, o.normalDir);
+				//o.SH = ShadeSH9(float4(o.normalDir, 1));
+				o.SH = UNITY_LIGHTMODEL_AMBIENT;
+				UBPA_TRANSFER_FOG(o, v.vertex);
 				return o;
 			}
 			float _Gloss0, _Gloss1, _Gloss2 , _Gloss3, _Gloss4, _Gloss5;
@@ -179,6 +271,8 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 4 Textures Bump PBR Simple"
 				float2 sphereCoords = float2(longitude, latitude) * float2(0.5 / UNITY_PI, 1.0 / UNITY_PI);
 				return float2(0.5, 1.0) - sphereCoords;
 			}
+			float4 GlobalTotalColor;
+			half _BakedPower;
 			fixed4 frag (v2f i) : SV_Target
 			{
 
@@ -235,6 +329,9 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 4 Textures Bump PBR Simple"
 				fixed3 lm = 1;
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
+
+				half nl = saturate(dot(normalDirection, lightDir));
+				c.rgb = i.SH * c.rgb + _LightColor0 * nl * c.rgb;
 				c.rgb *= lm;
 #else
 				
@@ -245,33 +342,47 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 4 Textures Bump PBR Simple"
 #endif
 				
 
-				float _Gloss = _Gloss0 * splat_control.r;
-				_Gloss += _Gloss1 * splat_control.g;
-				_Gloss += _Gloss2 * splat_control.b;
-				_Gloss += _Gloss3 * splat_control.a;
+				float _Gloss = _Gloss0 * splat0.a* splat_control.r;
+				_Gloss += _Gloss1 * splat1.a* splat_control.g;
+				_Gloss += _Gloss2 * splat2.a*splat_control.b;
+				_Gloss += _Gloss3 * splat3.a*splat_control.a;
 				_Gloss += _Gloss4 * splat_control2.r;
+
+				half _total = splat_control.r + splat_control.g + splat_control.b + splat_control.a + splat_control2.r;
+				_Gloss = _Gloss / _total;
+
 				float4 _SpColor = _SpColor0 * splat_control.r;
 				_SpColor += _SpColor1 * splat_control.g;
 				_SpColor += _SpColor2 * splat_control.b;
 				_SpColor += _SpColor3 * splat_control.a;
 				_SpColor += _SpColor4 * splat_control2.r;
-				half perceptualRoughness = 1.0 - _Gloss;
-				half roughness = perceptualRoughness * perceptualRoughness;
-				float3 halfDirection = normalize(viewDir + lightDir);
-				float LdotH = saturate(dot(lightDir, halfDirection));
-				float NdotH = saturate(dot(normalDirection, halfDirection));
-				float specular = saturate( ArmBRDF(roughness, NdotH, LdotH));
+				//half perceptualRoughness = 1.0 - _Gloss;
+				//half roughness = perceptualRoughness * perceptualRoughness;
+				//float3 halfDirection = normalize(viewDir + lightDir);
+				//float LdotH = saturate(dot(lightDir, halfDirection));
+				//float NdotH = saturate(dot(normalDirection, halfDirection));
+				//float specular = saturate( ArmBRDF(roughness, NdotH, LdotH));
+
+				/*UnityLight light;
+				light.color = _LightColor0;
+				light.dir = lightDir;
+				float NdotL = saturate(dot(normalDirection, lightDir));
+				light.ndotl = NdotL;
+				float3 specular = Unity_PBS(unity_ColorSpaceDielectricSpec.a, 1 - unity_ColorSpaceDielectricSpec.a, _Gloss,
+					normalDirection, viewDir,
+					light)*_SpColor;
+				*/
+				float3 specular = Unity_PBR3(_Gloss, 0, normalDirection, lightDir, viewDir)*_LightColor0 * nl  * _SpColor;
+
 				specular = saturate(specular);
 				float ml0 = min(min(lm.r, lm.b), lm.g);
 				ml0 = ml0 * ml0*ml0;
-#ifdef BRIGHTNESS_ON
-				c.rgb = c.rgb * _Brightness * 2 + _SpColor.rgb*ml0;
-#else
 				c.rgb += _SpColor.rgb*specular*ml0;
-
+#ifdef BRIGHTNESS_ON
+				c.rgb = c.rgb * _Brightness * 2;
 #endif
-				APPLY_HEIGHT_FOG(c,i.posWorld, normalDirection, i.fogCoord);
-				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
+				c.rgb *= GlobalTotalColor.rgb;
+				UBPA_APPLY_FOG(i, c);
 				return c;
 			}
 			ENDCG

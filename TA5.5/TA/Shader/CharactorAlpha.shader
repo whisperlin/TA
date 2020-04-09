@@ -63,7 +63,7 @@ Shader "TA/CharactorAlpha"
 		[Enum(UnityEngine.Rendering.CullMode)] _Cull("Off为双面贴图", Float) = 2
 		//_SnowPower()
 		[Toggle(S_DEVELOP)] S_DEVELOP("开发者模式", Float) = 0
-		[Toggle(S_BAKE)] S_BAKE("烘焙模式", Float) = 0
+		//[Toggle(S_BAKE)] S_BAKE("烘焙模式", Float) = 0
 		[HideInInspector] _Shadow("Shadow", 2D) = "black" {}
 		[HideInInspector] _ShadowFade("ShadowFade", 2D) = "black" {}
 		[HideInInspector] _ShadowStrength("ShadowStrength", Range(0, 1)) = 1
@@ -108,15 +108,15 @@ Shader "TA/CharactorAlpha"
 			#pragma  multi_compile  _ _SCENE_SHADOW2
 			#define _VIRTUAL_LIGHT_ON 1
 
-			#pragma shader_feature S_BAKE
-			#pragma shader_feature S_DEVELOP
-			#pragma shader_feature HARD_SNOW
-			#pragma shader_feature MELT_SNOW
+			//#pragma   multi_compile  _ S_BAKE
+			#pragma   shader_feature  S_DEVELOP
+			#pragma   multi_compile  _ HARD_SNOW
+			#pragma   multi_compile  _ MELT_SNOW
 //#define ENABLE_NEW_FOG 1
-		#pragma   multi_compile  _  ENABLE_NEW_FOG
+		//#pragma   multi_compile  _  ENABLE_NEW_FOG
 			//#pragma   multi_compile  _  _POW_FOG_ON
 			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-			#pragma   multi_compile  _  GLOBAL_ENV_SH9
+			//#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 	 		#define GLOBAL_SH9 1

@@ -37,22 +37,22 @@ Shader "TA/Scene/GrassEmission"
 			#pragma multi_compile_fwdbase
 			#pragma multi_compile_fog
 			#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
+			////#pragma   multi_compile  _  ENABLE_NEW_FOG
  
 			#define   _HEIGHT_FOG_ON 1  
 			#define   ENABLE_DISTANCE_ENV 1  
  
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#pragma multi_compile _FADEPHY_OFF _FADEPHY_ON
-			//#pragma shader_feature _DOUBLE_NL
+			//#pragma   multi_compile  _ _DOUBLE_NL
 			#define PHONE_SP 1
-			//#pragma shader_feature PHONE_SP
-			#pragma shader_feature _ALPHA_CLIP
+			//#pragma   multi_compile  _ PHONE_SP
+			#pragma   multi_compile  _ _ALPHA_CLIP
 			
 
 			#include "UnityCG.cginc"
 			#include "Lighting.cginc"
-			#include "height-fog.cginc"
+			#include "FogCommon.cginc"
 			#include "grass.cginc"
 
 
@@ -107,9 +107,7 @@ Shader "TA/Scene/GrassEmission"
 				float3 specular = specularColor *normTerm;
 #endif
 				c.rgb += specular;
-				APPLY_HEIGHT_FOG(c,i.wpos, normalDirection,i.fogCoord);
-
-				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
+				UBPA_APPLY_FOG(i, c);
 				return c;
 			}
 			ENDCG

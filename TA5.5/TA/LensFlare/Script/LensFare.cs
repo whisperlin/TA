@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 [RequireComponent(typeof(Camera))]
-//[ExecuteInEditMode]
+[ExecuteInEditMode]
 public class LensFare : MonoBehaviour {
 
     public Vector3 sun = new Vector3(0,180,0);
@@ -13,7 +13,8 @@ public class LensFare : MonoBehaviour {
     public Vector4[] indexs = new Vector4[] { 
         new Vector4(0,0f,0.3f,1f)
     };
-    [Range(0f,0.5f)]
+    public Color color = Color.white;
+ 
     public float sun_radius = 0.1f;
     
     public LayerMask occludieMark = - 1;
@@ -21,6 +22,8 @@ public class LensFare : MonoBehaviour {
 #if UNITY_EDITOR
     public bool develop = false;
 #endif
+    [Range(0f,1f)]
+    public float _Alpha = 1f;
 
     Camera mCamera;
     Camera mOccludieCamera;
@@ -144,15 +147,17 @@ public class LensFare : MonoBehaviour {
 
         sunMat.SetTexture("_AlphaTex", rt1x1);
  
+
+
         if (null == rt)
         {
             rt = new RenderTexture(32, 32, 16);
-            //rt.hideFlags = HideFlags.DontSaveInEditor;
+            rt.hideFlags = HideFlags.DontSave;
         }
         if (null == rt1x1)
         {
             rt1x1 = new RenderTexture(1, 1, 16);
-            //rt1x1.hideFlags = HideFlags.DontSaveInEditor;
+            rt1x1.hideFlags = HideFlags.DontSave;
         }
         if (null == mOccludieCamera)
         {
@@ -164,7 +169,7 @@ public class LensFare : MonoBehaviour {
             mOccludieCamera.orthographicSize = 0.5f;
             //mOccludieCamera.enabled = false;
             mOccludieCamera.targetTexture = rt;
-            //g.hideFlags = HideFlags.DontSaveInEditor;
+            g.hideFlags = HideFlags.DontSave;
             mOccludieCamera.backgroundColor = Color.white;
         }
         mOccludieCamera.enabled = false;
@@ -188,8 +193,20 @@ public class LensFare : MonoBehaviour {
 
 
 
+
+
+#if UNITY_IOS || UNITY_ANDROID
+
+    //#if UNITY_EDITOR
+    //    projPos.y = -projPos.y;
+    //#endif
+
+#else
+
 #if UNITY_2019_1_OR_NEWER
-        projPos.y = -projPos.y;
+      projPos.y = -projPos.y;
+#endif
+
 #endif
             InitArray(count);
             if (null == mesh)
@@ -197,7 +214,7 @@ public class LensFare : MonoBehaviour {
                 mesh = new Mesh();
                 mesh.MarkDynamic();
                 mesh.bounds = new Bounds(Vector3.zero, new Vector3(100000, 100000, 100000));
-                //mesh.hideFlags = HideFlags.DontSaveInEditor;
+                mesh.hideFlags = HideFlags.DontSave;
             }
             mesh.Clear();
            
@@ -211,6 +228,7 @@ public class LensFare : MonoBehaviour {
                 float u1 = u0 + delta;
                 int i0 = i * 4;
                 int b0 = i0;
+                float _a = ids.w*_Alpha;
                 Vector3 _pos = LerpV(projPos,Vector3.zero, ids.y);
                 //{ new Vector3(-1, -1, 0.1f), new Vector3(1, -1, 0.1f), new Vector3(-1, 1, 0.1f), new Vector3(1, 1, 0.1f) };
                 vs[i0++] = new Vector3(-ids.z* wh + _pos.x, -ids.z + _pos.y, 0.1f);
@@ -219,10 +237,10 @@ public class LensFare : MonoBehaviour {
                 vs[i0++] = new Vector3( ids.z* wh + _pos.x,  ids.z + _pos.y, 0.1f);
                 i0 = i * 4;
 
-                cols[i0++] = new Color(ids.w, ids.w, ids.w);
-                cols[i0++] = new Color(ids.w, ids.w, ids.w);
-                cols[i0++] = new Color(ids.w, ids.w, ids.w);
-                cols[i0++] = new Color(ids.w, ids.w, ids.w);
+                cols[i0++] = new Color(_a, _a, _a) * color;
+                cols[i0++] = new Color(_a, _a, _a) * color;
+                cols[i0++] = new Color(_a, _a, _a) * color;
+                cols[i0++] = new Color(_a, _a, _a) * color;
 
                 i0 = i * 4;
                 //{ new Vector2(u0, 0), new Vector2(u1, 0), new Vector2(u0, 1), new Vector2(u1, 1) };
@@ -237,8 +255,6 @@ public class LensFare : MonoBehaviour {
                 tras[i0++] = b0+1;
                 tras[i0++] = b0+2;
                 tras[i0++] = b0+3;
-
-                
             }
             mesh.vertices = vs;
             mesh.uv = uvs;
@@ -248,7 +264,7 @@ public class LensFare : MonoBehaviour {
             if (null == sunObj)
             {
                 GameObject g = new GameObject("Sun sprite");
-               //g.hideFlags = HideFlags.DontSaveInEditor;
+                g.hideFlags = HideFlags.DontSave;
                 MeshFilter mf = g.AddComponent<MeshFilter>();
                 mf.mesh = mesh;
                 MeshRenderer mr = g.AddComponent<MeshRenderer>();
@@ -310,6 +326,7 @@ public class LensFare : MonoBehaviour {
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(transform.position + _SunDirect * length,  1+length/30);
     }
+
     private void OnEnable()
     {
         if (null != sunObj)

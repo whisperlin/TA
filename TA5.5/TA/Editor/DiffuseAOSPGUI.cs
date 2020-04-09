@@ -19,13 +19,13 @@ public class DiffuseAOSPGUI :  ShaderGUI
         ShaderGUIHelper.RemoveRroperty(result, "S_BAKE");
 
         bool b_m = targetMat.IsKeywordEnabled("_ISMETALLIC_ON");
-		bool b_e = targetMat.IsKeywordEnabled("_ISMEMISSION_ON");
+ 
 
 		ShaderGUIHelper.RemoveExclusion(properties, b_m, new string[] { }, new string[] { "environment_reflect", "metallic_color",   "metallic_power","_IsMetaDiffuseColor" }, result);
 
 
-		ShaderGUIHelper.RemoveExclusion(properties, b_e, new string[] { }, new string[] {   "_Emission"  }, result);
-		ShaderGUIHelper.RemoveExclusion(properties, b_e||b_m, new string[] { }, new string[] {   "metallic_ctrl_tex"  }, result);
+ 
+		ShaderGUIHelper.RemoveExclusion(properties, b_m, new string[] { }, new string[] {   "metallic_ctrl_tex"  }, result);
 
  
 		int _snow_options = targetMat.GetInt ("_snow_options");
@@ -37,8 +37,12 @@ public class DiffuseAOSPGUI :  ShaderGUI
 		bool b_melt = targetMat.IsKeywordEnabled("MELT_SNOW");
 		ShaderGUIHelper.RemoveExclusion(properties, b_melt, new string[] { "_SnowLocalPower"  },new string[] {"_SnowMeltPower" }, result);
 
-		//_SnowMeltPower
-		//_SnowLocalPower
+        bool ALPHA_CLIP = targetMat.IsKeywordEnabled("ALPHA_CLIP");
+        if(!ALPHA_CLIP)
+            ShaderGUIHelper.RemoveRroperty(result, "_AlphaClip");
+        
+        //_SnowMeltPower
+        //_SnowLocalPower
 
 
         base.OnGUI(materialEditor, result.ToArray());

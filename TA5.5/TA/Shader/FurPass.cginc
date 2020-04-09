@@ -1,7 +1,7 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 #include "UnityCG.cginc"
-#include "height-fog.cginc"
+#include "FogCommon.cginc"
 #include "Lighting.cginc"
 #include "SHGlobal.cginc"
 
@@ -31,7 +31,7 @@ struct v2f
 #endif
 	
 	float4 wpos:TEXCOORD2;
-	UNITY_FOG_COORDS_EX(3)
+	UBPA_FOG_COORDS(3)
 	float3 normalWorld : TEXCOORD4;
 	fixed3 ambient: TEXCOORD5;
 
@@ -89,7 +89,7 @@ v2f vert (appdata v)
 	o.ambient = UNITY_LIGHTMODEL_AMBIENT   ;
 #endif
 
-	UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos,o.normalWorld);
+	UBPA_TRANSFER_FOG(o, v.vertex);
 
 
 #if _VIRTUAL_LIGHT_SHADOW2
@@ -148,8 +148,7 @@ fixed4 frag (v2f i) : SV_Target
 	
 
 	
-	APPLY_HEIGHT_FOG(c,i.wpos,i.normalWorld,i.fogCoord);
-	UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
+	UBPA_APPLY_FOG(i, c);
 
 
 

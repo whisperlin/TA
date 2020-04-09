@@ -50,7 +50,7 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 5 Textures Bump ARM Simple"
 		_Control ("Control (RGBA)", 2D) = "white" {}
 		_Control2("Control2 (RGBA)", 2D) = "white" {}
 		_MainTex ("Never Used", 2D) = "white" {}
-		[Toggle(_BAKED_LIGHT)] _BAKED_LIGHT("烘培后接受光", Float) = 1
+		[Toggle(_ALWAYR_AMB_LIGHT)] _ALWAYR_AMB_LIGHT("烘培不包含环境光", Float) = 1
 
 
 	}
@@ -70,22 +70,24 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 5 Textures Bump ARM Simple"
 			#pragma multi_compile_fog
 			#pragma multi_compile __ BRIGHTNESS_ON
             #pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
+			////#pragma   multi_compile  _  ENABLE_NEW_FOG
 			//#pragma   multi_compile  _  _POW_FOG_ON
 			#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
 			#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 			//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 
-			#pragma shader_feature _BAKED_LIGHT
+			#pragma   multi_compile  _ _BAKED_LIGHT
 
 			#include "UnityCG.cginc"
-			#include "../height-fog.cginc"
+			#include "../FogCommon.cginc"
 			#include "Lighting.cginc"
 			#include "AutoLight.cginc" //第三步// 
 			
 			#include "t4m.cginc"
 			#pragma multi_compile _ISMETALLIC_OFF _ISMETALLIC_ON  
+			
+			#pragma   multi_compile  _ _ALWAYR_AMB_LIGHT
 
 			struct appdata
 			{
@@ -112,7 +114,7 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 5 Textures Bump ARM Simple"
 #endif
 				
 				float4 posWorld:TEXCOORD2;
-				UNITY_FOG_COORDS_EX(3)
+				UBPA_FOG_COORDS(3)
 				float3 normalDir : TEXCOORD4;
 				float3 SH : TEXCOOR7;
 
@@ -136,11 +138,18 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 5 Textures Bump ARM Simple"
 
 
 
-			float ArmBRDF(float roughness, float NdotH, float LdotH)
+			inline half fixHalf(half f)
 			{
-				float n4 = roughness * roughness*roughness*roughness;
-				float c = NdotH * NdotH   *   (n4 - 1) + 1;
-				float b = 4 * 3.14*       c*c  *     LdotH*LdotH     *(roughness + 0.5);
+				return floor(f * 10000)*0.0001;
+			}
+			half ArmBRDF(half roughness, half NdotH, half LdotH)
+			{
+
+				half n4 = roughness * roughness*roughness*roughness;
+				//n4 = fixHalf(n4);
+				half c = NdotH * NdotH   *   (n4 - 1) + 1;
+				half b = 4 * 3.14*c*c*LdotH*LdotH*(roughness + 0.5);
+				b = fixHalf(b);
 				return n4 / b;
 
 			}
@@ -162,7 +171,7 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 5 Textures Bump ARM Simple"
 				o.bitangentDir = normalize(cross(o.normalDir, o.tangentDir) * v.tangent.w);
 
 				o.SH = ShadeSH9(float4(o.normalDir, 1));
-				UNITY_TRANSFER_FOG_EX(o, o.pos, o.posWorld, o.normalDir);
+				UBPA_TRANSFER_FOG(o, v.vertex);
 				return o;
 			}
 			
@@ -189,6 +198,7 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 5 Textures Bump ARM Simple"
 				float2 sphereCoords = float2(longitude, latitude) * float2(0.5 / UNITY_PI, 1.0 / UNITY_PI);
 				return float2(0.5, 1.0) - sphereCoords;
 			}
+			float4 GlobalTotalColor;
 			fixed4 frag (v2f i) : SV_Target
 			{
 
@@ -249,21 +259,28 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 5 Textures Bump ARM Simple"
 				half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
 				half4 c = half4(col.rgb,1);
 				fixed3 lm = 1;
+#if _ALWAYR_AMB_LIGHT
+				half nl = saturate(dot(normalDirection, lightDir));
+
+#if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
+				lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
+				c.rgb = c.rgb* lm;
+#else
+				c.rgb = i.SH * c.rgb + _LightColor0 * nl * c.rgb * LIGHT_ATTENUATION(i);
+#endif
+
+
+
+#else
 #if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
 				lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
 				c.rgb *= lm;
-				 
-#if _BAKED_LIGHT
-				half nl = saturate(dot(normalDirection, lightDir));
-				c.rgb +=  _LightColor0 * nl * c.rgb ;
-				//return float4(1, 0, 0, 1);
-#endif
 #else
-				
-				
+
 				half nl = saturate(dot(normalDirection, lightDir));
 				c.rgb = i.SH * c.rgb + _LightColor0 * nl * c.rgb* LIGHT_ATTENUATION(i);
-		 
+#endif
+
 #endif
 				
 
@@ -289,14 +306,13 @@ Shader "TA/T4MShaders/ShaderModel3/Diffuse/T4M 5 Textures Bump ARM Simple"
 				specular = saturate(specular);
 				float ml0 = min(min(lm.r, lm.b), lm.g);
 				ml0 = ml0 * ml0*ml0;
-#ifdef BRIGHTNESS_ON
-				c.rgb = c.rgb * _Brightness * 2 + _SpColor.rgb*ml0;
-#else
 				c.rgb += _SpColor.rgb*specular*ml0;
-
+#ifdef BRIGHTNESS_ON
+				c.rgb = c.rgb * _Brightness * 2;
 #endif
-				APPLY_HEIGHT_FOG(c,i.posWorld, normalDirection, i.fogCoord);
-				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
+				
+				c.rgb *= GlobalTotalColor.rgb;
+				UBPA_APPLY_FOG(i, c);
 				return c;
 			}
 			ENDCG

@@ -21,7 +21,7 @@ Shader "TA/Scene/GrassSp"
 		[KeywordEnum(Off,On)] _fadePhy("是否开启碰撞交互", Float) = 0
 		_HitPower("碰撞强度",Range(1,100)) = 5
 
-		[Toggle(_BAKEDARM)] _BAKEDARM("烘培时是否包含环境色", Float) = 0
+ 
 		_LightMapPower("光照贴图亮度调整",Range(0,2)) = 1
 	}
 
@@ -36,27 +36,25 @@ Shader "TA/Scene/GrassSp"
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			#pragma multi_compile_fwdbase
-			#pragma multi_compile_fog
+		
 			#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-			#pragma   multi_compile  _  ENABLE_NEW_FOG
+			////#pragma   multi_compile  _  ENABLE_NEW_FOG
 
-			#pragma shader_feature  _BAKEDARM
+ 
  
 			#define   _HEIGHT_FOG_ON 1  
 			#define   ENABLE_DISTANCE_ENV 1  
  
 			#pragma   multi_compile  _  GLOBAL_ENV_SH9
 			#pragma multi_compile _FADEPHY_OFF _FADEPHY_ON
-			#pragma shader_feature _DOUBLE_NL
+			#pragma   multi_compile  _ _DOUBLE_NL
 			#define PHONE_SP 1
-			//#pragma shader_feature PHONE_SP
-			#pragma shader_feature _ALPHA_CLIP
+			#pragma   multi_compile  _ _ALPHA_CLIP
 			
 
 			#include "UnityCG.cginc"
 			#include "Lighting.cginc"
-			#include "height-fog.cginc"
+			#include "FogCommon.cginc"
 			#include "grass.cginc"
 
 
@@ -70,6 +68,7 @@ Shader "TA/Scene/GrassSp"
 				return UNITY_INV_PI * a2 / (d * d + 1e-7f); // This function is not intended to be running on Mobile,
 														// therefore epsilon is smaller than what can be represented by half
 			}
+			float4 GlobalTotalColor;
 			float _LightMapPower;
 			fixed4 frag(v2f i) : SV_Target
 			{
@@ -79,17 +78,10 @@ Shader "TA/Scene/GrassSp"
 				half3 normalDirection = normalize(i.normalWorld);
 				half3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
 				clip(c.a - _AlphaCut);
-#if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
- 
+#if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON) 
 				fixed3 lm = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap, i.uv2));
- 
- 
-#if _BAKEDARM
+
 				c.rgb *= lm * _LightMapPower;
-#else
-				c.rgb *= (lm*_LightMapPower + i.SH.rgb);
-				//return float4(1, 1, 1, 1);
-#endif
  
 #else 
 				fixed3 lm = 1;
@@ -129,9 +121,9 @@ Shader "TA/Scene/GrassSp"
 				float lm0 = min(min(lm.r, lm.g), lm.b);
 				lm0 = lm0 * lm0*lm0;
 				c.rgb += specular* lm0;
-				APPLY_HEIGHT_FOG(c,i.wpos, normalDirection,i.fogCoord);
+				c.rgb *= GlobalTotalColor.rgb;
 
-				UNITY_APPLY_FOG_MOBILE(i.fogCoord, c);
+				UBPA_APPLY_FOG(i, c);
 				//return float4(1, 0, 0, 1);
 				return c;
 			}

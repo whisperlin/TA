@@ -41,7 +41,7 @@ temp.xy *= float2(.4, .45);\
 half3 bump1 = UnpackNormal(tex2D(_BumpSplat##index, temp.xy)).rgb;\
 half3 bump2 = UnpackNormal(tex2D(_BumpSplat##index, temp.zw)).rgb;\
 half3 bump = (bump1 + bump2) * 0.5;\
-float3 normalDirection##index =  mul(bump.rgb, tangentTransform) ;\
+float3 normalDirection##index =  normalize(mul(bump.rgb, tangentTransform)) ;\
 half3 waterNormal = normalize(lerp(i.normalDir, normalDirection##index, _WaveNormalPower));
 
 

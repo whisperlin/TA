@@ -120,6 +120,7 @@ public class WeatherPreview : MonoBehaviour {
 
     void OnDisable()
     {
+        Shader.DisableKeyword("BRIGHTNESS_ON");
         Shader.DisableKeyword("RAIN_ENABLE");
 		Shader.DisableKeyword("_ISNORMALSNOW_ON");
         Shader.SetGlobalTexture("_WeatherCtrlTex0", null);

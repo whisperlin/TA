@@ -46,20 +46,20 @@
 #pragma multi_compile __  __CREATE_DEPTH_MAP2 
 #pragma multi_compile __  BOX_PROJECT_SKY_BOX
 
-#pragma   multi_compile  _  ENABLE_NEW_FOG
+////#pragma   multi_compile  _  ENABLE_NEW_FOG
 //#pragma   multi_compile  _  _POW_FOG_ON
 #define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
 #define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
 //#pragma   multi_compile  _ ENABLE_BACK_LIGHT
 #pragma   multi_compile  _  GLOBAL_ENV_SH9
 
-#pragma shader_feature OPEN_SUN
+#pragma   multi_compile  _ OPEN_SUN
 #include "UnityCG.cginc"
 #include "../Shader/LCHCommon.cginc"
 #define ENABLE_FOG_EX  1
 
 #if ENABLE_FOG_EX
-#include "../Shader/height-fog.cginc"
+#include "../Shader/FogCommon.cginc"
 #endif
 #include "UnityLightingCommon.cginc" // for _LightColor0
 
@@ -101,7 +101,7 @@
 			NORMAL_TANGENT_BITANGENT_COORDS(5, 6, 7)
 
 #if ENABLE_FOG_EX
-				UNITY_FOG_COORDS_EX(8)
+				UBPA_FOG_COORDS(8)
 #else
 				UNITY_FOG_COORDS(8)
 #endif
@@ -168,12 +168,7 @@
 
 #endif
 
-#if ENABLE_FOG_EX
-			 
-			UNITY_TRANSFER_FOG_EX(o, o.pos, o.wpos, o.normal);
-#else
-			UNITY_TRANSFER_FOG(o, o.pos);
-#endif
+			UBPA_TRANSFER_FOG(o, v.vertex);
 
 
 
@@ -322,12 +317,7 @@
 					col.rgb = (_LightColor0 *(1.0 - metallic_power) + metallic_power * localskyColor.rgb)* lerp(_TopColor,_ButtonColor , inWater) + _LightColor0 * _WSpecColor.rgb * spec;
 
 
-					#if ENABLE_FOG_EX
-					APPLY_HEIGHT_FOG(col,i.wpos,i.normalWorld,i.fogCoord);
-					UNITY_APPLY_FOG_MOBILE(i.fogCoord, col);
-					#else
-					UNITY_APPLY_FOG(i.fogCoord, col);
-					#endif
+					UBPA_APPLY_FOG(i, col);
 
 					return col;
 				}

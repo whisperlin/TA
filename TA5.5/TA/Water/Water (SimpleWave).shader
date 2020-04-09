@@ -43,7 +43,7 @@
 		#include "UnityCG.cginc"
 
 		#if ENABLE_FOG_EX
-		#include "../Shader/height-fog.cginc"
+		#include "../Shader/FogCommon.cginc"
 		#endif
 
 		#include "UnityLightingCommon.cginc" // for _LightColor0
@@ -99,7 +99,7 @@
 			#endif
 
 			#if ENABLE_FOG_EX
-			UNITY_FOG_COORDS_EX(7)
+			UBPA_FOG_COORDS(7)
 			#else
 			UNITY_FOG_COORDS(7)
 			#endif
@@ -174,11 +174,7 @@
 			o.wareOffset = (wpos.x+wpos.y)*_WareTex_ST.x*0.1 +_Time.y*_WareTex_ST.w;
 
 
-			#if ENABLE_FOG_EX
-				UNITY_TRANSFER_FOG_EX(o, o.vertex, o.wpos,o.normalWorld);
-			#else
-				UNITY_TRANSFER_FOG(o, o.pos);
-			#endif
+			UBPA_TRANSFER_FOG(o, v.vertex);
 			
 
 
@@ -300,12 +296,7 @@
 
 					fixed4 col = lerp(waterColor,_SpecularColor*_SpecularPower,sp  );
 			
-					#if ENABLE_FOG_EX
-					APPLY_HEIGHT_FOG(col,i.wpos,i.normalWorld,i.fogCoord);
-					UNITY_APPLY_FOG_MOBILE(i.fogCoord, col);
-					#else
-					UNITY_APPLY_FOG(i.fogCoord, col);
-					#endif
+					UBPA_APPLY_FOG(i, c);
 					
 	 
 					return col;

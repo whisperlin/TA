@@ -70,9 +70,11 @@ Shader "TA/BumpedAOSpecular"
 
 		[KeywordEnum(ON, OFF)] _IsWeather("是否接收天气", Float) = 0
 
-	 
-
-
+		[KeywordEnum(ON, OFF)] _IsWeather("是否接收天气", Float) = 0
+		
+		[Toggle(ALPHA_CLIP)] ALPHA_CLIP("alpha剔除", Float) = 0
+		_AlphaClip("_AlphaClip",Range(0,1)) = 0
+		//_AlphaClip("alpha clip", _AlphaClip(0,1)) = 0
 		[Enum(UnityEngine.Rendering.CullMode)] _Cull("Off为双面贴图", Float) = 2
 		//_SnowPower()
 		[Toggle(S_DEVELOP)] S_DEVELOP("开发者模式", Float) = 0
@@ -102,40 +104,31 @@ Shader "TA/BumpedAOSpecular"
 		#pragma vertex vert
 		#pragma fragment frag
 		#pragma fragmentoption ARB_precision_hint_fastest
-		//#pragma multi_compile_fog
+		
 		#pragma multi_compile __ BRIGHTNESS_ON
 		#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
 		#pragma multi_compile __ RAIN_ENABLE
-		#pragma multi_compile _ISMETALLIC_OFF _ISMETALLIC_ON  
-		#define _ISMEMISSION_OFF 1
-		//#pragma multi_compile _ISMEMISSION_OFF   _ISMEMISSION_ON  
-		//#pragma multi_compile _ISMETADIFFUSECOLOR_OFF   _ISMETADIFFUSECOLOR_ON    
-       
-		#define _ISSUN_ON 1
-		//#pragma multi_compile _ISSUN_ON  _ISSUN_OFF
 		#pragma multi_compile __ SNOW_ENABLE
+		#pragma multi_compile _ISMETALLIC_OFF _ISMETALLIC_ON
+		
 		#pragma multi_compile _ISS3_BACK
-		//#pragma multi_compile  _VIRTUAL_LIGHT_ON _VIRTUAL_LIGHT_OFF
 		#pragma shader_feature S_BAKE
-		#pragma shader_feature S_DEVELOP
-		#pragma shader_feature HARD_SNOW
-		#pragma shader_feature MELT_SNOW
-
-//#define ENABLE_NEW_FOG 1
-		#pragma   multi_compile  _  ENABLE_NEW_FOG
-		//#pragma   multi_compile  _  _POW_FOG_ON
-		#define   _HEIGHT_FOG_ON 1 // #pragma   multi_compile  _  _HEIGHT_FOG_ON
-		#pragma   multi_compile  _  GLOBAL_ENV_SH9
-		#define   ENABLE_DISTANCE_ENV 1 // #pragma   multi_compile  _ ENABLE_DISTANCE_ENV
-		//#pragma   multi_compile  _ ENABLE_BACK_LIGHT
-
-			//#if !defined(LIGHTMAP_OFF) || defined(LIGHTMAP_ON)
+		#pragma   shader_feature  S_DEVELOP
+		//#pragma   multi_compile  _ S_BAKE
+		
+		#pragma   multi_compile  _ HARD_SNOW
+		#pragma   multi_compile  _ MELT_SNOW
+		#pragma   multi_compile  _ 	ALPHA_CLIP
+		
 		#pragma  multi_compile  _ _SCENE_SHADOW2
+		
+		#define ENABLE_NEW_FOG 1
  		#define _AO_ON 1
- 		 
  		#define _ISWEATHER_ON 1
-		//#pragma multi_compile __ GLOBAL_SH9
- 
+		#define   _HEIGHT_FOG_ON 1  N
+		#define   ENABLE_DISTANCE_ENV 1  
+		#define _ISSUN_ON 1
+		#define _ISMEMISSION_OFF 1
 
 		#include "pbr-brdf.cginc"
 		//#define GLOBAL_SH9 1
