@@ -20,6 +20,7 @@
 ![image](https://github.com/whisperlin/TA/blob/master/pic/waterSimple.png)<br>
 ## 卡通角色<br>
 ![image](https://github.com/whisperlin/TA/blob/master/pic/ct1.png)<br>
+![image](https://github.com/whisperlin/TA/blob/master/pic/cartoon3.png)<br>
 ## 卡通水<br>
 ![image](https://github.com/whisperlin/TA/blob/master/pic/ct2.png)<br>
 ## box project 360环境球<br>

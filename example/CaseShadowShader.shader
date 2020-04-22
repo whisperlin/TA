@@ -39,7 +39,7 @@
 				float2 uv : TEXCOORD0;
 				float4 worldPos : TEXCOORD6;
 				//LIGHTING_COORDS(3, 4) //第四步// 
-				UNITY_LIGHTING_COORDS(4,5)
+				UNITY_LIGHTING_COORDS(4,5)//第四步// 
 				UNITY_FOG_COORDS(2)
 				float4 pos : SV_POSITION;
 			};
@@ -64,7 +64,7 @@
 				// sample the texture
 				fixed4 col = tex2D(_MainTex, i.uv);
  
-				UNITY_LIGHT_ATTENUATION(atten, i, i.worldPos)
+				UNITY_LIGHT_ATTENUATION(atten, i, i.worldPos.xyz)
 				float4 diffuseTerm = col * atten;// LIGHT_ATTENUATION(i); //第6步//
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);
