@@ -1,0 +1,1 @@
+#pragma skip_variants   FOG_LINEAR FOG_EXP FOG_EXP2  VERTEXLIGHT_ON
