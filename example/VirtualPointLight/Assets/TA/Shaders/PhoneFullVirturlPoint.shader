@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'UNITY_INSTANCE_ID' with 'UNITY_VERTEX_INPUT_INSTANCE_ID'
+
  
 Shader "Shader Forge/PhoneFullVirtualPointLight" {
 	Properties{
@@ -30,6 +32,7 @@ Shader "Shader Forge/PhoneFullVirtualPointLight" {
 				#include "AutoLight.cginc"
 				#include "virtualight.cginc"
 				#pragma multi_compile_fwdbase_fullshadows
+				#pragma multi_compile_instancing
 				#pragma target 2.0
 				uniform float4 _LightColor0;
 				uniform float4 _Color;
@@ -44,6 +47,7 @@ Shader "Shader Forge/PhoneFullVirtualPointLight" {
 					float3 normal : NORMAL;
 					float4 tangent : TANGENT;
 					float2 texcoord0 : TEXCOORD0;
+					UNITY_VERTEX_INPUT_INSTANCE_ID
 				};
 				struct VertexOutput {
 					float4 pos : SV_POSITION;
@@ -54,9 +58,18 @@ Shader "Shader Forge/PhoneFullVirtualPointLight" {
 					float3 bitangentDir : TEXCOORD4;
 					LIGHTING_COORDS(5,6)
 					UNITY_FOG_COORDS(7)
+					UNITY_VERTEX_INPUT_INSTANCE_ID
 				};
 				VertexOutput vert(VertexInput v) {
+
+					
+
+
 					VertexOutput o = (VertexOutput)0;
+
+					UNITY_SETUP_INSTANCE_ID(v);
+					UNITY_TRANSFER_INSTANCE_ID(v, o);
+
 					o.uv0 = v.texcoord0;
 					o.normalDir = UnityObjectToWorldNormal(v.normal);
 					o.tangentDir = UnityObjectToWorldDir(v.tangent.xyz);
@@ -99,7 +112,10 @@ Shader "Shader Forge/PhoneFullVirtualPointLight" {
 
 					float3 lightDirection;
 					float3 lightColor;
-					GetVirtualPointLightData(  _VirtualPointLightPos,   _VirtualPointLightColor,   i.posWorld.xyz,   lightDirection,  lightColor);
+
+
+					
+					GetVirtualPointLightData(UNITY_ACCESS_INSTANCED_PROP(_VirtualPointLightPos_arr, _VirtualPointLightPos), UNITY_ACCESS_INSTANCED_PROP(_VirtualPointLightColor_arr, _VirtualPointLightColor),   i.posWorld.xyz,   lightDirection,  lightColor);
  
 					float attenuation = LIGHT_ATTENUATION(i);
 					float3 attenColor = attenuation * lightColor.xyz;
