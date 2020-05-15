@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TA_Diffuse
+  m_Shader: {fileID: 4800000, guid: b015649adf563924f8774bb2e61cb66b, type: 3}
+  m_ShaderKeywords: EMISSSION EMISSSION_ON _BUTTOM _CLOUND _CLOUND2 _SKY_FOG _SUN
+    _SUN_RAY
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _CloundTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CloundTex2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CubeMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMark:
+        m_Texture: {fileID: 2800000, guid: 7da525f5778527f4c8b117417df7f13e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 088a4e2d240684242972c06375728852, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecRefSmoothnessEmissive:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - EMISSSION: 1
+    - _BUTTOM: 1
+    - _ButtomBrightness: 0.01
+    - _CLOUND: 1
+    - _CLOUND2: 1
+    - _CloundSpeed: 0.01
+    - _CloundSpeed2: 0.01
+    - _FadeEdge: 0.05
+    - _Fancy: 0
+    - _MODE: 0
+    - _Radius: 0.2
+    - _RadiusRay: 0.5
+    - _Ref: 0
+    - _SKY_FOG: 1
+    - _SUN: 1
+    - _SUN_RAY: 1
+    - _SkyButtomCtrl: 0
+    - _SkyCtrl: 0.305
+    - _Smoothness: 0
+    - _SunPower: 1
+    - _SunRayPower: 0.5
+    m_Colors:
+    - _ClondColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ClondColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0.5566038, g: 0.32293522, b: 0.32293522, a: 0}
+    - _Emissive: {r: 0, g: 0, b: 0, a: 0}
+    - _RefColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SkyColorButtom: {r: 0.3254902, g: 0.6, b: 0.94509804, a: 1}
+    - _SkyColorTop: {r: 0.003921569, g: 0.13725491, b: 0.49019608, a: 1}
+    - _Spec: {r: 0, g: 0, b: 0, a: 0}
+    - _SunColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    - _SunDir: {r: 0, g: 0.3, b: 0, a: 1}
+    - _SunRayColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    - emission_color: {r: 1, g: 1, b: 1, a: 0}
