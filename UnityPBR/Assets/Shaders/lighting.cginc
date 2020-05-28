@@ -205,7 +205,7 @@ float4 FragmentProgramSample (Interpolators i) : SV_TARGET {
 	//BRDF3_Unity_PBS
 	//BRDF2_Unity_PBS
 	//half4 final = UNITY_PBS_USE_BRDF1(albedo, specularTint, oneMinusReflectivity, _Smoothness, i.normal, viewDir, CreateLight(i), CreateIndirectLight(i));
-	half4 final = BRDF3_Unity_PBS(albedo, specularTint, oneMinusReflectivity, _Smoothness, i.normal, viewDir, CreateLight(i, attenuation), CreateIndirectLight(i, lightmap.rgb));
+	half4 final = BRDF1_Unity_PBS(albedo, specularTint, oneMinusReflectivity, _Smoothness, i.normal, viewDir, CreateLight(i, attenuation), CreateIndirectLight(i, lightmap.rgb));
 
 	return final;
 }
