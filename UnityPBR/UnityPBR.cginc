@@ -244,7 +244,7 @@ half4 BRDF3_Unity_PBS_MOD(half3 diffColor, half3 specColor, half oneMinusReflect
 
 
 
-half4 Unity_PBR3(float smoothness, float reflectivity, float3 Normal, float3 lightDir, float3 viewDir)
+half Unity_PBR3(float smoothness, float reflectivity, float3 Normal, float3 lightDir, float3 viewDir)
 {
 	half roughness = 1 - smoothness;
 	half oneMinusReflectivity = 1 - reflectivity;
@@ -254,14 +254,13 @@ half4 Unity_PBR3(float smoothness, float reflectivity, float3 Normal, float3 lig
 
 	half2 rlPow4AndFresnelTerm = Pow4(half2(dot(reflDir, lightDir), 1 - nv));
 	half rlPow4 = rlPow4AndFresnelTerm.x;
-	half fresnelTerm = rlPow4AndFresnelTerm.y;
-	half grazingTerm = saturate(smoothness + reflectivity);
+	//half fresnelTerm = rlPow4AndFresnelTerm.y;
+	//half grazingTerm = saturate(smoothness + reflectivity);
 
 	half LUT_RANGE = 16.0;
 	half specular = tex2D(unity_NHxRoughness, half2(rlPow4, roughness)).UNITY_ATTEN_CHANNEL * LUT_RANGE;
 	return specular;
-	//half4 spec = lightColor * nl * specular * specColor;
-	//return spec;
+ 
 }
 half4 Unity_PBS(half3 specColor, half oneMinusReflectivity, half smoothness,
 	half3 normal, half3 viewDir,
