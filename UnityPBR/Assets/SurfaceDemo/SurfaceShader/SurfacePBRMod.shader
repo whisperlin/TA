@@ -24,7 +24,7 @@ Shader "SurfacePBR Mod"
 		#pragma only_renderers d3d9 d3d11 gles gles3 
 		//novertexlights
 		#pragma skip_variants  INSTANCING_ON 
-		#pragma surface surf Standard keepalpha addshadow fullforwardshadows  nodynlightmap nodirlightmap nofog noforwardadd vertex:vertexDataFunc 
+		#pragma surface surf Standard keepalpha  fullforwardshadows  nodynlightmap nodirlightmap nofog noforwardadd// vertex:vertexDataFunc 
 		struct Input
 		{
 			float2 uv_texcoord;
