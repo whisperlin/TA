@@ -14,13 +14,14 @@ namespace ExcelToJson
         String,
         Int,
         Float,
+        Enum,
     }
     class Program
     {
         static void Main(string[] args)
         {
             
-            string importExcelPath = @"G:\TA\Excel\Test.xls";
+            string importExcelPath = @"G:\TA\Excel\skill.xls";
             string outDir = "out";
             if (args.Length > 0)
             {
@@ -39,23 +40,94 @@ namespace ExcelToJson
                 System.Console.WriteLine("table name {0}", sheet.SheetName);
 
                 List<Dictionary<string, object>> data = new List<Dictionary<string, object>>();
-                //Dictionary<string, object> row;
+ 
                 List<string> keys = new List<string>();
+                Dictionary<int,Dictionary<string,int>> enums = new Dictionary<int,Dictionary<string, int>>();
                 List<TYPE> types = new List<TYPE>();
 
-                for (int j = sheet.FirstRowNum; j < sheet.LastRowNum; j++)
+                int r_id = -1;
+                int r_type = -1;
+                int r_enum = -1;
+                int r_data = -1;
+                for (int j = sheet.FirstRowNum ; j <= sheet.LastRowNum; j++ )
                 {
                     Dictionary<string, object> lines = new Dictionary<string, object>();
                     IRow row = (IRow)sheet.GetRow(j);
-                    
-                    for (int k = row.FirstCellNum; k < row.LastCellNum; k++)
+                    if (row == null)
+                        continue;
+                    if (j == sheet.FirstRowNum+1)
                     {
-                        string cellValue = row.GetCell(k).ToString();
-                        if (j == sheet.FirstRowNum)
+                        if (r_id == -1 || r_type == -1 || r_enum == -1 || r_data == -1)
+                            break;
+                    }
+ 
+                    for (int k = row.FirstCellNum, cellIdZeroBase = 0; k <= row.LastCellNum; k++, cellIdZeroBase++)
+                    {
+                        var cell = row.GetCell(k);
+                        if (null == cell)
+                            continue;
+                        string cellValue = cell.ToString();
+                        if (j == 0)
                         {
-                            keys.Add(cellValue);
+                            if (cellIdZeroBase == 0)
+                            {
+                                try
+                                {
+                                    r_id = int.Parse(cellValue);
+                                }
+                                catch (Exception e)
+                                {
+                                }
+                            }
+                            if (cellIdZeroBase == 1)
+                            {
+                                try
+                                {
+                                    r_type = int.Parse(cellValue);
+                                }
+                                catch (Exception e)
+                                {
+                                }
+                            }
+                            if (cellIdZeroBase == 2)
+                            {
+                                try
+                                {
+                                    r_enum = int.Parse(cellValue);
+                                }
+                                catch (Exception e)
+                                {
+                                }
+                            }
+                            if (cellIdZeroBase == 3)
+                            {
+                                try
+                                {
+                                    r_data = int.Parse(cellValue);
+                                }
+                                catch (Exception e)
+                                {
+                                }
+                            }
                         }
-                        else if (j > sheet.FirstRowNum + 2 && k < keys.Count)
+                        else if (j == r_id)
+                        {
+                            if(cellValue.Length>0)
+                                keys.Add(cellValue);
+                        }
+                        else if (j == r_enum)
+                        {
+                            Dictionary<string, int> dict = new Dictionary<string, int>();
+                            string[]  ls = cellValue.Split('|');
+                            for (int eid = 0; eid < ls.Length; eid++)
+                            {
+                                dict[ls[eid] ] = eid;
+                            }
+                            enums[k] = dict;
+                            //if (cellValue.Length > 0)
+                            //    keys.Add(cellValue);
+                        }
+                        else if (j >= r_data && k < keys.Count)
                         {
                             try
                             {
@@ -71,31 +143,39 @@ namespace ExcelToJson
                                 {
                                     lines[keys[k]] = float.Parse(cellValue);
                                 }
+                                else if (types[k] == TYPE.Enum)
+                                {
+                                    //enums
+                                    lines[keys[k]] = enums[k][cellValue];//float.Parse(cellValue);
+                                }
                             }
                             catch (Exception e)
                             {
                                 System.Console.ForegroundColor = ConsoleColor.Red;
-                                System.Console.WriteLine("第{0}行第{1}列{2}:{3}格式出错",j,k,keys[k],cellValue);
+                                System.Console.WriteLine("第{0}行第{1}列{2}:{3}格式出错\n{4}",j,k,keys[k],cellValue,e.ToString());
                                 Console.Read();
                             }
                             
                         }
-                        else if (j == sheet.FirstRowNum + 2)
+                        else if (j == r_type)
                         {
-                            TYPE type = TYPE.String;
-                            try
+                            if (cellValue.Length > 0)
                             {
-                                type = (TYPE)Enum.Parse(typeof(TYPE), cellValue, true);
-                            }
-                            catch (Exception e)
-                            {
+                                TYPE type = TYPE.String;
+                                try
+                                {
+                                    type = (TYPE)Enum.Parse(typeof(TYPE), cellValue, true);
+                                }
+                                catch (Exception e)
+                                {
 
+                                }
+                                types.Add(type);
                             }
-                            types.Add(type);
+                                
                         }
-
                     }
-                    if (j == sheet.FirstRowNum + 2)
+                    if (j == r_type)
                     {
                         if (keys.Count != types.Count)
                             break;
