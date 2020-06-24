@@ -16,6 +16,14 @@ namespace ExcelToJson
         Float,
         Enum,
     }
+    public struct Remap
+    {
+        public string name;
+        public string condiction;
+        public int condictionValue;
+        public int index;
+  
+    }
     class Program
     {
         static void Main(string[] args)
@@ -44,10 +52,11 @@ namespace ExcelToJson
                 List<string> keys = new List<string>();
                 Dictionary<int,Dictionary<string,int>> enums = new Dictionary<int,Dictionary<string, int>>();
                 List<TYPE> types = new List<TYPE>();
-
+                List<Remap> remaps = new List<Remap>();
                 int r_id = -1;
                 int r_type = -1;
                 int r_enum = -1;
+                int r_remap = -1;
                 int r_data = -1;
                 for (int j = sheet.FirstRowNum ; j <= sheet.LastRowNum; j++ )
                 {
@@ -103,6 +112,16 @@ namespace ExcelToJson
                             {
                                 try
                                 {
+                                    r_remap = int.Parse(cellValue);
+                                }
+                                catch (Exception e)
+                                {
+                                }
+                            }
+                            if (cellIdZeroBase == 4)
+                            {
+                                try
+                                {
                                     r_data = int.Parse(cellValue);
                                 }
                                 catch (Exception e)
@@ -115,17 +134,42 @@ namespace ExcelToJson
                             if(cellValue.Length>0)
                                 keys.Add(cellValue);
                         }
+                        //remaps
+                        else if (j == r_remap)
+                        {
+                            
+                             
+                            try
+                            {
+                                if (cellValue.Length > 0)
+                                {
+                                    Remap rm = new Remap();
+                                    string[] ls = cellValue.Split('|');
+                                    rm.name = ls[0];
+                                    rm.condiction = ls[1];
+                                    rm.condictionValue = int.Parse(ls[2]);
+                                    rm.index = k;
+                                    remaps.Add(rm);
+                                }
+                                
+                            }
+                            catch (Exception e)
+                            {
+                                System.Console.ForegroundColor = ConsoleColor.Red;
+                                System.Console.WriteLine("第{0}行第{1}列{2}:{3} remap 定义错误", j, k, keys[k], cellValue);
+                                Console.Read();
+                            }
+                           
+                        }
                         else if (j == r_enum)
                         {
                             Dictionary<string, int> dict = new Dictionary<string, int>();
-                            string[]  ls = cellValue.Split('|');
+                            string[]  ls = cellValue.Split(',');
                             for (int eid = 0; eid < ls.Length; eid++)
                             {
                                 dict[ls[eid] ] = eid;
                             }
                             enums[k] = dict;
-                            //if (cellValue.Length > 0)
-                            //    keys.Add(cellValue);
                         }
                         else if (j >= r_data && k < keys.Count)
                         {
@@ -183,10 +227,23 @@ namespace ExcelToJson
                     if (lines.Count > 0)
                         data.Add(lines);
                 }
+                foreach (var line in data)
+                {
+                    foreach (Remap value  in remaps)
+                    {
+                        int val = (int)line[value.condiction];
+                        if (value.condictionValue == val)
+                        {
+                            line[value.name] = line[keys[value.index]];
+                        }
+                        line.Remove( keys[value.index]);
+                    }
+                }
                 
                
                 if (keys.Count > 0)
                 {
+                    
                     string jsonText = JsonConvert.SerializeObject(data);
 
                     System.IO.File.WriteAllText(outDir + "/" + sheet.SheetName + ".json", jsonText);
