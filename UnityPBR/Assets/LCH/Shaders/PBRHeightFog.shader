@@ -8,9 +8,12 @@
 		_BumpScale ("Bump Scale", Float) = 1
 		[Gamma] _Metallic ("Metallic", Range(0, 1)) = 0
 		_Smoothness ("Smoothness", Range(0, 1)) = 0.1
-		//_DetailTex("Detail Texture", 2D) = "gray" {}
-		//[NoScaleOffset] _DetailNormalMap ("Detail Normals", 2D) = "bump" {}
-		//_DetailBumpScale ("Detail Bump Scale", Float) = 1
+		_MetallicTex("Metallic Tex", 2D) = "white" {}
+		
+		[KeywordEnum(None,Aniso,SSS)]_EffectMode("Color Mode",Float) = 0
+		//[Toggle(_ANISOTROPIC_ENABLE)] _button("各向异性", Float) = 0
+		_Anisotropic("Anisotropic",  Range(-20,1)) = 0
+		_BRDFTex("_BRDFTex", 2D) = "white" {}
 	}
 
 	CGINCLUDE
@@ -33,6 +36,8 @@
 			#pragma multi_compile _ SHADOWS_SCREEN
 			#pragma multi_compile _ VERTEXLIGHT_ON
 			#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+
+			#pragma multi_compile _EFFECTMODE_NONE _EFFECTMODE_ANISO _EFFECTMODE_SSS
 
 			#pragma vertex VertexProgramSample
 			#pragma fragment FragmentProgramSample

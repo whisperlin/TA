@@ -13,10 +13,15 @@
 float4 _Tint;
 sampler2D _MainTex, _DetailTex;
 float4 _MainTex_ST, _DetailTex_ST;
+sampler2D _MetallicTex;
+
+
+
 
 sampler2D _NormalMap, _DetailNormalMap;
 float _BumpScale, _DetailBumpScale;
 
+float _Anisotropic;
 float _Metallic;
 float _Smoothness;
 
@@ -78,7 +83,7 @@ Interpolators VertexProgramSample(VertexData v) {
 	i.worldPos = mul(unity_ObjectToWorld, v.vertex);
 	i.normal = UnityObjectToWorldNormal(v.normal);
 
-	#if defined(BINORMAL_PER_FRAGMENT)
+	#if  BINORMAL_PER_FRAGMENT 
 		i.tangent = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);
 	#else
 		i.tangent = UnityObjectToWorldDir(v.tangent.xyz);
@@ -171,6 +176,10 @@ void InitializeFragmentNormal(inout Interpolators i) {
 		tangentSpaceNormal.y * binormal +
 		tangentSpaceNormal.z * i.normal
 	);
+#if _EFFECTMODE_ANISO
+	float3 bitangentDir = normalize(cross(i.normal, i.tangent.xyz));
+	i.tangent = float4(normalize(cross(i.normal, bitangentDir.xyz)),1);
+#endif
 }
 
 float4 FragmentProgramSample (Interpolators i) : SV_TARGET {
@@ -181,6 +190,10 @@ float4 FragmentProgramSample (Interpolators i) : SV_TARGET {
 	float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
 
 	float3 albedo = tex2D(_MainTex, i.uv.xy).rgb * _Tint.rgb;
+	float4 metallic_var  = tex2D(_MetallicTex, i.uv.xy);
+	_Smoothness *= metallic_var.a;
+	_Metallic *= metallic_var.r;
+	//metallic_var
 #if ENABLE_DETIAL_TEXTURE
 	albedo *=  tex2D(_DetailTex, i.uv.zw)*unity_ColorSpaceDouble;
 #endif
@@ -205,7 +218,16 @@ float4 FragmentProgramSample (Interpolators i) : SV_TARGET {
 	}
 
 	LIGHT_MAP_FINAL(i)
-	half4 final = BRDF1_Unity_PBS(albedo, specularTint, oneMinusReflectivity, _Smoothness, i.normal, viewDir, CreateLight(i, attenuation), CreateIndirectLight(i, lightmap.rgb));
+#if _EFFECTMODE_ANISO
+		
+		half4 final = BRDF1_Unity_PBS_DRAND(albedo, specularTint, oneMinusReflectivity, _Smoothness, _Anisotropic, i.normal,i.tangent, viewDir, CreateLight(i, attenuation), CreateIndirectLight(i, lightmap.rgb));
+
+#elif _EFFECTMODE_SSS
+		half4 final = BRDF2_Unity_PBS_SSS(albedo, specularTint, oneMinusReflectivity, _Smoothness, metallic_var.b, i.worldPos, i.normal, viewDir, CreateLight(i, attenuation), CreateIndirectLight(i, lightmap.rgb));
+#else
+		half4 final = BRDF2_Unity_PBS(albedo, specularTint, oneMinusReflectivity, _Smoothness, i.normal, viewDir, CreateLight(i, attenuation), CreateIndirectLight(i, lightmap.rgb));
+#endif
+	
 
 
 	UBPA_APPLY_FOG(i, final);

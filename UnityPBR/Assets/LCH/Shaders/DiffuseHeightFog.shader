@@ -34,11 +34,9 @@
 
 			#pragma target 3.0
 			#define UNITY_SHADOW 1
-			#pragma multi_compile _ _ISWEATHER_ON
 			#pragma multi_compile _ SHADOWS_SCREEN
 			#pragma multi_compile _ VERTEXLIGHT_ON
 			#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-
 			#pragma vertex VertexProgramSample
 			#pragma fragment FragmentProgramSample
 

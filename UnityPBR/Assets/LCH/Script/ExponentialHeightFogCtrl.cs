@@ -30,9 +30,9 @@ public class ExponentialHeightFogCtrl : MonoBehaviour
     [ColorUsage(false)]
     public Color fogInscatteringColor = new Color(0.447f, 0.639f, 1.0f); // Sets the inscattering color for the fog. Essentially, this is the fog's primary color.
 
-    [Label("雾色2")]
-    [ColorUsage(false)]
-    public Color fogInscatteringColor2 = new Color(0.447f, 0.639f, 1.0f); // Sets the inscattering color for the fog. Essentially, this is the fog's primary color.
+    //[Label("雾色2")]
+    //[ColorUsage(false)]
+    //public Color fogInscatteringColor2 = new Color(0.447f, 0.639f, 1.0f); // Sets the inscattering color for the fog. Essentially, this is the fog's primary color.
     [Label("雾最大不透明度")]
     [Range(0.0f,1.0f)]
     public float fogMaxOpacity = 1.0f; // This controls the maximum opacity of the fog. A value of 1 means the fog will be completely opaque, while 0 means the fog will be essentially invisible.
@@ -87,14 +87,14 @@ public class ExponentialHeightFogCtrl : MonoBehaviour
         Vector4 ExponentialFogColorParameter;
         if (dirLight == null)
         {
-            Shader.DisableKeyword("FOG_LIGHT");
+            //Shader.DisableKeyword("FOG_LIGHT");
               InscatteringLightDirection = new Vector4(-0,-0,-0,-1 );
               ExponentialFogColorParameter = new Vector4( fogInscatteringColor.r, fogInscatteringColor.g, fogInscatteringColor.b,
                   1.0f - fogMaxOpacity );
         }
         else
         {
-            Shader.EnableKeyword("FOG_LIGHT");
+            //Shader.EnableKeyword("FOG_LIGHT");
             InscatteringLightDirection = new Vector4( -dirLight.transform.forward.x, -dirLight.transform.forward.y,  -dirLight.transform.forward.z,
                directionalInscatteringStartDistance
         );
@@ -109,7 +109,7 @@ public class ExponentialHeightFogCtrl : MonoBehaviour
         Shader.SetGlobalVector(nameof(DirectionalInscatteringColor), DirectionalInscatteringColor);
         Shader.SetGlobalVector(nameof(InscatteringLightDirection), InscatteringLightDirection);
         Shader.SetGlobalVector(nameof(ExponentialFogColorParameter), ExponentialFogColorParameter);
-        Shader.SetGlobalColor(nameof(fogInscatteringColor2), fogInscatteringColor2);
+        //Shader.SetGlobalColor(nameof(fogInscatteringColor2), fogInscatteringColor2);
 
         
     }

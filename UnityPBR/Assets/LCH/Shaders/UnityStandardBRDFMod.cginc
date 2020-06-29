@@ -7,7 +7,7 @@
 #include "UnityStandardConfig.cginc"
 #include "UnityLightingCommon.cginc"
 
-
+#include "sss.cginc"
 
 
 //-------------------------------------------------------------------------------------
@@ -313,7 +313,8 @@ half4 BRDF1_Unity_PBS (half3 diffColor, half3 specColor, half oneMinusReflectivi
 #   endif
 
     // specularTerm * nl can be NaN on Metal in some cases, use max() to make sure it's a sane value
-    specularTerm = max(0, specularTerm * nl);
+    //specularTerm = max(0, specularTerm * nl);
+	specularTerm = clamp(specularTerm * nl, 0, 3);
 #if defined(_SPECULARHIGHLIGHTS_OFF)
     specularTerm = 0.0;
 #endif
@@ -415,9 +416,10 @@ half4 BRDF2_Unity_PBS (half3 diffColor, half3 specColor, half oneMinusReflectivi
 
 #endif
 
-#if defined (SHADER_API_MOBILE)
-    specularTerm = clamp(specularTerm, 0.0, 100.0); // Prevent FP16 overflow on mobiles
-#endif
+//#if defined (SHADER_API_MOBILE)
+//    specularTerm = clamp(specularTerm, 0.0, 100.0); // Prevent FP16 overflow on mobiles
+//#endif
+	specularTerm = clamp(specularTerm  , 0, 3); // Prevent FP16 overflow on mobiles
 #if defined(_SPECULARHIGHLIGHTS_OFF)
     specularTerm = 0.0;
 #endif
@@ -444,6 +446,105 @@ half4 BRDF2_Unity_PBS (half3 diffColor, half3 specColor, half oneMinusReflectivi
     + surfaceReduction * gi.specular * FresnelLerpFast (specColor, grazingTerm, nv);
 
     return half4(color, 1);
+}
+
+
+half4 BRDF2_Unity_PBS_SSS(half3 diffColor, half3 specColor, half oneMinusReflectivity, half smoothness,half _S3SPower,
+	float3 posWorld,float3 normal, float3 viewDir,
+	UnityLight light, UnityIndirect gi)
+{
+	float3 halfDir = Unity_SafeNormalize(float3(light.dir) + viewDir);
+	half nl0 = dot(normal, light.dir);
+	half nl = saturate(nl0);
+	half invNL = saturate(-nl0);
+	float nh = saturate(dot(normal, halfDir));
+	half nv = saturate(dot(normal, viewDir));
+	float lh = saturate(dot(light.dir, halfDir));
+
+	// Specular term
+	half perceptualRoughness = SmoothnessToPerceptualRoughness(smoothness);
+	half roughness = PerceptualRoughnessToRoughness(perceptualRoughness);
+
+#if UNITY_BRDF_GGX
+
+	// GGX Distribution multiplied by combined approximation of Visibility and Fresnel
+	// See "Optimizing PBR for Mobile" from Siggraph 2015 moving mobile graphics course
+	// https://community.arm.com/events/1155
+	half a = roughness;
+	float a2 = a * a;
+
+	float d = nh * nh * (a2 - 1.f) + 1.00001f;
+#ifdef UNITY_COLORSPACE_GAMMA
+	// Tighter approximation for Gamma only rendering mode!
+	// DVF = sqrt(DVF);
+	// DVF = (a * sqrt(.25)) / (max(sqrt(0.1), lh)*sqrt(roughness + .5) * d);
+	float specularTerm = a / (max(0.32f, lh) * (1.5f + roughness) * d);
+#else
+	float specularTerm = a2 / (max(0.1f, lh*lh) * (roughness + 0.5f) * (d * d) * 4);
+#endif
+
+	// on mobiles (where half actually means something) denominator have risk of overflow
+	// clamp below was added specifically to "fix" that, but dx compiler (we convert bytecode to metal/gles)
+	// sees that specularTerm have only non-negative terms, so it skips max(0,..) in clamp (leaving only min(100,...))
+#if defined (SHADER_API_MOBILE)
+	specularTerm = specularTerm - 1e-4f;
+#endif
+
+#else
+
+	// Legacy
+	half specularPower = PerceptualRoughnessToSpecPower(perceptualRoughness);
+	// Modified with approximate Visibility function that takes roughness into account
+	// Original ((n+1)*N.H^n) / (8*Pi * L.H^3) didn't take into account roughness
+	// and produced extremely bright specular at grazing angles
+
+	half invV = lh * lh * smoothness + perceptualRoughness * perceptualRoughness; // approx ModifiedKelemenVisibilityTerm(lh, perceptualRoughness);
+	half invF = lh;
+
+	half specularTerm = ((specularPower + 1) * pow(nh, specularPower)) / (8 * invV * invF + 1e-4h);
+
+#ifdef UNITY_COLORSPACE_GAMMA
+	specularTerm = sqrt(max(1e-4f, specularTerm));
+#endif
+
+#endif
+
+	//#if defined (SHADER_API_MOBILE)
+	//    specularTerm = clamp(specularTerm, 0.0, 100.0); // Prevent FP16 overflow on mobiles
+	//#endif
+	specularTerm = clamp(specularTerm, 0, 3); // Prevent FP16 overflow on mobiles
+#if defined(_SPECULARHIGHLIGHTS_OFF)
+	specularTerm = 0.0;
+#endif
+
+	// surfaceReduction = Int D(NdotH) * NdotH * Id(NdotL>0) dH = 1/(realRoughness^2+1)
+
+	// 1-0.28*x^3 as approximation for (1/(x^4+1))^(1/2.2) on the domain [0;1]
+	// 1-x^3*(0.6-0.08*x)   approximation for 1/(x^4+1)
+#ifdef UNITY_COLORSPACE_GAMMA
+	half surfaceReduction = 0.28;
+#else
+	half surfaceReduction = (0.6 - 0.08*perceptualRoughness);
+#endif
+
+	surfaceReduction = 1.0 - roughness * perceptualRoughness*surfaceReduction;
+
+	half grazingTerm = saturate(smoothness + (1 - oneMinusReflectivity));
+
+	half3 brdf = sss_from_lut(nl, normal, posWorld, light.color.rgb);
+	float3 difNl = lerp(nl.rrr, brdf,  _S3SPower)  ;
+
+	half3 color = 
+		diffColor * light.color * difNl +
+		 specularTerm * specColor * light.color * nl
+#if defined(FORWARD_BASE_PASS)
+		+invNL * _BackLight.rgb
+#endif
+
+		+ gi.diffuse * diffColor
+		+ surfaceReduction * gi.specular * FresnelLerpFast(specColor, grazingTerm, nv);
+
+	return half4(color, 1);
 }
 
 sampler2D_float unity_NHxRoughness;
@@ -503,6 +604,112 @@ half4 BRDF3_Unity_PBS (half3 diffColor, half3 specColor, half oneMinusReflectivi
     color += BRDF3_Indirect(diffColor, specColor, gi, grazingTerm, fresnelTerm);
 
     return half4(color, 1);
+}
+float sqr(float x)
+{
+	return x * x;
+}
+float TrowbridgeReitzAnisotropicNormalDistribution(float _Glossiness,float anisotropic, float NdotH, float HdotX, float HdotY) {
+	float sqrtOneMCloss = sqr(1.0 - _Glossiness);
+	float aspect = sqrt(1.0h - anisotropic * 0.9h);
+	float X = max(.001, sqrtOneMCloss / aspect) * 5;
+	float Y = max(.001, sqrtOneMCloss*aspect) * 5;
+	return 1.0 / (3.1415926535 * X*Y * sqr(sqr(HdotX / X) + sqr(HdotY / Y) + NdotH * NdotH));
+}
+
+
+half4 BRDF1_Unity_PBS_DRAND(half3 diffColor, half3 specColor, half oneMinusReflectivity, half smoothness,
+	float anisotropic,float3 normal,float3 tangent, float3 viewDir,
+	UnityLight light, UnityIndirect gi)
+{
+	float perceptualRoughness = SmoothnessToPerceptualRoughness(smoothness);
+	float3 halfDir = Unity_SafeNormalize(float3(light.dir) + viewDir);
+
+	// NdotV should not be negative for visible pixels, but it can happen due to perspective projection and normal mapping
+	// In this case normal should be modified to become valid (i.e facing camera) and not cause weird artifacts.
+	// but this operation adds few ALU and users may not want it. Alternative is to simply take the abs of NdotV (less correct but works too).
+	// Following define allow to control this. Set it to 0 if ALU is critical on your platform.
+	// This correction is interesting for GGX with SmithJoint visibility function because artifacts are more visible in this case due to highlight edge of rough surface
+	// Edit: Disable this code by default for now as it is not compatible with two sided lighting used in SpeedTree.
+#define UNITY_HANDLE_CORRECTLY_NEGATIVE_NDOTV 0
+
+#if UNITY_HANDLE_CORRECTLY_NEGATIVE_NDOTV
+	// The amount we shift the normal toward the view vector is defined by the dot product.
+	half shiftAmount = dot(normal, viewDir);
+	normal = shiftAmount < 0.0f ? normal + viewDir * (-shiftAmount + 1e-5f) : normal;
+	// A re-normalization should be applied here but as the shift is small we don't do it to save ALU.
+	//normal = normalize(normal);
+
+	float nv = saturate(dot(normal, viewDir)); // TODO: this saturate should no be necessary here
+#else
+	half nv = abs(dot(normal, viewDir));    // This abs allow to limit artifact
+#endif
+	float nl0 = dot(normal, light.dir);
+	float nl = saturate(nl0);
+	float invNL = saturate(-nl0);
+	float nh = saturate(dot(normal, halfDir));
+
+	half lv = saturate(dot(light.dir, viewDir));
+	half lh = saturate(dot(light.dir, halfDir));
+
+
+
+	// Specular term
+	// HACK: theoretically we should divide diffuseTerm by Pi and not multiply specularTerm!
+	// BUT 1) that will make shader look significantly darker than Legacy ones
+	// and 2) on engine side "Non-important" lights have to be divided by Pi too in cases when they are injected into ambient SH
+	float roughness = PerceptualRoughnessToRoughness(perceptualRoughness);
+ 
+	// GGX with roughtness to 0 would mean no specular at all, using max(roughness, 0.002) here to match HDrenderloop roughtness remapping.
+	roughness = max(roughness, 0.002);
+	float V = SmithJointGGXVisibilityTerm(nl, nv, roughness);
+	
+
+	float3 bitangentDir = normalize(cross(normal, tangent.xyz));
+ 
+	float HdotT = dot(tangent.xyz, halfDir);
+	float HdotB = dot(bitangentDir.xyz, halfDir);
+	//return anisotropic.rrrr;
+	float D = TrowbridgeReitzAnisotropicNormalDistribution(smoothness,anisotropic, nh, dot(halfDir, tangent.xyz), dot(halfDir, bitangentDir));
+ 
+	float specularTerm = V * D * UNITY_PI; // Torrance-Sparrow model, Fresnel is applied later
+
+#   ifdef UNITY_COLORSPACE_GAMMA
+	specularTerm = sqrt(max(1e-4h, specularTerm));
+#   endif
+
+	// specularTerm * nl can be NaN on Metal in some cases, use max() to make sure it's a sane value
+	specularTerm = max(0, specularTerm * nl);
+#if defined(_SPECULARHIGHLIGHTS_OFF)
+	specularTerm = 0.0;
+#endif
+
+	// surfaceReduction = Int D(NdotH) * NdotH * Id(NdotL>0) dH = 1/(roughness^2+1)
+	half surfaceReduction;
+#   ifdef UNITY_COLORSPACE_GAMMA
+	surfaceReduction = 1.0 - 0.28*roughness*perceptualRoughness;      // 1-0.28*x^3 as approximation for (1/(x^4+1))^(1/2.2) on the domain [0;1]
+#   else
+	surfaceReduction = 1.0 / (roughness*roughness + 1.0);           // fade \in [0.5;1]
+#   endif
+
+	// To provide true Lambert lighting, we need to be able to kill specular completely.
+	specularTerm *= any(specColor) ? 1.0 : 0.0;
+
+	half grazingTerm = saturate(smoothness + (1 - oneMinusReflectivity));
+
+	// Diffuse term
+	//half diffuseTerm = DisneyDiffuse(nv, nl, lh, perceptualRoughness) * nl;
+	//half diffuseTerm = nl;
+	half3 color = diffColor * (gi.diffuse + light.color * nl
+#if defined(FORWARD_BASE_PASS)
+		+_BackLight * invNL
+#endif
+
+		)
+		+ specularTerm * light.color * FresnelTerm(specColor, lh)
+		+ surfaceReduction * gi.specular * FresnelLerp(specColor, grazingTerm, nv);
+
+	return half4(color, 1);
 }
 
 // Include deprecated function
