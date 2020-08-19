@@ -30,9 +30,12 @@
 			}
 
 			CGPROGRAM
-
+			#define OLD_FOG 1
 			#pragma target 3.0
 			#define UNITY_SHADOW 1
+#if OLD_FOG
+			#pragma multi_compile _  FOG_LINEAR FOG_EXP
+#endif
 			#pragma multi_compile _ SHADOWS_SCREEN
 			#pragma multi_compile _ VERTEXLIGHT_ON
 			#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
@@ -77,7 +80,7 @@
 			}
 
 			CGPROGRAM
-
+			
 			#pragma target 3.0
 
 			#pragma vertex MyShadowVertexProgram

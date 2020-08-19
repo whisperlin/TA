@@ -56,8 +56,12 @@ struct Interpolators {
 	#if defined(VERTEXLIGHT_ON)
 		float3 vertexLightColor : TEXCOORD7;
 	#endif
-
+#if OLD_FOG
+	UNITY_FOG_COORDS(8)
+#else
 	UBPA_FOG_COORDS(8)
+#endif
+	
 };
 
 void ComputeVertexLightColor (inout Interpolators i) {
@@ -107,7 +111,12 @@ Interpolators VertexProgramSample(VertexData v) {
 
 	ComputeVertexLightColor(i);
 
+#if OLD_FOG
+	UNITY_TRANSFER_FOG(i, i.pos);
+#else
 	UBPA_TRANSFER_FOG(i, v.vertex);
+#endif
+	
 	return i;
 }
 
@@ -184,11 +193,6 @@ float4 FragmentProgramSample (Interpolators i) : SV_TARGET {
 	albedo *=  tex2D(_DetailTex, i.uv.zw)*unity_ColorSpaceDouble;
 #endif
 
-	/*float3 specularTint;
-	float oneMinusReflectivity;
-	albedo = DiffuseAndSpecularFromMetallic(
-		albedo, _Metallic, specularTint, oneMinusReflectivity
-	);*/
  
 	
  
@@ -209,7 +213,13 @@ float4 FragmentProgramSample (Interpolators i) : SV_TARGET {
 	LIGHT_MAP_FINAL(i)
 	half4 final = LightingBlinnPhong(albedo,  _SpecColor, _Smoothness,  _Gloss, i.normal, viewDir , CreateLight(i, attenuation), CreateIndirectLight(i, lightmap.rgb));
 
+
+#if OLD_FOG
+	UNITY_APPLY_FOG(i.fogCoord, final);
+#else
 	UBPA_APPLY_FOG(i, final);
+#endif
+	
 	return final;
 }
 

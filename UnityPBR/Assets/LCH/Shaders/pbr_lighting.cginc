@@ -58,7 +58,11 @@ struct Interpolators {
 		float3 vertexLightColor : TEXCOORD7;
 	#endif
 
+#if OLD_FOG
+	UNITY_FOG_COORDS(8)
+#else
 	UBPA_FOG_COORDS(8)
+#endif
 };
 
 void ComputeVertexLightColor (inout Interpolators i) {
@@ -108,7 +112,11 @@ Interpolators VertexProgramSample(VertexData v) {
 
 	ComputeVertexLightColor(i);
 
+#if OLD_FOG
+	UNITY_TRANSFER_FOG(i, i.pos);
+#else
 	UBPA_TRANSFER_FOG(i, v.vertex);
+#endif
 	return i;
 }
 
@@ -230,7 +238,11 @@ float4 FragmentProgramSample (Interpolators i) : SV_TARGET {
 	
 
 
-	UBPA_APPLY_FOG(i, final);
+#if OLD_FOG
+		UNITY_APPLY_FOG(i.fogCoord, final);
+#else
+		UBPA_APPLY_FOG(i, final);
+#endif
 	return final;
 }
 
