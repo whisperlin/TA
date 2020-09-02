@@ -58,6 +58,17 @@ public class WaterGUI : ShaderGUI
         IsDebuggingMode = EditorGUILayout.Toggle("开启调试模式",IsDebuggingMode);
         if (IsDebuggingMode)
         {
+            bool IsDebuggingMode2 =  targetMat.IsKeywordEnabled("__CREATE_DEPTH_MAP2");
+
+            /*IsDebuggingMode2 = EditorGUILayout.Toggle("查看贴图映射",IsDebuggingMode2);
+            if(IsDebuggingMode2)
+            {
+                targetMat.EnableKeyword("__CREATE_DEPTH_MAP2");
+            }
+            else
+            {
+                targetMat.DisableKeyword("__CREATE_DEPTH_MAP2");
+            }*/
             float f = Shader.GetGlobalInt(waterToolctrlPower);
 
             GUILayout.Label("贴图深度采样控制");
@@ -70,7 +81,7 @@ public class WaterGUI : ShaderGUI
             height0 = EditorGUILayout.Popup(height0, options);
             targetMat.EnableKeyword("__CREATE_DEPTH_MAP");
 
-            
+            //targetMat.EnableKeyword("__CREATE_DEPTH_MAP2"); 
 
             
             Camera.main.depthTextureMode = DepthTextureMode.Depth;
@@ -84,20 +95,27 @@ public class WaterGUI : ShaderGUI
                 }
                 else
                 {
+                    targetMat.EnableKeyword("__CREATE_DEPTH_MAP2");
                     int width = GetSize(width0);
                     int height = GetSize(height0);
                     RenderTexture rt = RenderTexture.GetTemporary(width, height);
                     Camera.main.targetTexture = rt;
+                    float oldFov = Camera.main.fieldOfView ;
+                    CameraClearFlags ccf = Camera.main.clearFlags;
                     var oldPos = Camera.main.transform.position;
                     var oldForward = Camera.main.transform.forward;
                     Camera.main.transform.position = SceneView.lastActiveSceneView.camera.transform.position;
                     Camera.main.transform.forward =  SceneView.lastActiveSceneView.camera.transform.forward;
-                    targetMat.EnableKeyword("__CREATE_DEPTH_MAP2");
+                    Camera.main.fieldOfView = SceneView.lastActiveSceneView.camera.fieldOfView;
+                    Camera.main.clearFlags = CameraClearFlags.SolidColor;
+
+                    //targetMat.EnableKeyword("__CREATE_DEPTH_MAP2");
                     Camera.main.Render();
                     Camera.main.transform.position = oldPos;
                     Camera.main.transform.forward = oldForward;
                     Camera.main.targetTexture = null;
-
+                    Camera.main.fieldOfView  = oldFov;
+                    Camera.main.clearFlags = ccf;
                     //Material m = new Material(Shader.Find("TA/SimpleBlurEffect"));
                     //Graphics.Blit(rt, rt, m);
                     //Graphics.Blit(rt, rt, m);
@@ -120,8 +138,9 @@ public class WaterGUI : ShaderGUI
                         Texture2D t = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
                         targetMat.SetTexture("_ColorControl", t);
                     }
-                    targetMat.DisableKeyword("__CREATE_DEPTH_MAP2");
+                   
                     RenderTexture.ReleaseTemporary(rt);
+                     targetMat.DisableKeyword("__CREATE_DEPTH_MAP2");
                 }
             }
         }
@@ -130,6 +149,7 @@ public class WaterGUI : ShaderGUI
             base.OnGUI(materialEditor, properties);
             Camera.main.depthTextureMode = DepthTextureMode.None;
             targetMat.DisableKeyword("__CREATE_DEPTH_MAP");
+            targetMat.DisableKeyword("__CREATE_DEPTH_MAP2");
    
         }
         
