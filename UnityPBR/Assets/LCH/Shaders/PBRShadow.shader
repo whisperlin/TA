@@ -1,23 +1,25 @@
-﻿Shader "Demo/Shadow" {
+﻿Shader "LCH/PBR Shadow" {
 
 	Properties {
 		_Tint ("Tint", Color) = (0.5, 0.5, 0.5, 1)
-		_BackLight("BackLight",Color)=(0.15,0.15,0.15,1)
+		//_BackLight("BackLight",Color)=(0.15,0.15,0.15,1)
 		_MainTex ("Albedo", 2D) = "white" {}
 		[NoScaleOffset] _NormalMap ("Normals", 2D) = "bump" {}
 		_BumpScale ("Bump Scale", Float) = 1
 		[Gamma] _Metallic ("Metallic", Range(0, 1)) = 0
 		_Smoothness ("Smoothness", Range(0, 1)) = 0.1
+		_MetallicTex("Metallic Tex", 2D) = "white" {}
 		
-		_DetailTex("Detail Texture", 2D) = "gray" {}
-		[NoScaleOffset] _DetailNormalMap ("Detail Normals", 2D) = "bump" {}
-		_DetailBumpScale ("Detail Bump Scale", Float) = 1
+		[KeywordEnum(None,Aniso,SSS)]_EffectMode("Color Mode",Float) = 0
+		//[Toggle(_ANISOTROPIC_ENABLE)] _button("各向异性", Float) = 0
+		_Anisotropic("Anisotropic",  Range(-20,1)) = 0
+		_BRDFTex("_BRDFTex", 2D) = "white" {}
 	}
 
 	CGINCLUDE
 
 	#define BINORMAL_PER_FRAGMENT 1
-	#define ENABLE_DETIAL_TEXTURE 1
+	//#define ENABLE_DETIAL_TEXTURE 1
 	ENDCG
 
 	SubShader {
@@ -28,12 +30,14 @@
 			}
 
 			CGPROGRAM
-
+			#define OLD_FOG 1
 			#pragma target 3.0
 			#define UNITY_SHADOW 1
+			#pragma multi_compile _  FOG_LINEAR FOG_EXP
 			#pragma multi_compile _ SHADOWS_SCREEN
 			#pragma multi_compile _ VERTEXLIGHT_ON
 			#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
+
 
 			#pragma vertex VertexProgramSample
 			#pragma fragment FragmentProgramSample
@@ -73,7 +77,7 @@
 			}
 
 			CGPROGRAM
-
+			
 			#pragma target 3.0
 
 			#pragma vertex MyShadowVertexProgram
