@@ -24,7 +24,11 @@ public class ConditionalHidePropertyDrawer : PropertyDrawer
         int index = conditionPath.LastIndexOf(".");
         if (index > 0)
         {
-            conditionPath = conditionPath.Substring(0,index+1)+ condHAtt.conditionalSourceField;
+            conditionPath = conditionPath.Substring(0, index + 1) + condHAtt.conditionalSourceField;
+        }
+        else
+        {
+            conditionPath= condHAtt.conditionalSourceField;
         }
 
         //string conditionPath = propertyPath.Replace(property.name, condHAtt.conditionalSourceField); //changes the path to the conditionalsource property path
@@ -34,8 +38,7 @@ public class ConditionalHidePropertyDrawer : PropertyDrawer
         {
             
             enabled = sourcePropertyValue.boolValue;
-            Debug.LogError("enable = "+enabled);
-            Debug.LogError("conditionPath = " + conditionPath + " enabled = "+ enabled);
+           
         }
         /*else
         {
