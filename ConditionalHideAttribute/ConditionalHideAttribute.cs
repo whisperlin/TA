@@ -10,15 +10,32 @@ public class ConditionalHidePropertyDrawer : PropertyDrawer
 {
     private bool GetConditionalHideAttributeResult(LabelAttribute condHAtt, SerializedProperty property)
     {
+
+        if (condHAtt.conditionalSourceField.Length<=0)
+        {
+            return true;
+            
+        }
         bool enabled = true;
         //Look for the sourcefield within the object that the property belongs to
         string propertyPath = property.propertyPath; //returns the property path of the property we want to apply the attribute to
-        string conditionPath = propertyPath.Replace(property.name, condHAtt.conditionalSourceField); //changes the path to the conditionalsource property path
-        SerializedProperty sourcePropertyValue = property.serializedObject.FindProperty(conditionPath);
+        
+        string conditionPath = propertyPath;
+        int index = conditionPath.LastIndexOf(".");
+        if (index > 0)
+        {
+            conditionPath = conditionPath.Substring(0,index+1)+ condHAtt.conditionalSourceField;
+        }
 
+        //string conditionPath = propertyPath.Replace(property.name, condHAtt.conditionalSourceField); //changes the path to the conditionalsource property path
+
+        SerializedProperty sourcePropertyValue = property.serializedObject.FindProperty(conditionPath);
         if (sourcePropertyValue != null)
         {
+            
             enabled = sourcePropertyValue.boolValue;
+            Debug.LogError("enable = "+enabled);
+            Debug.LogError("conditionPath = " + conditionPath + " enabled = "+ enabled);
         }
         /*else
         {
