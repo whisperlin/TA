@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -98,15 +99,26 @@ public class ConditionalHidePropertyDrawer : PropertyDrawer
     {
         SerializedProperty arraySizeProp = property.FindPropertyRelative("Array.size");
         EditorGUILayout.PropertyField(arraySizeProp);
-
         EditorGUI.indentLevel++;
-
         for (int i = 0; i < arraySizeProp.intValue; i++)
         {
             CommonProperty(position, property.GetArrayElementAtIndex(i));
             EditorGUILayout.PropertyField(property.GetArrayElementAtIndex(i));
         }
         EditorGUI.indentLevel--;
+    }
+
+    public static  Type GetFile(Type targetObjectClassType,string propertyPath)
+    {
+        string [] sl = propertyPath.Split('.');
+        Type final = targetObjectClassType;
+        
+        for (int i = 0; i < sl.Length; i++)
+        {
+            FieldInfo field = final.GetField(sl[i]);
+            final = field.FieldType ;
+        }
+        return final;
     }
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
@@ -184,24 +196,18 @@ public class ConditionalHidePropertyDrawer : PropertyDrawer
 
                 if (property.propertyType == SerializedPropertyType.Enum)
                 {
-                    var _type = property.GetType();
- 
-                    var type = property.serializedObject.targetObject.GetType();
-                    var field = type.GetField(property.name);
-                    if (null == field || null == field.FieldType)
-                    {
-                        
 
-                        EditorGUI.BeginChangeCheck();
-                        var value = EditorGUI.Popup(position, label.text, property.enumValueIndex, property.enumDisplayNames);
-                        if (EditorGUI.EndChangeCheck())
-                        {
-                            property.enumValueIndex = value;
-                        }
+                    var targetObject = property.serializedObject.targetObject;
+                    var targetObjectClassType = targetObject.GetType();
+                    var _type =  GetFile(targetObjectClassType, property.propertyPath);
+                    if (/*null == field ||*/ null == _type)
+                    {
+                        EditorGUI.PropertyField(position, property, label, true);
                     }
                     else
                     {
-                        var enumtype = field.FieldType;
+                        //var enumtype = field.FieldType;
+                        var enumtype = _type;
                         List<string> m_displayNames = new List<string>();
                         foreach (var enumName in property.enumNames)
                         {
@@ -215,21 +221,14 @@ public class ConditionalHidePropertyDrawer : PropertyDrawer
                         {
                             property.enumValueIndex = value;
                         }
-                     
                     }
-                    
                 }
                 else
                 {
-
                     EditorGUI.PropertyField(position, property, label, true);
                 }
-                
             }
- 
-            
         }
-
         //Ensure that the next property that is being drawn uses the correct settings
         GUI.enabled = wasEnabled;
     }
