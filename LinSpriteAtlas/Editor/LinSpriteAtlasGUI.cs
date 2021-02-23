@@ -22,7 +22,8 @@ public class FolderReferencePropertyDrawer : PropertyDrawer
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
          Init(property);
-        label.text = obj.name;
+         if(null != obj)
+              label.text = obj.name;
         GUIContent guiContent = EditorGUIUtility.ObjectContent(obj, typeof(DefaultAsset));
 
         Rect r = EditorGUI.PrefixLabel(position, label);
