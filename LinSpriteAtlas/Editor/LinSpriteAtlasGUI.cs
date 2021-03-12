@@ -4,7 +4,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-
+ 
 [CustomPropertyDrawer(typeof(FolderReference))]
 public class FolderReferencePropertyDrawer : PropertyDrawer
 {
@@ -22,8 +22,8 @@ public class FolderReferencePropertyDrawer : PropertyDrawer
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
          Init(property);
-         if(null != obj)
-              label.text = obj.name;
+        if(null!=obj)
+            label.text = obj.name;
         GUIContent guiContent = EditorGUIUtility.ObjectContent(obj, typeof(DefaultAsset));
 
         Rect r = EditorGUI.PrefixLabel(position, label);
@@ -212,11 +212,17 @@ public class LinSpriteAtlasGUI : Editor
                 }
                 
             }
-            var err  = packer.Pack(2048);
+            //var err  = packer.Pack(2048);
+            var err = packer.Pack2(2048);
             if (err.Count>0)
             {
                  
                 EditorUtility.DisplayDialog("", err.Count.ToString()+"张贴图贴图放不下", "确定");
+                foreach (var b in err)
+                {
+                    MyTextureData ud = (MyTextureData)b.userData;
+                    Debug.LogError(" "+b.width + ","+b.height + " "+ ud.path);
+                }
 
             }
              
