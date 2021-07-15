@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+/*
+作者：林春华
+QQ:309762472
+*/
+using UnityEngine;
 using System;
 using System.Collections;
 
@@ -17,11 +21,11 @@ public class ConditionalHidePropertyDrawer : PropertyDrawer
 
         if (sourcePropertyValue != null)
         {
-            enabled = sourcePropertyValue.boolValue;
+            enabled = sourcePropertyValue.boolValue == condHAtt.condictionValue;
         }
         else
         {
-            //Debug.LogWarning("Attempting to use a ConditionalLabelAttribute but no matching SourcePropertyValue found in object: " + condHAtt.ConditionalSourceField);
+            Debug.LogWarning("Attempting to use a ConditionalLabelAttribute but no matching SourcePropertyValue found in object: " + condHAtt.ConditionalSourceField);
         }
 
         return enabled;
@@ -39,7 +43,7 @@ public class ConditionalHidePropertyDrawer : PropertyDrawer
         }
         else
         {
-            return 0.1f;
+            return 0f;
         }
        
     }
@@ -101,7 +105,8 @@ public class LabelAttribute : PropertyAttribute
     public bool condiction = false;
     public float max;
     public float min;
-    public bool ctrlByParam = true; 
+    public bool ctrlByParam = true;
+    public bool condictionValue = true;
 
     public LabelAttribute(string label,string conditionalSourceField)
     {
@@ -110,6 +115,15 @@ public class LabelAttribute : PropertyAttribute
         this.Label = "    "+label;
         condiction = false;
         ctrlByParam = true;
+    }
+    public LabelAttribute(string label, string conditionalSourceField,bool condictionValue)
+    {
+        this.ConditionalSourceField = conditionalSourceField;
+
+        this.Label = "    " + label;
+        condiction = false;
+        ctrlByParam = true;
+        this.condictionValue = condictionValue;
     }
 
     public LabelAttribute(string label, string conditionalSourceField,float min,float max)
@@ -120,6 +134,17 @@ public class LabelAttribute : PropertyAttribute
         this.max = max;
         this.min = min;
         this.ctrlByParam = true;
+    }
+
+    public LabelAttribute(string label, string conditionalSourceField, float min, float max,bool condictionValue)
+    {
+        this.Label = "    " + label;
+        this.ConditionalSourceField = conditionalSourceField;
+        condiction = true;
+        this.max = max;
+        this.min = min;
+        this.ctrlByParam = true;
+        this.condictionValue = condictionValue;
     }
     public LabelAttribute(string label, float min, float max)
     {
