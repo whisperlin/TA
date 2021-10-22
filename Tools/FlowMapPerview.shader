@@ -64,6 +64,9 @@ Shader "Hidden/FlowMapPerview"
 
 				if(GlobalFlowMapPaintParams2.x>0)
 				{
+					#if _GLOBAL_FLOW_MAP
+					col2 =  lerp(col2, float4(1,1,0,1), col3.r);
+					#endif 
 			 
 					return  col2;
 				}
