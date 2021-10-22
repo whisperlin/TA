@@ -156,4 +156,124 @@ public class FlowMapPainter : EditorWindow
         {
             string[] type = { "Image files", "png,tga,dds,jpg", "All files", "*" };
             string path = EditorUtility.OpenFilePanelWithFilters("选择一个图片", "", type);
-            if (path
+            if (path.Length > 0)
+            {
+                path = path.Replace('\\', '/');
+                int _id = path.IndexOf("/Assets/");
+                if (_id >= 0)
+                {
+                    path = path.Substring(_id + 1);
+                    Texture2D tx = AssetDatabase.LoadAssetAtPath<Texture2D>(path) as Texture2D;
+                    Graphics.Blit(tx, rt);
+                }
+
+
+
+            }
+
+        }
+        GUILayout.EndHorizontal();
+
+        Texture2D preview = Texture2D.whiteTexture;
+        if (backBround)
+        {
+            preview = backBround;
+        }
+        Rect rect0 = EditorGUILayout.GetControlRect(false, 2);
+        mat.SetTexture("_TargetTex", rt);
+        float width = Mathf.Min(this.position.width - 5, this.position.height - 7 - rect0.x);
+        Rect rect = EditorGUILayout.GetControlRect(false, width);
+        float w = Mathf.Min(rect.width, rect.height);
+        rect.width = rect.height = w;
+        EditorGUI.DrawPreviewTexture(rect, preview, mat);
+
+        float m1 = (baseTexture ? 1f : 0f);
+        Shader.SetGlobalVector("GlobalFlowMapPaintParams2", new Vector4(m1, 1f, 1f, 1f));
+        this.wantsMouseMove = true;
+        if (Event.current.type == EventType.MouseMove)
+        {
+
+            Vector2 pos = new Vector2(Event.current.mousePosition.x - rect.x, Event.current.mousePosition.y - rect.y);
+            if (pos.x >= 0 && pos.y > 0 && pos.x < width && pos.y >= 0 && pos.y <= width)
+            {
+                Vector2 paintPos = pos / width;
+                Vector2 paintDir = (lastPosition - pos).normalized;
+
+                Shader.SetGlobalVector("GlobalFlowMapPaintPos", new Vector4(paintPos.x, paintPos.y, paintDir.x, paintDir.y));
+
+
+                lastPosition = pos;
+
+
+            }
+
+        }
+        if (Event.current.type == EventType.MouseDown)
+        {
+            Vector2 pos = new Vector2(Event.current.mousePosition.x - rect.x, Event.current.mousePosition.y - rect.y);
+            if (pos.x >= 0 && pos.y > 0 && pos.x < width && pos.y >= 0 && pos.y <= width)
+            {
+                Vector2 paintPos = pos / width;
+                Vector2 paintDir = (lastPosition - pos).normalized;
+                Shader.SetGlobalVector("GlobalFlowMapPaintPos", new Vector4(paintPos.x, paintPos.y, paintDir.x, paintDir.y));
+
+                isDragging = true;
+                lastPosition = pos;
+            }
+
+        }
+        if (Event.current.type == EventType.MouseUp)
+        {
+            isDragging = false;
+        }
+        if (Event.current.type == EventType.MouseDrag)
+        {
+            if (isDragging)
+            {
+                Vector2 pos = new Vector2(Event.current.mousePosition.x - rect.x, Event.current.mousePosition.y - rect.y);
+                if (pos.x >= 0 && pos.y > 0 && pos.x < width && pos.y >= 0 && pos.y <= width)
+                {
+
+                    Vector2 paintPos = pos / width;
+                    Vector2 paintDir = (lastPosition - pos).normalized;
+                    Vector4 v = new Vector4(paintPos.x, paintPos.y, paintDir.x * 0.5f + 0.5f, paintDir.y * 0.5f + 0.5f);
+
+
+                    Shader.SetGlobalVector("GlobalFlowMapPaintPos", v);
+
+                    Graphics.Blit(rt, rt1, mat2, 1);
+                    var r = rt1;
+                    rt1 = rt;
+                    rt = r;
+
+                    lastPosition = pos;
+
+
+
+                }
+            }
+        }
+    }
+    void On3DPanel()
+    {
+    }
+    private void OnGUI()
+    {
+        toolbarInt = GUILayout.Toolbar(toolbarInt, toolbarStrings);
+
+        switch (toolbarInt)
+        {
+            case 0:
+                {
+                    On2DPanel();
+                }
+                break;
+            case 1:
+                {
+                    On3DPanel();
+                }
+                break;
+        }
+    }
+}
+
