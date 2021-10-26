@@ -29,7 +29,7 @@ public class GPUInstanceMulPass : MonoBehaviour
                 offsetIndex[i] = delta * i;
             }
             ms.SetFloatArray("_Offset", offsetIndex);
-            Graphics.DrawMeshInstanced(mesh, 0, mat, ts, ms);
+            Graphics.DrawMeshInstanced(mesh, 0, mat, ts, ms); 
         }
     }
 }
