@@ -1,4 +1,4 @@
-Shader "Lch/Phone(Shadow Mask)"
+Shader "Lch/PhoneEX(Shadow Mask)"
 {
 	Properties
 	{
@@ -16,9 +16,16 @@ Shader "Lch/Phone(Shadow Mask)"
 
 		[Toggle(_ALPHA_CLIP)]_ALPHA_CLIP("透明剔除",Int) = 0
 		_AlphaClip("剔除值[_ALPHA_CLIP]", Range(0, 1)) = 0.01
-		 
 
-	 
+		[Toggle(_REF_ENABLE)]_REF_ENABLE("开启反射",Int) = 0
+		 _RefPower("_RefPower[_REF_ENABLE]", Range(0.1, 1)) = 0.5
+		 _RefLevel("_RefLevel[_REF_ENABLE]", Range(0, 7)) = 0
+ 
+
+		[Enum(BlendModeSimpleFirst)] _SrcBlend("Src Blend", Float) = 1
+	[Enum(BlendModeSimple)] _DstBlend("Dst Blend", Float) = 0
+    [Enum(Off, 0, On, 1)] _ZWrite("ZWrite", Float) = 1
+	 [LCHEnumDrawer(LCHCullModel)] _CullMode ("裁剪", Float) = 0
 	}
 
 	SubShader
@@ -26,6 +33,13 @@ Shader "Lch/Phone(Shadow Mask)"
 		Pass
 		{
 			Tags {"LightMode"="ForwardBase"}
+
+			blend [_SrcBlend] [_DstBlend]
+			Cull [_CullMode]
+
+			ZWrite [_ZWrite]
+
+			
 
 			CGPROGRAM
 			#pragma vertex vert
@@ -40,6 +54,8 @@ Shader "Lch/Phone(Shadow Mask)"
 			#pragma multi_compile   _ _SPEC_ENABLE
 
 			#pragma multi_compile   _ GLOBAL_BACK_LIGHT
+
+			#pragma multi_compile   _  _REF_ENABLE
 		 
 			#pragma multi_compile  SHADOWS_SHADOWMASK
 			#pragma multi_compile LIGHTMAP_SHADOW_MIXING
