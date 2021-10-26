@@ -224,4 +224,44 @@
         //float4 _MainTex_ST;
         //float4 _Illum_ST;
 
-        v2f vertMeta (appdat
+        v2f vertMeta (appdata_full v)
+        {
+            v2f o;
+            UNITY_SETUP_INSTANCE_ID(v);
+            UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+            o.pos = UnityMetaVertexPosition(v.vertex, v.texcoord1.xy, v.texcoord2.xy, unity_LightmapST, unity_DynamicLightmapST);
+            o.uvMain = TRANSFORM_TEX(v.texcoord, _MainTex);
+   
+        #ifdef EDITOR_VISUALIZATION
+            o.vizUV = 0;
+            o.lightCoord = 0;
+            if (unity_VisualizationMode == EDITORVIZ_TEXTURE)
+                o.vizUV = UnityMetaVizUV(unity_EditorViz_UVIndex, v.texcoord.xy, v.texcoord1.xy, v.texcoord2.xy, unity_EditorViz_Texture_ST);
+            else if (unity_VisualizationMode == EDITORVIZ_SHOWLIGHTMASK)
+            {
+                o.vizUV = v.texcoord1.xy * unity_LightmapST.xy + unity_LightmapST.zw;
+                o.lightCoord = mul(unity_EditorViz_WorldToLight, mul(unity_ObjectToWorld, float4(v.vertex.xyz, 1)));
+            }
+        #endif
+            return o;
+        }
+
+        //sampler2D _MainTex;
+        //fixed4 _Color;
+ 
+
+        half4 fragMeta (v2f i) : SV_Target
+        {
+            UnityMetaInput metaIN;
+            UNITY_INITIALIZE_OUTPUT(UnityMetaInput, metaIN);
+
+            fixed4 tex = tex2D(_MainTex, i.uvMain);
+            fixed4 c = tex * _Color;
+            metaIN.Albedo = c.rgb;
+           // metaIN.Emission = 0;
+        
+
+            return UnityMetaFragment(metaIN);
+        }
+
+#endif
