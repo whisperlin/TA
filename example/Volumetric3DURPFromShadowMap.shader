@@ -165,3 +165,19 @@ Shader "Unlit/Volumetic3D URP From Shadow Map"
 					#else
 					hd += intensity * worldPos.w   ;
 					#endif
+					
+					worldPos += delta;
+				}
+				hd  /= _SamplingQuality;
+				color = _Color * dist*hd  ; 
+				
+
+		
+
+				return color;
+
+            }
+            ENDHLSL
+        }
+    }
+}
