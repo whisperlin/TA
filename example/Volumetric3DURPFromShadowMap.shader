@@ -2,7 +2,8 @@ Shader "Unlit/Volumetic3D URP From Shadow Map"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "" {}
+        _MainTex ("Texture", 2D) = "white" {}
+		_NoiseTex ("_NoiseTex", 2D) = "white" {}
 		[HDR]_Color("Color",Color) = (1,1,1,1)
 	 
 		_SamplingQuality("_SamplingQuality",Range(5,64)) = 5
@@ -42,12 +43,18 @@ Shader "Unlit/Volumetic3D URP From Shadow Map"
 
 			TEXTURE2D( _MainTex);
 			SAMPLER(sampler_MainTex);
+			TEXTURE2D( _NoiseTex);
+			SAMPLER(sampler_NoiseTex);
+			
 
 			CBUFFER_START(UnityPerMaterial)
 			int _SamplingQuality;
  
 			half4 _Color;
 			float4 _MainTex_ST;
+			float4 _NoiseTex_ST;
+
+			
  
 			CBUFFER_END
             struct Attributes
@@ -145,11 +152,17 @@ Shader "Unlit/Volumetic3D URP From Shadow Map"
 				{
 
 					#if _MARK
-					half4 mark = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv0*_MainTex_ST.xy );
-
-					half4 mark2 = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv0*_MainTex_ST.xy+  _MainTex_ST.zw*_Time.y);
-					mark = (mark2 + mark)  * 0.5  ;
-					mark.r = mark.r*0.5+0.5;
+					
+					half4 mark = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv0   );
+					mark.r  = saturate(mark.r*100);
+					half4 mark1 = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, uv0*_NoiseTex_ST.xy );
+					
+					half4 mark2 = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, uv0*_NoiseTex_ST.xy+  _NoiseTex_ST.zw*_Time.y);
+					mark1 = (mark1 + mark2 )  * 0.5  ;
+					
+					mark1 =  mark1.r*0.5+0.5;
+					mark.r *= mark1.r;
+					
 					uv0+=ds0.xy;
 					//float2 uv0 = i.localPos.xy+0.5;
 					#endif
