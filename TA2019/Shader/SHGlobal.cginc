@@ -51,7 +51,7 @@ float Y8(float3 v)//SH_2_4
 
 
 #define CMP_SH9_ORDER3(v,name,col)\
-float3 name##result = (\
+float3 col = saturate (\
 name##0.xyz   +\
 name##1.xyz * Y1(v) +\
 name##2.xyz * Y2(v) +\
@@ -62,15 +62,15 @@ name##6.xyz * Y6(v) +\
 name##7.xyz * Y7(v) +\
 name##8.xyz * Y8(v)\
 );\
-float3 col = max(name##result, float3(0, 0, 0));
+ 
 
 #define CMP_SH9_ORDER2(v,name,col)\
-float3 name##result = (\
+float3 col = saturate(\
 name##0.xyz    +\
 name##1.xyz * Y1(v) +\
 name##2.xyz * Y2(v) +\
 name##3.xyz * Y3(v) );\
-float3 col = max(name##result, float3(0, 0, 0));
+ 
 
 float3 g_sh(float3 v)
 {
