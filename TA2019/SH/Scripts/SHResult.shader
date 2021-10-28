@@ -1,65 +1,65 @@
-﻿Shader "lin/SHResult"
+Shader "TA/Test/SHResult"
 {
-    SubShader
-    {
-        // very simple lighting pass, that only does non-textured ambient
-        Pass
-        {
-            Tags {"LightMode"="ForwardBase"}
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #include "UnityCG.cginc"
-            struct v2f
-            {
-                fixed4 diff : COLOR0;
-                float4 vertex : SV_POSITION;
-            };
-            v2f vert (appdata_base v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                half3 worldNormal = UnityObjectToWorldNormal(v.normal);
-                // only evaluate ambient
-                o.diff.rgb = ShadeSH9(half4(worldNormal,1));
-                o.diff.a = 1;
-                return o;
-            }
-            fixed4 frag (v2f i) : SV_Target
-            {
-                return i.diff;
-            }
-            ENDCG
-        }
+	Properties
+	{
+		[Toggle(ENABLE_FANCY)] _Fancy("Fancy?", Float) = 0
+	}
+	SubShader
+	{
+		Tags { "RenderType"="Opaque" }
 
-        // shadow caster rendering pass, implemented manually
-        // using macros from UnityCG.cginc
-        Pass
-        {
-            Tags {"LightMode"="ShadowCaster"}
+		LOD 100
 
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #pragma multi_compile_shadowcaster
-            #include "UnityCG.cginc"
+		Pass
+		{
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+			// make fog work
+			#pragma multi_compile_fog
+			#pragma   multi_compile  _ ENABLE_FANCY
+			#include "UnityCG.cginc"
+			#include "SHGlobal.cginc"
+			
+			struct appdata
+			{
+				float4 vertex : POSITION;
+				float2 uv : TEXCOORD0;
+				float3 normal:NORMAL;
+			};
 
-            struct v2f { 
-                V2F_SHADOW_CASTER;
-            };
+			struct v2f
+			{
+				float2 uv : TEXCOORD0;
+			 	float3 worldNormal : TEXCOORD1;
+				float4 vertex : SV_POSITION;
+			};
 
-            v2f vert(appdata_base v)
-            {
-                v2f o;
-                TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
-                return o;
-            }
-
-            float4 frag(v2f i) : SV_Target
-            {
-                SHADOW_CASTER_FRAGMENT(i)
-            }
-            ENDCG
-        }
-    }
+			sampler2D _MainTex;
+			float4 _MainTex_ST;
+			
+			v2f vert (appdata v)
+			{
+				v2f o;
+				o.vertex = UnityObjectToClipPos(v.vertex);
+				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+				float3 worldNormal = normalize(UnityObjectToWorldNormal(v.normal));
+		 		o.worldNormal = worldNormal;
+				return o;
+			}
+			DEFINE_SH9(g_sph)
+			fixed4 frag (v2f i) : SV_Target
+			{
+#if ENABLE_FANCY
+				CMP_SH9_ORDER3(i.worldNormal ,g_sph,c);		 
+#else
+				CMP_SH9_ORDER2(i.worldNormal ,g_sph,c);
+#endif
+		
+				fixed4 col = float4(c,1);
+				return col;
+			}
+			ENDCG
+		}
+	}
 }
