@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,10 +31,6 @@ public class SetGlobalSH9 : MonoBehaviour {
     public Texture2D sbl;
     Texture2D curSbl = null;
 
-
-
-    //public Vector4[] iblCoefficients = new Vector4[0];
-
     public SH9Struct iblData;
     public SH9Struct iblData2;
     public SH9Struct iblData3;
@@ -43,11 +39,8 @@ public class SetGlobalSH9 : MonoBehaviour {
     [Label("烘培贴图亮度提高",    -1f, 1f)]
     public float LightMapIntensity = 0f;
 
-
     [Label("角色光照调整",-1f,1f)]
     public float RoleLightPower = 0f;
-
- 
 
     public bool updateSH9Data = true;
 
@@ -58,19 +51,17 @@ public class SetGlobalSH9 : MonoBehaviour {
         updateSH9Data = true;
         setSH9Global();
     }
-	// Update is called once per frame
-	void Update () {
+    // Update is called once per frame
 #if UNITY_EDITOR
-        //if (null == ibl)
-        //    ibl = RenderSettings.skybox;
+    void Update () {
+
         SH9Helper.UpdateSH9FormCubeMap(ibl,ref curIbl,iblData);
         SH9Helper.UpdateSH9FormCubeMap(ibl2, ref curIbl2, iblData2);
         SH9Helper.UpdateSH9FormCubeMap(ibl3, ref curIbl3, iblData3);
         
         setSH9Global();
-#endif
-       
     }
+#endif
     private void setSH9Global()
     {
         if (openDepthTexture)
@@ -82,7 +73,6 @@ public class SetGlobalSH9 : MonoBehaviour {
         {
             Shader.DisableKeyword("__DEPTH_TEXTURE_MODE");
         }
- 
 #if !UNITY_EDITOR
         if (curSbl != sbl)
         {
@@ -93,8 +83,6 @@ public class SetGlobalSH9 : MonoBehaviour {
         }
 #endif
 
-
-
 #if !UNITY_EDITOR
         if (updateSH9Data)
         {
@@ -103,12 +91,9 @@ public class SetGlobalSH9 : MonoBehaviour {
         iblData.Commit("g_sph", "GLOBAL_SH9");
         iblData2.Commit("g_sph_role", "GLOBAL_SH9_ROLE");
         iblData3.Commit("g_sph_role2", "GLOBAL_SH9_ROLE2");
-
-
 #if !UNITY_EDITOR
         }
 #endif
-
 
         Shader.SetGlobalFloat("RoleLightPower", RoleLightPower);
         Shader.SetGlobalVector("LightMapInf",new Vector4(LightMapColor.r, LightMapColor.g, LightMapColor.b, LightMapIntensity));
