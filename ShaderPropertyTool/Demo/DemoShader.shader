@@ -20,7 +20,7 @@ Shader "Unlit/DemoShader"
 		_Float22("[!S_BOOL]宏开!支持",Range(0,100)) = 2
         [Toggle] _MyToggle1("变暗", int) = 0
 		_Color31("[_MyToggle1 = 1]写等于多少就是按属性开启",Color) = (1,0,1,1)
-		_Float32("[_MyToggle1 = 2&S_BOOL]混合条件开启哦",Range(0,100)) = 2
+		_Float32("[_MyToggle1 = 1 &!S_BOOL]混合条件开启哦",Range(0,100)) = 2
 
 		//枚举要中文的.
 		[LCHEnum(LCHblendlModel)] _bendModel("混合模式", Int) = 0
