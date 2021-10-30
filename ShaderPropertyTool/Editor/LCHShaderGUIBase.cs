@@ -125,9 +125,10 @@ public class LCHShaderGUIBase : ShaderGUI
                     if (keys.Length == 1)
                     {
                         displayName = line.Substring(0, index0 - 1);
+                        keys[0] = keys[0].Trim();
                         if (keys[0].StartsWith("!"))
                         {
-                            bool b = targetMat.IsKeywordEnabled(keys[0].Substring(1));
+                            bool b = targetMat.IsKeywordEnabled(keys[0].Substring(1).Trim());
                             if (b)
                                 isOk = false;
                         }
@@ -139,9 +140,11 @@ public class LCHShaderGUIBase : ShaderGUI
                     }
                     else if (keys.Length == 2)
                     {
+                        //去掉空格
                         displayName = line.Substring(0, index0 - 1);
-                        if (int.TryParse(keys[1], out int n))
+                        if (int.TryParse(keys[1].Trim(), out int n))
                         {
+                            keys[0] = keys[0].Trim();
                             if (targetMat.HasProperty(keys[0]))
                             {
                                 if (!(Mathf.Abs(targetMat.GetFloat(keys[0]) - n) < 0.01f))
