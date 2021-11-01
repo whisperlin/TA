@@ -1,4 +1,5 @@
  
+ 
 using UnityEngine;
 public enum GodRayPostEffectModel
 {
@@ -45,8 +46,11 @@ public class GodRayPostEffect : MonoBehaviour
 
     [Header("光源位置")]
     public Transform lightTransform;
-   
-    
+
+    [Header("噪点")]
+    public Texture2D noise;
+
+    public Vector4 noise_ST = new Vector4(0.5f,0.5f,0.5f,0.5f);
 
     public Camera targetCamera = null;
     public Material _Material;
@@ -71,6 +75,18 @@ public class GodRayPostEffect : MonoBehaviour
     {
         if (_Material && targetCamera)
         {
+            if (noise)
+            {
+                _Material.SetTexture("_Noise", noise);
+                _Material.SetVector("_Noise_ST", noise_ST);
+                
+                _Material.EnableKeyword("NOISE_TEXTURE");
+            }
+            else
+            {
+                _Material.DisableKeyword("NOISE_TEXTURE");
+            }
+           
             int rtWidth = source.width >> downSample;
             int rtHeight = source.height >> downSample;
             //RT分辨率按照downSameple降低
