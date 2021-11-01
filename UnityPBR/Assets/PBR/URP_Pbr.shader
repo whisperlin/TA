@@ -22,20 +22,13 @@ Shader "Lch/URPBrdf"
 			#pragma vertex vert
 			#pragma fragment frag
 
- 
-
 			#define FORWARD_BASE_PASS
- 
 			#pragma multi_compile  LIGHTPROBE_SH
 			#pragma multi_compile  DIRECTIONAL
-		 
 			#pragma multi_compile  SHADOWS_SHADOWMASK
 			#pragma multi_compile LIGHTMAP_SHADOW_MIXING
-
 			#pragma multi_compile _ SHADOWS_SCREEN 
 			#pragma multi_compile LIGHTMAP_OFF LIGHTMAP_ON
-
-
 			#pragma multi_compile  _  OLD_PBR
 
 			#include "UnityCG.cginc"
@@ -70,9 +63,7 @@ Shader "Lch/URPBrdf"
 				SHADOW_COORDS(7)
  
 			};
-
 			//sampler2D unity_NHxRoughness;
-
 			float4 _Tint;
 			sampler2D _MainTex;
 			half4 _MainTex_ST;
@@ -81,7 +72,6 @@ Shader "Lch/URPBrdf"
 			sampler2D _LUT;
 			float _Metallic;
 			float _Smoothness;
- 
 			sampler2D _SpecMap;
 			v2f vert(appdata v)
 			{
@@ -100,8 +90,6 @@ Shader "Lch/URPBrdf"
 				o.tspace0 = half3(tangent.x, bitangent.x, normal.x);
 				o.tspace1 = half3(tangent.y, bitangent.y, normal.y);
 				o.tspace2 = half3(tangent.z, bitangent.z, normal.z);
-
- 
 				o.ambientOrLightmapUV = VertexGIForward(v.uv1, worldPos, normal);
 		 
 				TRANSFER_SHADOW(o);
@@ -111,18 +99,12 @@ Shader "Lch/URPBrdf"
 				return o;
 			}
 
-				float3 fresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
-				{
-					return F0 + (max(float3(1 ,1, 1) * (1 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
-				}
- 
-				#define HALF_MIN 6.103515625e-5  // 2^-14, the same value for 10, 11 and 16-bit: https://www.khronos.org/opengl/wiki/Small_Float_Formats
+			float3 fresnelSchlickRoughness(float cosTheta, float3 reflectSpecular, float roughness)
+			{
+				return reflectSpecular + (max(float3(1 ,1, 1) * (1 - roughness), reflectSpecular) - reflectSpecular) * pow(1.0 - cosTheta, 5.0);
+			}
+			#define HALF_MIN 6.103515625e-5  // 2^-14, the same value for 10, 11 and 16-bit: https://www.khronos.org/opengl/wiki/Small_Float_Formats
 
-
-				/*float PerceptualSmoothnessToPerceptualRoughness(float perceptualSmoothness)
-				{
-					return (1.0 - perceptualSmoothness);
-				}*/
 			fixed4 frag(v2f i) : SV_Target
 			{
  
@@ -135,10 +117,8 @@ Shader "Lch/URPBrdf"
 
 				half shadowMaskAttenuation = UnitySampleBakedOcclusion(i.ambientOrLightmapUV, 0);
 				half realtimeShadowAttenuation = SHADOW_ATTENUATION(i);
-
 				float zDist = dot(_WorldSpaceCameraPos - i.worldPos, UNITY_MATRIX_V[2].xyz);
 				float fadeDist = UnityComputeShadowFadeDistance(i.worldPos, zDist);
-
 				half atten = UnityMixRealtimeAndBakedShadows(realtimeShadowAttenuation, shadowMaskAttenuation, UnityComputeShadowFade(fadeDist));
 			
 			
@@ -160,9 +140,7 @@ Shader "Lch/URPBrdf"
 				float nDotH = max(saturate(dot(normal, halfVector)), HALF_MIN);
 
 				float3 Albedo = _Tint * tex2D(_MainTex, i.uv);
-
-			
-				float3 F0 = lerp(unity_ColorSpaceDielectricSpec.rgb, Albedo, _Metallic);
+				float3 reflectSpecular = lerp(unity_ColorSpaceDielectricSpec.rgb, Albedo, _Metallic);
 
 				#if  OLD_PBR
 					float lerpSquareRoughness = pow(lerp(0.002, 1, roughness), 2);
@@ -172,19 +150,16 @@ Shader "Lch/URPBrdf"
 					float GLeft = NDotL / lerp(NDotL, 1, kInDirectLight);
 					float GRight = NDotV / lerp(NDotV, 1, kInDirectLight);
 					float G = GLeft * GRight;
-					float3 F = F0 + (1 - F0) * exp2((-5.55473 * VDotH - 6.98316) * VDotH);
+					float3 F = reflectSpecular + (1 - reflectSpecular) * exp2((-5.55473 * VDotH - 6.98316) * VDotH);
 					float3 SpecularResult = (D * G * F * 0.25) / (NDotV * NDotL);
 			
 					#if defined (SHADER_API_MOBILE) || defined (SHADER_API_SWITCH)
 						specularTerm = specularTerm - HALF_MIN;
 						specularTerm = clamp(specularTerm, 0.0, 100.0); // Prevent FP16 overflow on mobiles
 					#endif
-
 					SpecularResult *=UNITY_PI;
 	  
- 
 				#else
-
 					half LoH2 = LDotH * LDotH;
 					half roughness2MinusOne = squareRoughness - 1.0h;
 					half d = nDotH * nDotH * roughness2MinusOne + 1.00001f;
@@ -198,81 +173,68 @@ Shader "Lch/URPBrdf"
 					half normalizationTerm = roughness * 4.0h + 2.0h;			 
 					half specularTerm = squareRoughness / ((d * d) * max(0.1h, LoH2) *  normalizationTerm);
 
-
 					#if defined (SHADER_API_MOBILE) || defined (SHADER_API_SWITCH)
 						specularTerm = specularTerm - HALF_MIN;
 						specularTerm = clamp(specularTerm, 0.0, 100.0); // Prevent FP16 overflow on mobiles
 					#endif
 
-					float3 SpecularResult = specularTerm * F0  ;
+					float3 SpecularResult = specularTerm * reflectSpecular  ;
 				#endif
  
 				#if  OLD_PBR
- 
-					half3 kd = (1 - F)*(1 - _Metallic);
- 
-				 #else
-					half oneMinusDielectricSpec = unity_ColorSpaceDielectricSpec.a;
-					half3 kd =  oneMinusDielectricSpec - _Metallic * oneMinusDielectricSpec;
-				 #endif
- 
-				half3 DirectLightResult = SpecularResult +  (kd * Albedo)*lightColor * NDotL  *atten;
-
- 
-
-
-				#if defined(LIGHTMAP_ON) || defined(DYNAMICLIGHTMAP_ON)
-	 
-				half2 lightmapUV = i.ambientOrLightmapUV.xy;
-
-				// Baked lightmaps
-				half4 bakedColorTex = UNITY_SAMPLE_TEX2D(unity_Lightmap, lightmapUV.xy);
-				half3 bakedColor = DecodeLightmap(bakedColorTex);
-				half3 iblDiffuse = bakedColor;
+					half3 oneMinusReflectivity = (1 - F)*(1 - _Metallic);
+					//half oneMinusDielectricSpec = unity_ColorSpaceDielectricSpec.a;
+					//half3 oneMinusReflectivity =  oneMinusDielectricSpec - _Metallic * oneMinusDielectricSpec;
 
 				#else
-				half3 iblDiffuse = i.ambientOrLightmapUV.rgb;
+					half oneMinusDielectricSpec = unity_ColorSpaceDielectricSpec.a;
+					half3 oneMinusReflectivity =  oneMinusDielectricSpec - _Metallic * oneMinusDielectricSpec;
+				#endif
+				
+				half3 _Diffuse = oneMinusReflectivity * Albedo;
+				half3 DirectLightResult = SpecularResult + _Diffuse*lightColor * NDotL  *atten;
  
+				#if defined(LIGHTMAP_ON) || defined(DYNAMICLIGHTMAP_ON)
+					half2 lightmapUV = i.ambientOrLightmapUV.xy;
+					half4 bakedColorTex = UNITY_SAMPLE_TEX2D(unity_Lightmap, lightmapUV.xy);
+					half3 bakedColor = DecodeLightmap(bakedColorTex);
+					half3 iblDiffuse = bakedColor;
+				#else
+					half3 iblDiffuse = i.ambientOrLightmapUV.rgb;
 				#endif 
 
  
-
-				 
-			 
-
-				float mip_roughness = perceptualRoughness * (1.7 - 0.7 * perceptualRoughness);
 				float3 reflectVec = reflect(-viewDir, normal);
+				float mip_roughness = perceptualRoughness * (1.7 - 0.7 * perceptualRoughness);
 				half mip = mip_roughness * UNITY_SPECCUBE_LOD_STEPS;
 				half4 rgbm = UNITY_SAMPLE_TEXCUBE_LOD(unity_SpecCube0, reflectVec, mip);
 				float3 iblSpecular = DecodeHDR(rgbm, unity_SpecCube0_HDR);
 
+				#if  OLD_PBR
+					 //间接高光.
+					float2 envBDRF = tex2D(_LUT, float2(NDotV, roughness )).rg; // LUT采样
+					float3 Flast = fresnelSchlickRoughness(max(NDotV, 0.0), reflectSpecular, roughness);
+					float3 iblSpecularResult = iblSpecular * (Flast * envBDRF.r + envBDRF.g) ;
+					//间接漫射.
+					//float kdLast = (1 - Flast) * (1 - _Metallic);
+					//float3 iblDiffuseResult = iblDiffuse * kdLast * Albedo;
+					float3 iblDiffuseResult = iblDiffuse * _Diffuse;
+				#else
+					half fresnelTerm = 1.0 - NDotV;
+					fresnelTerm = fresnelTerm*fresnelTerm*fresnelTerm*fresnelTerm;
+					float surfaceReduction = 1.0 / (squareRoughness + 1.0);
+					float reflectivity = 1.0 - oneMinusReflectivity;
+					float  grazingTerm = saturate(_Smoothness + reflectivity);
+					float3  iblSpecularResult = iblSpecular*surfaceReduction * lerp(reflectSpecular, grazingTerm, fresnelTerm);
+					float3 iblDiffuseResult = iblDiffuse * _Diffuse;
+				#endif
 
-				float2 envBDRF = tex2D(_LUT, float2(NDotV, roughness )).rg; // LUT采样
-				float3 Flast = fresnelSchlickRoughness(max(NDotV, 0.0), F0, roughness);
-				float kdLast = (1 - Flast) * (1 - _Metallic);
-				float3 iblSpecularResult = iblSpecular * (Flast * envBDRF.r + envBDRF.g) ;
-				
-				// half fresnelTerm = Pow4(1.0 -  NDotV));
-
-				float3 iblDiffuseResult = iblDiffuse * kdLast * Albedo;
-				float3 IndirectResult = iblDiffuseResult + iblSpecularResult;
-
-				
-
+				float3 IndirectResult =  iblDiffuseResult  +    iblSpecularResult ;
 				float4 result = float4(DirectLightResult + IndirectResult, 1);
-
 				return result;
-
-				// apply fog
-				//UNITY_APPLY_FOG(i.fogCoord, c);
-				//return c;
 			}
 			ENDCG
 	}
 	UsePass "Mobile/VertexLit/ShadowCaster"
-
-								 
-
 	}
-	 
 }
