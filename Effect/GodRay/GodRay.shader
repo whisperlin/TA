@@ -3,6 +3,7 @@ Shader "GodRay/PostEffect" {
 	Properties{
 		_MainTex("Base (RGB)", 2D) = "white" {}
 		_BlurTex("Blur", 2D) = "white"{}
+
 	}
  
 	CGINCLUDE
@@ -65,6 +66,14 @@ Shader "GodRay/PostEffect" {
  
 	fixed4 frag_threshold(v2f_threshold i) : SV_Target
 	{
+	#if NOISE_TEXTURE
+		//采样深度贴图
+		float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
+		//转换回01区间
+		depth = Linear01Depth (depth);
+ 
+		return step(_DepthThreshold,depth);
+	#else
 		fixed4 color = tex2D(_MainTex, i.uv);
 		float distFromLight = length(_ViewPortLightPos.xy - i.uv);
 		float distanceControl = saturate(_LightRadius - distFromLight);
@@ -84,6 +93,8 @@ Shader "GodRay/PostEffect" {
  
 		luminanceColor *= step(_DepthThreshold,depth);
 		return fixed4(luminanceColor, luminanceColor, luminanceColor, 1);
+	#endif
+		
 	}
  
 	//径向模糊 vert shader
@@ -128,13 +139,34 @@ Shader "GodRay/PostEffect" {
 		return o;
 	}
  
+	sampler2D _Noise;
+	half4 _Noise_ST;
+	half4 _Center;
+	half _Range;
 	fixed4 frag_merge(v2f_merge i) : SV_Target
 	{
 		fixed4 ori = tex2D(_MainTex, i.uv1);
 		fixed4 blur = tex2D(_BlurTex, i.uv);
 		
+
 		//输出= 原始图像，叠加体积光贴图
 		fixed4 lightColor =    blur * _LightColor;
+		#if NOISE_TEXTURE
+
+
+		float2  dir = _ViewPortLightPos.xy - i.uv;
+				
+		float y = dot( normalize( dir ), float2(0,1)   );
+		float x = dot( normalize( dir ), float2(1,0)   );
+		half2 uv = half2(x,y )*_Noise_ST.xy + _Noise_ST.zw*_Time.x;
+		half len = length(dir);
+		
+		fixed4 col = tex2D(_Noise, uv  );
+		col = lerp(half4(1,1,1,1) , col,  saturate( len  ));
+		//return lightColor *  col.r  ;
+		lightColor *= col.r;
+		#endif
+		
 		return lightColor + ori;
 	}
  
@@ -151,6 +183,7 @@ Shader "GodRay/PostEffect" {
 			Fog{ Mode Off }
  
 			CGPROGRAM
+			 #pragma multi_compile _  NOISE_TEXTURE
 			#pragma vertex vert_threshold
 			#pragma fragment frag_threshold
 			ENDCG
@@ -180,6 +213,7 @@ Shader "GodRay/PostEffect" {
 			Fog{ Mode Off }
  
 			CGPROGRAM
+			 #pragma multi_compile _  NOISE_TEXTURE
 			#pragma vertex vert_merge
 			#pragma fragment frag_merge
 			ENDCG
