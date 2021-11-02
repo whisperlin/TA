@@ -23,10 +23,14 @@ public class DepthGodRays : MonoBehaviour
 
    
     [Label("体积光颜色", 0.0f, 1.0f)]
-    [ColorUsage(false, true)]
-    public Color lightColor = Color.white;
+    [ColorUsage(false,true)]
+    public Color lightColoHDRr = Color.white;
+
+
+    [Label("中心颜色", 0.0f, 1.0f)]
  
-   
+    public Color centerColor = Color.black;
+
     [Label("降低分辨率倍率", 2, 5)]
     public int downSample = 4;
 
@@ -66,6 +70,8 @@ public class DepthGodRays : MonoBehaviour
             _Material.SetVector("_Noise_ST", noise_ST);
             _Material.EnableKeyword("NOISE_TEXTURE");
             _Material.SetFloat("_OffsetLen", offsetLen);
+            _Material.SetColor("_Color", centerColor);
+            
             int rtWidth = source.width >> downSample;
             int rtHeight = source.height >> downSample;
             //RT分辨率按照downSameple降低
@@ -112,7 +118,7 @@ public class DepthGodRays : MonoBehaviour
                 return;
             }
             _Material.SetTexture("_BlurTex", temp2);
-            _Material.SetVector("_LightColor", lightColor);
+            _Material.SetVector("_LightColor", lightColoHDRr);
 
             //最终混合，将体积光径向模糊图与原始图片混合，pass2
             Graphics.Blit(source, destination, _Material, 2);
