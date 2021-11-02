@@ -240,3 +240,7 @@ Shader "Lch/DepthGodRay" {
 			#pragma fragment frag_merge
 			ENDCG
 		}
+	 
+ 
+	}
+}
