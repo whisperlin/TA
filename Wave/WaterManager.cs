@@ -6,12 +6,12 @@ using UnityEngine.Rendering;
 public class WaterManager : MonoBehaviour
 {
     public GameObject WaterPlane;
-    public float WaterPlaneWidth;
-    public float WaterPlaneLength;
-    public float WaveRadius = 1.0f;
-    public float WaveSpeed = 1.0f;
-    public float WaveViscosity = 1.0f; //粘度
-    public float WaveAtten = 0.99f; //衰减
+    public float WaterPlaneWidth = 10;
+    public float WaterPlaneLength = 10;
+    public float WaveRadius = 0.01f;
+    public float WaveSpeed = 0.5f;
+    public float WaveViscosity = 0.15f; //粘度
+    public float WaveAtten = 0.98f; //衰减
     [Range(0, 0.999f)]
     public float WaveHeight = 0.999f;
     public int WaveTextureResolution = 512;
@@ -31,10 +31,11 @@ public class WaterManager : MonoBehaviour
     {
         m_waterWaveMarkTexture = new RenderTexture(WaveTextureResolution, WaveTextureResolution, 0, RenderTextureFormat.Default);
         m_waterWaveMarkTexture.name = "m_waterWaveMarkTexture";
- 
+        m_waterWaveMarkTexture.wrapMode = TextureWrapMode.Repeat;
+
         m_prevWaveMarkTexture = new RenderTexture(WaveTextureResolution, WaveTextureResolution, 0, RenderTextureFormat.Default);
         m_prevWaveMarkTexture.name = "m_prevWaveMarkTexture";
-
+        m_prevWaveMarkTexture.wrapMode = TextureWrapMode.Repeat;
         m_curRT = m_waterWaveMarkTexture;
         m_prevRT = m_prevWaveMarkTexture;
 
@@ -58,7 +59,6 @@ public class WaterManager : MonoBehaviour
         if (null != m_waveTransmitMat)
             GameObject.DestroyImmediate(m_waveTransmitMat, true);
     }
-
 
     public void InitWaveTransmitParams()
     {
@@ -103,11 +103,15 @@ public class WaterManager : MonoBehaviour
         Debug.LogFormat("p1 {0} p2 {1} p3 {2}", p1, p2, p3);
     }
 
-    private void OnPreRender()
+    private void LateUpdate()
     {
         WaterPlaneCollider();
         WaveTransmit();
     }
+    /*private void OnPreRender()
+    {
+        
+    }*/
 
     Vector2 hitPos = Vector2.zero;
     bool hasHit = false;
@@ -119,16 +123,19 @@ public class WaterManager : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hitInfo = new RaycastHit();
             bool ret = Physics.Raycast(ray.origin, ray.direction, out hitInfo);
-             if (ret)
+            if (ret)
             {
+                
                 Vector3 waterPlaneSpacePos = WaterPlane.transform.worldToLocalMatrix * new Vector4(hitInfo.point.x, hitInfo.point.y, hitInfo.point.z, 1);
 
                 float dx = (waterPlaneSpacePos.x / WaterPlaneWidth) + 0.5f;
                 float dy = (waterPlaneSpacePos.z / WaterPlaneLength) + 0.5f;
+                dx = 1 - dx;
+                dy = 1 - dy;
 
                 hitPos.Set(dx, dy);
                 m_waveMarkParams.Set(dx, dy, WaveRadius * WaveRadius, WaveHeight);
-
+                //Debug.LogError(hitPos);
                 hasHit = true;
             }
         }
@@ -143,7 +150,6 @@ public class WaterManager : MonoBehaviour
         {
             m_waveTransmitMat.SetVector("_WaveMarkParams", m_waveMarkParams);
             m_waveTransmitMat.EnableKeyword("HIT");
-
         }
         else
         {
