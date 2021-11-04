@@ -10,14 +10,14 @@ public class ConditionalHidePropertyDrawer : PropertyDrawer
     private bool GetConditionalHideAttributeResult(LabelAttribute condHAtt, SerializedProperty property)
     {
         bool enabled = true;
-        string propertyPath = property.propertyPath; //returns the property path of the property we want to apply the attribute to
-        string conditionPath = propertyPath.Replace(property.name, condHAtt.ConditionalSourceField); //changes the path to the conditionalsource property path
+        string propertyPath = property.propertyPath;  
+        string conditionPath = propertyPath.Replace(property.name, condHAtt.ConditionalSourceField); 
         SerializedProperty sourcePropertyValue = property.serializedObject.FindProperty(conditionPath);
         if (sourcePropertyValue != null)
         {
             enabled = sourcePropertyValue.boolValue;
         }
-        return enabled;
+        return enabled == condHAtt.condictionValue;
     }
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
@@ -113,19 +113,37 @@ public class LabelAttribute : PropertyAttribute
     public bool condiction = false;
     public float max;
     public float min;
-    public bool ctrlByParam = true; 
+    public bool ctrlByParam = true;
+    public bool condictionValue = true;
     public LabelAttribute(string label,string conditionalSourceField)
     {
-        this.ConditionalSourceField = conditionalSourceField;
-      
+        if (conditionalSourceField.StartsWith("!"))
+        {
+            this.ConditionalSourceField = conditionalSourceField.Substring(1);
+            condictionValue = false;
+        }
+        else
+        {
+            this.ConditionalSourceField = conditionalSourceField;
+            condictionValue = true;
+        }
         this.Label = "    "+label;
         condiction = false;
         ctrlByParam = true;
     }
-     public LabelAttribute(string label, string conditionalSourceField,float min,float max)
+    public LabelAttribute(string label, string conditionalSourceField,float min,float max)
     {
         this.Label = "    "+label;
-        this.ConditionalSourceField = conditionalSourceField;
+        if (conditionalSourceField.StartsWith("!"))
+        {
+            this.ConditionalSourceField = conditionalSourceField.Substring(1);
+            condictionValue = false;
+        }
+        else
+        {
+            this.ConditionalSourceField = conditionalSourceField;
+            condictionValue = true;
+        }
         condiction = true;
         this.max = max;
         this.min = min;
