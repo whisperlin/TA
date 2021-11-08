@@ -124,7 +124,15 @@ public class LCHShaderGUIBase : ShaderGUI
                     string[] keys = cnd.Split('=');
                     if (keys.Length == 1)
                     {
-                        displayName = line.Substring(0, index0 - 1);
+                        if (index1 < line.Length - 1)
+                        {
+                            displayName = line.Substring(0, index0 - 1) + line.Substring(index1 + 1);
+                        }
+                        else
+                        {
+                            displayName = line.Substring(0, index0 - 1) ;
+                        }
+                        
                         keys[0] = keys[0].Trim();
                         if (keys[0].StartsWith("!"))
                         {
@@ -411,5 +419,7 @@ public class LCHShaderGUIBase : ShaderGUI
     }
      
 }
+
+ 
 
  
