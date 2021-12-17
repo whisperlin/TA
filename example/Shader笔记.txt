@@ -1,12 +1,16 @@
-_MinMapPower("MinMap·¶Î§",Range(0.1,1))= 1
+æ‰‹åŠ¨minmap
+_MinMapPower("MinMap",Range(0.1,1))= 1
 float _MinMapPower;
 fixed4 col = tex2D(_MainTex, uv,ddx(uv)*_MinMapPower,ddy(uv)*_MinMapPower);
 
 
-//¹«¸æ°å
+//å…¬å‘Šæ¿
 float3 forwardCamVec = -normalize(UNITY_MATRIX_V._m20_m21_m22);
 float3 rightCamVec = normalize(cross(upCamVec, forwardCamVec));
 forwardCamVec = normalize(cross(rightCamVec, upCamVec));
 float3x3 rotationCamMatrix = float3x3(rightCamVec, upCamVec,  forwardCamVec);
 v.normal = normalize(mul(v.normal, rotationCamMatrix));
 v.vertex.xyz = mul(v.vertex.xyz, rotationCamMatrix);
+
+
+float4 frag(VertexOutput i, float facing : VFACE) : COLOR {
