@@ -13,4 +13,7 @@ v.normal = normalize(mul(v.normal, rotationCamMatrix));
 v.vertex.xyz = mul(v.vertex.xyz, rotationCamMatrix);
 
 
+//
+elementObject.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor | HideFlags.HideInHierarchy | HideFlags.NotEditable;
+
 float4 frag(VertexOutput i, float facing : VFACE) : COLOR {
