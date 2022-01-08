@@ -12,7 +12,13 @@ float3x3 rotationCamMatrix = float3x3(rightCamVec, upCamVec,  forwardCamVec);
 v.normal = normalize(mul(v.normal, rotationCamMatrix));
 v.vertex.xyz = mul(v.vertex.xyz, rotationCamMatrix);
 
+//fast acos
+double acos(x) {
+   return (-0.69813170079773212*x*x - 0.87266462599716477)* x + 1.5707963267948966;
+}
 
+ 
+Pro
 //
 elementObject.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor | HideFlags.HideInHierarchy | HideFlags.NotEditable;
 
