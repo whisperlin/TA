@@ -20,11 +20,11 @@ public class Reflection : MonoBehaviour
 
     public LayerMask cullMark = -1;
 
-   
+
     // Update is called once per frame
     void LateUpdate()
     {
-        
+
         if (null == targetCamera)
             targetCamera = Camera.main;
         if (null == targetCamera)
@@ -39,7 +39,8 @@ public class Reflection : MonoBehaviour
         reflectionCamera.targetTexture = null;
 
 
-        LchCommonResource.CheckRT(ref rt, targetCamera.pixelWidth/(int) textureSise, targetCamera.pixelHeight / (int)textureSise, 16);
+        LchCommonResource.CheckRT(ref rt, targetCamera.pixelWidth / (int)textureSise, targetCamera.pixelHeight / (int)textureSise, 16,RenderTextureFormat.Default,true);
+ 
         reflectionCamera.transform.parent = transform;
         reflectionCamera.CopyFrom(targetCamera);
         reflectionCamera.targetTexture = rt;
@@ -58,6 +59,7 @@ public class Reflection : MonoBehaviour
         Shader.SetGlobalMatrix("_LchReflectionMatrix", vp);
         Shader.SetGlobalTexture("_LchReflectionTex", rt);
         reflectionCamera.Render();
+        
     }
 
     private void OnDisable()
