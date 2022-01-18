@@ -6,9 +6,8 @@ using UnityEngine.Experimental.Rendering;
 
 public class LchCommonResource  
 {
-    public  static void CheckRT(ref RenderTexture rt , int width, int height, int depth, RenderTextureFormat format = RenderTextureFormat.Default)
+    public  static void CheckRT(ref RenderTexture rt , int width, int height, int depth, RenderTextureFormat format = RenderTextureFormat.Default,bool minMap = false)
     {
-     
         if (null != rt)
         {
             if (rt.width != width || rt.height != height)
@@ -18,8 +17,16 @@ public class LchCommonResource
         }
         if (null == rt)
         {
-            
-            rt = new RenderTexture(  width, height, depth, format);
+            if (minMap)
+            {
+                rt = new RenderTexture(width, height, depth, format, 5);
+                rt.useMipMap = true;
+                rt.autoGenerateMips = true;
+            }
+            else
+            {
+                rt = new RenderTexture(width, height, depth, format, 0);
+            }
         }
     }
 
