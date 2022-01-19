@@ -40,7 +40,7 @@
 ## 工具<br>
 ![image](https://github.com/whisperlin/TA/blob/master/pic/tool.png)<br>
 
-## 工具<br>
+## 虚拟光源<br>
 ![image](https://github.com/whisperlin/TA/blob/master/pic/1.png)<br>
 
 ## 球谐工具<br>
