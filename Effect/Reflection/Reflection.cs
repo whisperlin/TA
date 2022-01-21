@@ -38,6 +38,13 @@ public class Reflection : MonoBehaviour
         }
         reflectionCamera.targetTexture = null;
 
+        Vector3 lossyScale = transform.lossyScale;
+        Vector3 localScale = transform.localScale;
+
+        lossyScale.x = Mathf.Max(lossyScale.x, 0.00000001f);
+        lossyScale.y = Mathf.Max(lossyScale.y, 0.00000001f);
+        lossyScale.z = Mathf.Max(lossyScale.z, 0.00000001f);
+        transform.localScale = new Vector3(localScale.x / lossyScale.x, localScale.y / lossyScale.y, localScale.z / lossyScale.z);
 
         LchCommonResource.CheckRT(ref rt, targetCamera.pixelWidth / (int)textureSise, targetCamera.pixelHeight / (int)textureSise, 16,RenderTextureFormat.Default,true);
  
