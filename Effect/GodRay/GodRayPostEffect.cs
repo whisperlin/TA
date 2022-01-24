@@ -1,7 +1,16 @@
- 
- 
 using UnityEngine;
-public enum GodRayPostEffectModel
+
+/*public enum GodRayPostEffectModel
+{
+    [EnumAttirbute("深度模式")]
+    Depth = 0,
+    [EnumAttirbute("颜色模式")]
+    Color = 1,
+    [EnumAttirbute("颜色和深度模式")]
+    DepthAndColor = 2,
+}*/
+
+public enum GodRayPostEffectDevModel
 {
     NORMAL,
     DEVELOP1,
@@ -12,29 +21,38 @@ public enum GodRayPostEffectModel
 [ExecuteInEditMode]
 public class GodRayPostEffect : MonoBehaviour
 {
-    [Header("深度控制阈值")]
+    //[CNEnum(typeof(GodRayPostEffectModel), "高亮提取模式")]
+    //public GodRayPostEffectModel model = GodRayPostEffectModel.Color;
+
+    [Label("深度提取")]
+    public bool depthEnabel = true;
+    [Label("深度控制阈值", "depthEnabel")]
     [Range(0.0f, 1.0f)]
     public float depthThreshold = 0.8f;
-    [Header("高亮部分提取阈值")]
-    public Color colorThreshold = Color.gray;
+    [Label("颜色提取阙值")]
+    public bool colorEnable = false;
+    [Label("高亮部分提取阈值", "colorEnable")]
+    public Color colorThreshold = new Color(0.25f,0.25f,0.25f,1);
 
-    [Header("提取高亮结果Pow倍率，适当降低颜色过亮的情况")]
-    [Range(0.2f, 4.0f)]
-    public float lightPowFactor = 3.0f;
+    [Label("提取高亮结果Pow倍率，适当降低颜色过亮的情况", "colorEnable")]
+    [Range(1f, 4.0f)]
+    public float lightPowFactor = 1.0f;
 
-    [Header("产生体积光的范围")]
-    [Range(0.0f, 5.0f)]
-    public float lightRadius = 2.0f;
-
-    [Header("光源最大限制")]
+    [Label("光源最大限制", "colorEnable")]
     [Range(0.0f, 1.0f)]
     public float lightMaxRadius = 1;
 
-    [Header("体积光颜色")]
+    [Label("产生体积光的范围")]
+    [Range(0.0f, 5.0f)]
+    public float lightRadius = 2.0f;
+
+    
+
+    [Label("体积光颜色")]
     [ColorUsage(false,true)]
     public Color lightColor = Color.white;
  
-    [Header("径向模糊uv采样偏移值")]
+    [Label("径向模糊uv采样偏移值")]
     [Range(0.0f, 10.0f)]
     public float samplerScale = 1;
     //Blur迭代次数
@@ -44,10 +62,10 @@ public class GodRayPostEffect : MonoBehaviour
     [Range(0, 2)]
     public int downSample = 1;
 
-    [Header("光源位置")]
+    [Label("光源位置")]
     public Transform lightTransform;
 
-    [Header("噪点")]
+    [Label("噪点")]
     public Texture2D noise;
 
     public Vector4 noise_ST = new Vector4(0.5f,0.5f,0.5f,0.5f);
@@ -55,7 +73,7 @@ public class GodRayPostEffect : MonoBehaviour
     public Camera targetCamera = null;
     public Material _Material;
 
-    public GodRayPostEffectModel model = GodRayPostEffectModel.NORMAL;
+    public GodRayPostEffectDevModel dev_model = GodRayPostEffectDevModel.NORMAL;
     void Awake()
     {
         targetCamera = GetComponent<Camera>();
@@ -75,6 +93,27 @@ public class GodRayPostEffect : MonoBehaviour
     {
         if (_Material && targetCamera)
         {
+            if (depthEnabel)
+            {
+ 
+                _Material.EnableKeyword("FROM_DEPTH");
+            }
+            else
+            {
+                _Material.DisableKeyword("FROM_DEPTH");
+            }
+
+            if (colorEnable)
+            {
+
+                _Material.EnableKeyword("FROM_COLOR");
+            }
+            else
+            {
+                _Material.DisableKeyword("FROM_COLOR");
+            }
+
+             
             if (noise)
             {
                 _Material.SetTexture("_Noise", noise);
@@ -113,7 +152,7 @@ public class GodRayPostEffect : MonoBehaviour
             //根据阈值提取高亮部分,使用pass0进行高亮提取，比Bloom多一步计算光源距离剔除光源范围外的部分
             Graphics.Blit(source, temp1, _Material, 0);
 
-            if (model == GodRayPostEffectModel.DEVELOP1)
+            if (dev_model == GodRayPostEffectDevModel.DEVELOP1)
             {
                 Graphics.Blit(temp1, destination);
                 RenderTexture.ReleaseTemporary(temp1);
@@ -137,7 +176,7 @@ public class GodRayPostEffect : MonoBehaviour
                 Graphics.Blit(temp2, temp1, _Material, 1);
                 RenderTexture.ReleaseTemporary(temp2);
             }
-            if (model == GodRayPostEffectModel.DEVELOP2)
+            if (dev_model == GodRayPostEffectDevModel.DEVELOP2)
             {
                 Graphics.Blit(temp1, destination);
                 RenderTexture.ReleaseTemporary(temp1);
