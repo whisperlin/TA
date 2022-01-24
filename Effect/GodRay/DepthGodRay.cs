@@ -1,135 +1,268 @@
+Shader "GodRay/PostEffect" {
+ 
+	Properties{
+		_MainTex("Base (RGB)", 2D) = "white" {}
+		_BlurTex("Blur", 2D) = "white"{}
+		_AO("AO",Range(0,1)) = 1
+	}
+ 
+	CGINCLUDE
+	
+	#include "UnityCG.cginc"
+	
+	//用于阈值提取高亮部分
+	struct v2f_threshold
+	{
+		float4 pos : SV_POSITION;
+		float2 uv : TEXCOORD0;
+	};
+ 
+	//用于blur
+	struct v2f_blur
+	{
+		float4 pos : SV_POSITION;
+		float2 uv  : TEXCOORD0;
+		float2 blurOffset : TEXCOORD1;
+	};
+ 
+	//用于最终融合
+	struct v2f_merge
+	{
+		float4 pos : SV_POSITION;
+		float2 uv  : TEXCOORD0;
+		float2 uv1 : TEXCOORD1;
+	};
+ 
+	sampler2D _CameraDepthTexture;
+	sampler2D _MainTex;
+	float4 _MainTex_TexelSize;
+	sampler2D _BlurTex;
+	float4 _BlurTex_TexelSize;
+	float4 _ViewPortLightPos;
+	
+	float4 _offsets;
+	float4 _ColorThreshold;
+	float4 _LightColor;
+ 
+	float _PowFactor;
+	float _LightRadius;
+	float _DepthThreshold;
+	float _LightMaxRadius;
+	float _AO;
+ 
+	//高亮部分提取shader
+	v2f_threshold vert_threshold(appdata_img v)
+	{
+		v2f_threshold o;
+		o.pos = UnityObjectToClipPos(v.vertex);
+		o.uv = v.texcoord.xy;
+		
+		//dx中纹理从左上角为初始坐标，需要反向
+#if UNITY_UV_STARTS_AT_TOP
+		if (_MainTex_TexelSize.y < 0)
+			o.uv.y = 1 - o.uv.y;
+#endif	
+		return o;
+	}
+ 
+	fixed4 frag_threshold(v2f_threshold i) : SV_Target
+	{
+ 
+		float distFromLight = length(_ViewPortLightPos.xy - i.uv);
+		float distanceControl = saturate(_LightRadius - distFromLight);
 
-using UnityEngine;
-public enum DepthGodRaytModel
-{
-    NORMAL,
-    DEVELOP1,
-    DEVELOP2,
+
+#if FROM_DEPTH  
+		float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
+		depth = Linear01Depth(depth);
+		depth  = step(_DepthThreshold, depth);
+
+#else  
+		float depth = 1;
+#endif
+
+		depth *= distanceControl;
+		#if FROM_COLOR  
+
+			fixed4 color = tex2D(_MainTex, i.uv);
+			
+			float4 deltaColor = saturate(color - _ColorThreshold);
+
+			
+			float4 thresholdColor = deltaColor ;
+			float luminanceColor = Luminance(thresholdColor.rgb);
+			luminanceColor = pow(luminanceColor, _PowFactor);
+			luminanceColor = smoothstep(0, _LightMaxRadius, luminanceColor) *_LightMaxRadius;
+			luminanceColor *= depth;
+			 
+		#else 
+			float luminanceColor = depth * distanceControl;
+
+			 
+
+		#endif
+			 
+
+		return fixed4(luminanceColor, luminanceColor, luminanceColor, depth);
+		
+	 
+		
+	}
+ 
+	//径向模糊 vert shader
+	v2f_blur vert_blur(appdata_img v)
+	{
+		v2f_blur o;
+		o.pos = UnityObjectToClipPos(v.vertex);
+		o.uv = v.texcoord.xy;
+ 
+		o.blurOffset = _offsets * (_ViewPortLightPos.xy - o.uv);
+		return o;
+	}
+ 
+	//#define RADIAL_SAMPLE_COUNT 0.125
+	#define RADIAL_SAMPLE_COUNT_INV    0.125
+
+	//径向模拟pixel shader
+	fixed4 frag_blur(v2f_blur i) : SV_Target
+	{
+	 
+
+		half4 color = tex2D(_MainTex, i.uv.xy);
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		
+		
+	 
+
+		return  half4( (color.r * RADIAL_SAMPLE_COUNT_INV).rrr, color.a);
+		 
+	}
+ 
+	//融合vertex shader
+	v2f_merge vert_merge(appdata_img v)
+	{
+		v2f_merge o;
+		//mvp矩阵变换
+		o.pos = UnityObjectToClipPos(v.vertex);
+		//uv坐标传递
+		o.uv.xy = v.texcoord.xy;
+		o.uv1.xy = o.uv.xy;
+#if UNITY_UV_STARTS_AT_TOP
+		if (_MainTex_TexelSize.y < 0)
+			o.uv.y = 1 - o.uv.y;
+#endif	
+		return o;
+	}
+ 
+	sampler2D _Noise;
+	half4 _Noise_ST;
+	half4 _Center;
+	half _Range;
+	fixed4 frag_merge(v2f_merge i) : SV_Target
+	{
+		fixed4 ori = tex2D(_MainTex, i.uv1);
+		fixed4 blur = tex2D(_BlurTex, i.uv);
+		
+
+		//输出= 原始图像，叠加体积光贴图
+		
+		#if NOISE_TEXTURE
+
+
+		float2  dir = _ViewPortLightPos.xy - i.uv;
+				
+		float y = dot( normalize( dir ), float2(0,1)   );
+		float x = dot( normalize( dir ), float2(1,0)   );
+		half2 uv = half2(x,y )*_Noise_ST.xy + _Noise_ST.zw*_Time.x;
+		half len = length(dir);
+		
+		fixed4 col = tex2D(_Noise, uv  );
+		col = lerp(half4(1,1,1,1) , col,  saturate( len  ));
+  
+		blur.r *= col.r;
+		#endif
+		_LightColor *= blur.r;
+		
+		float ao =  lerp(1, blur.a, _AO);
+		
+		return half4( _LightColor.rgb + ori.rgb *  saturate (1- _LightColor.rgb   ) * ao ,1  );
+		 
+	}
+ 
+		ENDCG
+ 
+	SubShader
+	{
+		//pass 0: 提取高亮部分
+		Pass
+		{
+			ZTest Off
+			Cull Off
+			ZWrite Off
+			Fog{ Mode Off }
+ 
+			CGPROGRAM
+
+			#pragma multi_compile FROM_DEPTH  _ 
+			#pragma multi_compile _  FROM_COLOR 
+
+			//#pragma multi_compile _  NOISE_TEXTURE
+			#pragma vertex vert_threshold
+			#pragma fragment frag_threshold
+			ENDCG
+		}
+ 
+		//pass 1: 径向模糊
+		Pass
+		{
+			ZTest Off
+			Cull Off
+			ZWrite Off
+			Fog{ Mode Off }
+ 
+			CGPROGRAM
+			#pragma vertex vert_blur
+			#pragma fragment frag_blur
+			ENDCG
+		}
+ 
+		//pass 2: 将体积光模糊图与原图融合
+		Pass
+		{
+ 
+			ZTest Off
+			Cull Off
+			ZWrite Off
+			Fog{ Mode Off }
+ 
+			CGPROGRAM
+			 #pragma multi_compile _  NOISE_TEXTURE
+			#pragma vertex vert_merge
+			#pragma fragment frag_merge
+			ENDCG
+		}
+ 
+	}
 }
-
-[RequireComponent(typeof(Camera))]
-[ExecuteInEditMode]
-public class DepthGodRays : MonoBehaviour
-{
-    [Label("深度控制阈值", 0.0f, 1.0f)]
-
-    public float depthThreshold = 0.8f;
-
-    [Label("光源偏移距离",0f,0.1f)]
-    public float offsetLen = 0.05f;
-    [Label("产生体积光的范围", 0.0f, 1.0f)]
-
-    public float lightRadius = 2.0f;
-
-   
-    [Label("体积光颜色", 0.0f, 1.0f)]
-    [ColorUsage(false,true)]
-    public Color lightColoHDRr = Color.white;
-
-
-    [Label("中心颜色", 0.0f, 1.0f)]
- 
-    public Color centerColor = Color.black;
-
-    [Label("降低分辨率倍率", 2, 5)]
-    public int downSample = 4;
-
-    [Label("光源位置")]
-    public Transform lightTransform;
-
-    [Label("噪点")]
-    public Texture2D noise;
-    [Label("噪点控制")]
-    public Vector4 noise_ST = new Vector4(100f, 100f, 1f, 1f);
-
-    public Camera targetCamera = null;
-    public Material _Material;
-
-    public DepthGodRaytModel model = DepthGodRaytModel.NORMAL;
-    void Awake()
-    {
-        targetCamera = GetComponent<Camera>();
-    }
-
-    void OnEnable()
-    {
-        targetCamera.depthTextureMode = DepthTextureMode.Depth;
-    }
-
-    void OnDistable()
-    {
-        targetCamera.depthTextureMode = DepthTextureMode.None;
-    }
-
-    void OnRenderImage(RenderTexture source, RenderTexture destination)
-    {
-        if (_Material && targetCamera)
-        {
-
-            _Material.SetTexture("_Noise", noise);
-            _Material.SetVector("_Noise_ST", noise_ST);
-            _Material.EnableKeyword("NOISE_TEXTURE");
-            _Material.SetFloat("_OffsetLen", offsetLen);
-            _Material.SetColor("_Color", centerColor);
-            
-            int rtWidth = source.width >> downSample;
-            int rtHeight = source.height >> downSample;
-            //RT分辨率按照downSameple降低
-            RenderTexture temp1 = RenderTexture.GetTemporary(rtWidth, rtHeight, 0, source.format);
-
-            //计算光源位置从世界空间转化到视口空间
-            Vector3 viewPortLightPos = new Vector3(.5f, .5f, 0);
-            if (null != lightTransform)
-            {
-                Vector3 worldPos = transform.position + lightTransform.forward * 1000f;
-                viewPortLightPos = targetCamera.WorldToViewportPoint(worldPos);
-            }
-
-            _Material.SetVector("_ViewPortLightPos", new Vector4(viewPortLightPos.x, viewPortLightPos.y, viewPortLightPos.z, 0));
-            _Material.SetFloat("_LightRadius", lightRadius);
-            _Material.SetFloat("_DepthThreshold", depthThreshold);
-
-            //根据阈值提取高亮部分,使用pass0进行高亮提取，比Bloom多一步计算光源距离剔除光源范围外的部分
-            Graphics.Blit(source, temp1, _Material, 0);
-
-            if (model == DepthGodRaytModel.DEVELOP1)
-            {
-                Graphics.Blit(temp1, destination);
-                RenderTexture.ReleaseTemporary(temp1);
-                return;
-            }
-
-            _Material.SetVector("_ViewPortLightPos", new Vector4(viewPortLightPos.x, viewPortLightPos.y, viewPortLightPos.z, 0));
-            _Material.SetFloat("_LightRadius", lightRadius);
-
- 
-
-            RenderTexture temp2 = RenderTexture.GetTemporary(rtWidth, rtHeight, 0, source.format);
-            Graphics.Blit(temp1, temp2, _Material, 1);
-
-     
-        
-   
-
-            if (model == DepthGodRaytModel.DEVELOP2)
-            {
-                Graphics.Blit(temp2, destination);
-                RenderTexture.ReleaseTemporary(temp1);
-                return;
-            }
-            _Material.SetTexture("_BlurTex", temp2);
-            _Material.SetVector("_LightColor", lightColoHDRr);
-
-            //最终混合，将体积光径向模糊图与原始图片混合，pass2
-            Graphics.Blit(source, destination, _Material, 2);
-            RenderTexture.ReleaseTemporary(temp2);
-            //释放申请的RT
-            RenderTexture.ReleaseTemporary(temp1);
-        }
-        else
-        {
-            Graphics.Blit(source, destination);
-        }
-    }
-}
- 
