@@ -3,11 +3,11 @@ Shader "GodRay/PostEffect" {
 	Properties{
 		_MainTex("Base (RGB)", 2D) = "white" {}
 		_BlurTex("Blur", 2D) = "white"{}
-
+		_AO("AO",Range(0,1)) = 0.25
 	}
  
 	CGINCLUDE
-	#define RADIAL_SAMPLE_COUNT 6
+	
 	#include "UnityCG.cginc"
 	
 	//用于阈值提取高亮部分
@@ -48,6 +48,7 @@ Shader "GodRay/PostEffect" {
 	float _LightRadius;
 	float _DepthThreshold;
 	float _LightMaxRadius;
+	float _AO;
  
 	//高亮部分提取shader
 	v2f_threshold vert_threshold(appdata_img v)
@@ -66,34 +67,45 @@ Shader "GodRay/PostEffect" {
  
 	fixed4 frag_threshold(v2f_threshold i) : SV_Target
 	{
-	#if NOISE_TEXTURE
-		//采样深度贴图
-		float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
-		//转换回01区间
-		depth = Linear01Depth (depth);
  
-		return step(_DepthThreshold,depth);
-	#else
-		fixed4 color = tex2D(_MainTex, i.uv);
 		float distFromLight = length(_ViewPortLightPos.xy - i.uv);
 		float distanceControl = saturate(_LightRadius - distFromLight);
-		//仅当color大于设置的阈值的时候才输出
-		float4 thresholdColor = saturate(color - _ColorThreshold) * distanceControl;
-		float luminanceColor = Luminance(thresholdColor.rgb);
-		
-		luminanceColor = pow(luminanceColor, _PowFactor);
 
-		luminanceColor = smoothstep( 0, _LightMaxRadius, luminanceColor) *_LightMaxRadius;
-		
-		
-		//采样深度贴图
+
+#if FROM_DEPTH  
 		float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
-		//转换回01区间
-		depth = Linear01Depth (depth);
- 
-		luminanceColor *= step(_DepthThreshold,depth);
-		return fixed4(luminanceColor, luminanceColor, luminanceColor, 1);
-	#endif
+		depth = Linear01Depth(depth);
+		depth  = step(_DepthThreshold, depth);
+
+#else  
+		float depth = 1;
+#endif
+
+		depth *= distanceControl;
+		#if FROM_COLOR  
+
+			fixed4 color = tex2D(_MainTex, i.uv);
+			
+			float4 deltaColor = saturate(color - _ColorThreshold);
+
+			
+			float4 thresholdColor = deltaColor ;
+			float luminanceColor = Luminance(thresholdColor.rgb);
+			luminanceColor = pow(luminanceColor, _PowFactor);
+			luminanceColor = smoothstep(0, _LightMaxRadius, luminanceColor) *_LightMaxRadius;
+			luminanceColor *= depth;
+			 
+		#else 
+			float luminanceColor = depth * distanceControl;
+
+			 
+
+		#endif
+			 
+
+		return fixed4(luminanceColor, luminanceColor, luminanceColor, depth);
+		
+	 
 		
 	}
  
@@ -108,19 +120,44 @@ Shader "GodRay/PostEffect" {
 		return o;
 	}
  
+	//#define RADIAL_SAMPLE_COUNT 0.125
+	#define RADIAL_SAMPLE_COUNT_INV    0.125
+
 	//径向模拟pixel shader
 	fixed4 frag_blur(v2f_blur i) : SV_Target
 	{
-		half4 color = half4(0,0,0,0);
-		for(int j = 0; j < RADIAL_SAMPLE_COUNT; j++)   
-		{	
-			color += tex2D(_MainTex, i.uv.xy);
-			i.uv.xy += i.blurOffset; 	
-		}
-		/*half2 uv =  abs(_ViewPortLightPos.xy - i.uv) ;
-		if(uv.x<0.2&& uv.y<0.2)
-		return float4(1,0,0,1);*/
-		return color / RADIAL_SAMPLE_COUNT;
+	 
+
+		half4 color = tex2D(_MainTex, i.uv.xy);
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		color.r += tex2D(_MainTex, i.uv.xy).r;
+		i.uv.xy += i.blurOffset;
+
+		
+		
+	 
+
+		return  half4( (color.r * RADIAL_SAMPLE_COUNT_INV).rrr, color.a);
+		 
 	}
  
 	//融合vertex shader
@@ -150,7 +187,7 @@ Shader "GodRay/PostEffect" {
 		
 
 		//输出= 原始图像，叠加体积光贴图
-		fixed4 lightColor =    blur * _LightColor;
+		
 		#if NOISE_TEXTURE
 
 
@@ -163,11 +200,15 @@ Shader "GodRay/PostEffect" {
 		
 		fixed4 col = tex2D(_Noise, uv  );
 		col = lerp(half4(1,1,1,1) , col,  saturate( len  ));
-		//return lightColor *  col.r  ;
-		lightColor *= col.r;
+  
+		blur.r *= col.r;
 		#endif
+		_LightColor *= blur.r;
 		
-		return lightColor + ori;
+		float ao =  lerp(1, blur.a, _AO);
+		
+		return half4( _LightColor.rgb + ori.rgb *  saturate (1- _LightColor.rgb   ) * ao ,1  );
+		 
 	}
  
 		ENDCG
@@ -183,7 +224,11 @@ Shader "GodRay/PostEffect" {
 			Fog{ Mode Off }
  
 			CGPROGRAM
-			 #pragma multi_compile _  NOISE_TEXTURE
+
+			#pragma multi_compile FROM_DEPTH  _ 
+			#pragma multi_compile _  FROM_COLOR 
+
+			//#pragma multi_compile _  NOISE_TEXTURE
 			#pragma vertex vert_threshold
 			#pragma fragment frag_threshold
 			ENDCG
