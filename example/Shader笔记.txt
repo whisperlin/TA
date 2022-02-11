@@ -23,3 +23,7 @@ Pro
 elementObject.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor | HideFlags.HideInHierarchy | HideFlags.NotEditable;
 
 float4 frag(VertexOutput i, float facing : VFACE) : COLOR {
+
+
+dynamicbone 
+https://chowdera.com/2022/02/202202020915213339.html
