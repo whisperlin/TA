@@ -11,47 +11,44 @@ public static class CanvasExtensions
     {
         if (camera == null)
         {
-            //camera = canvas.worldCamera;
             camera = Camera.main;
         }
-
         var viewport_position = camera.WorldToViewportPoint(world_position);
         var canvas_rect = canvas.GetComponent<RectTransform>();
-
         return new Vector2((viewport_position.x * canvas_rect.sizeDelta.x) - (canvas_rect.sizeDelta.x * 0.5f),
                            (viewport_position.y * canvas_rect.sizeDelta.y) - (canvas_rect.sizeDelta.y * 0.5f));
+    }
+}
+public class UIContent
+{
+    public Vector3 worldPos = Vector3.zero;
+    public float sqDistance = 0;
+    public RectTransform rectTransform;
+
+    public void UpdateDistance(Vector3 cameraPos)
+    {
+        sqDistance = (cameraPos - worldPos).sqrMagnitude;
+    }
+    public UIContent(RectTransform transform)
+    {
+        this.rectTransform = transform;
     }
 }
 public class TestFont : MonoBehaviour
 {
     public GameObject g;
     public Canvas _ui_canvas;
-    public class UIContent 
-    {
-        public  Vector3 worldPos = Vector3.zero;
-        public float distance = 0;
-        public RectTransform rectTransform;
- 
- 
-
-        public UIContent(RectTransform transform)
-        {
- 
-            this.rectTransform = transform;
-        }
-    }
+    
 
     public class UIContentComparer : IComparer<UIContent>
     {
         public int Compare(UIContent p1, UIContent p2)
         {
-            return p1.distance.CompareTo(p2.distance);
+            return p1.sqDistance.CompareTo(p2.sqDistance);
         }
     }
     UIContentComparer cmp = new UIContentComparer();
-
     public List<UIContent> fonts = new List<UIContent>();
-    // Start is called before the first frame update
     void Start()
     {
         
@@ -71,12 +68,19 @@ public class TestFont : MonoBehaviour
         if (null == _ui_canvas)
             return;
 
+        Vector3 cameraPosition = Camera.main.transform.position;
+        for (int i = 0; i < fonts.Count; i++)
+        {
+            fonts[i].worldPos = new Vector3(Random.Range(0, 10), Random.Range(0, 2), Random.Range(0, 10));
+
+            fonts[i].UpdateDistance(cameraPosition);
+
+        }
         fonts.Sort(cmp);
         for (int i = 0; i < fonts.Count; i++)
         {
             fonts[i].rectTransform.SetAsLastSibling();
-
-            fonts[i].rectTransform.anchoredPosition = _ui_canvas.WorldToCanvas(new Vector3(Random.Range(0, 10), Random.Range(0, 2), Random.Range(0, 10)));
+            fonts[i].rectTransform.anchoredPosition = _ui_canvas.WorldToCanvas(fonts[i].worldPos);
             
         }
     }
