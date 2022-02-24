@@ -27,3 +27,6 @@ float4 frag(VertexOutput i, float facing : VFACE) : COLOR {
 
 dynamicbone 
 https://chowdera.com/2022/02/202202020915213339.html
+
+//debug symbols
+#pragma enable_d3d11_debug_symbols
