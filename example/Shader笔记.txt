@@ -30,3 +30,8 @@ https://chowdera.com/2022/02/202202020915213339.html
 
 //debug symbols
 #pragma enable_d3d11_debug_symbols
+
+
+
+OpenGL 投影矩阵
+Z轴投影后的范围也有所不同，DX为[0, 1]，而OpenGL为[-1, 1]
