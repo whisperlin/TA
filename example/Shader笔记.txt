@@ -35,3 +35,11 @@ https://chowdera.com/2022/02/202202020915213339.html
 
 OpenGL 投影矩阵
 Z轴投影后的范围也有所不同，DX为[0, 1]，而OpenGL为[-1, 1]
+
+float d = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture,i.uv_depth);
+4      // 根据深度和当前uv坐标反推当前NDC坐标(注意这个坐标已经经过了齐次除法了)
+5        float4 NDCPos = float4(i.uv.x*2-1, i.uv.y*2-1, d*2-1,1);
+6       // 根据NDC坐标及View-Projection的逆矩阵，将NDC坐标变换到世界坐标下
+7       float4 worldPos = mul(_CurrentViewProjectionInverseMatrix,NDCPos);
+8    
+9       worldPos /= worldPos.w;
